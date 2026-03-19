@@ -129,12 +129,55 @@ exports.Prisma.SessionScalarFieldEnum = {
 
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
   email: 'email',
-  is_admin: 'is_admin',
-  fname: 'fname',
-  lname: 'lname',
-  alias: 'alias',
-  password: 'password'
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClientScalarFieldEnum = {
+  id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  status: 'status',
+  intakeDate: 'intakeDate',
+  extensionStatus: 'extensionStatus',
+  extensionDate: 'extensionDate',
+  priorityNeed: 'priorityNeed',
+  avatarUrl: 'avatarUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ReferralScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  createdById: 'createdById',
+  organizationName: 'organizationName',
+  resourceType: 'resourceType',
+  purpose: 'purpose',
+  status: 'status',
+  roiSigned: 'roiSigned',
+  roiSignedAt: 'roiSignedAt',
+  followUpDate: 'followUpDate',
+  isPriority: 'isPriority',
+  closedAt: 'closedAt',
+  summary: 'summary',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NoteScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  authorId: 'authorId',
+  content: 'content',
+  setReminder: 'setReminder',
+  reminderAt: 'reminderAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -147,10 +190,38 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+exports.UserRole = exports.$Enums.UserRole = {
+  ADMIN: 'ADMIN',
+  MANAGER: 'MANAGER',
+  STAFF: 'STAFF'
+};
+
+exports.ClientStatus = exports.$Enums.ClientStatus = {
+  ENROLLED: 'ENROLLED',
+  WC: 'WC',
+  INACTIVE: 'INACTIVE',
+  ARCHIVED: 'ARCHIVED'
+};
+
+exports.ReferralStatus = exports.$Enums.ReferralStatus = {
+  INQUIRED: 'INQUIRED',
+  REFERRED: 'REFERRED',
+  PENDING: 'PENDING',
+  ENROLLED: 'ENROLLED',
+  COMPLETED: 'COMPLETED',
+  CLOSED: 'CLOSED'
+};
 
 exports.Prisma.ModelName = {
   Session: 'Session',
-  User: 'User'
+  User: 'User',
+  Client: 'Client',
+  Referral: 'Referral',
+  Note: 'Note'
 };
 
 /**

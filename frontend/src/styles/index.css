@@ -53,11 +53,13 @@
 
 
 body {
+  background-color: rgb(19, 19, 19);
   margin: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  color: whitesmoke;
 }
 
 @media (min-width: 31.25em) and (max-width: 62.5em) {

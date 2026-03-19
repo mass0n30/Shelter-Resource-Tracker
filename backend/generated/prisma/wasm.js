@@ -101,12 +101,55 @@ exports.Prisma.SessionScalarFieldEnum = {
 
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
   email: 'email',
-  is_admin: 'is_admin',
-  fname: 'fname',
-  lname: 'lname',
-  alias: 'alias',
-  password: 'password'
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClientScalarFieldEnum = {
+  id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  status: 'status',
+  intakeDate: 'intakeDate',
+  extensionStatus: 'extensionStatus',
+  extensionDate: 'extensionDate',
+  priorityNeed: 'priorityNeed',
+  avatarUrl: 'avatarUrl',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ReferralScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  createdById: 'createdById',
+  organizationName: 'organizationName',
+  resourceType: 'resourceType',
+  purpose: 'purpose',
+  status: 'status',
+  roiSigned: 'roiSigned',
+  roiSignedAt: 'roiSignedAt',
+  followUpDate: 'followUpDate',
+  isPriority: 'isPriority',
+  closedAt: 'closedAt',
+  summary: 'summary',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NoteScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  authorId: 'authorId',
+  content: 'content',
+  setReminder: 'setReminder',
+  reminderAt: 'reminderAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -119,10 +162,38 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+exports.UserRole = exports.$Enums.UserRole = {
+  ADMIN: 'ADMIN',
+  MANAGER: 'MANAGER',
+  STAFF: 'STAFF'
+};
+
+exports.ClientStatus = exports.$Enums.ClientStatus = {
+  ENROLLED: 'ENROLLED',
+  WC: 'WC',
+  INACTIVE: 'INACTIVE',
+  ARCHIVED: 'ARCHIVED'
+};
+
+exports.ReferralStatus = exports.$Enums.ReferralStatus = {
+  INQUIRED: 'INQUIRED',
+  REFERRED: 'REFERRED',
+  PENDING: 'PENDING',
+  ENROLLED: 'ENROLLED',
+  COMPLETED: 'COMPLETED',
+  CLOSED: 'CLOSED'
+};
 
 exports.Prisma.ModelName = {
   Session: 'Session',
-  User: 'User'
+  User: 'User',
+  Client: 'Client',
+  Referral: 'Referral',
+  Note: 'Note'
 };
 /**
  * Create the Client
@@ -135,7 +206,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/massoncorlette/Desktop/files/PERN-Starter-Template/backend/generated/prisma",
+      "value": "/home/massoncorlette/Desktop/files/Shelter-Resource-Tracker/backend/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -149,11 +220,12 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/massoncorlette/Desktop/files/PERN-Starter-Template/backend/prisma/schema.prisma",
+    "sourceFilePath": "/home/massoncorlette/Desktop/files/Shelter-Resource-Tracker/backend/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../.env"
   },
   "relativePath": "../../prisma",
   "clientVersion": "6.16.2",
@@ -162,7 +234,6 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -171,13 +242,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Session {\n  id        String   @id\n  sid       String   @unique\n  data      String\n  expiresAt DateTime\n}\n\nmodel User {\n  id       Int     @id @default(autoincrement())\n  email    String  @unique\n  is_admin Boolean @default(false)\n  fname    String\n  lname    String\n  alias    String\n  password String\n}\n",
-  "inlineSchemaHash": "bddf97f09085ed8de93a0376e3b25fd4adbea22d41638e631dda30ade9b9c902",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Session {\n  id        String   @id\n  sid       String   @unique\n  data      String\n  expiresAt DateTime\n}\n\nenum UserRole {\n  ADMIN\n  MANAGER\n  STAFF\n}\n\nenum ClientStatus {\n  ENROLLED\n  WC // Winter Contigency\n  INACTIVE\n  ARCHIVED\n}\n\nenum ReferralStatus {\n  INQUIRED\n  REFERRED\n  PENDING\n  ENROLLED\n  COMPLETED\n  CLOSED\n}\n\nmodel User {\n  id        Int      @id @default(autoincrement())\n  firstName String\n  lastName  String\n  email     String   @unique\n  role      UserRole @default(STAFF)\n\n  notes     Note[]\n  referrals Referral[] @relation(\"ReferralCreatedBy\")\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel Client {\n  id        Int          @id @default(autoincrement())\n  firstName String\n  lastName  String\n  status    ClientStatus @default(ENROLLED)\n\n  intakeDate      DateTime?\n  extensionStatus Boolean   @default(false)\n  extensionDate   DateTime?\n\n  // Input text or a selection input, not sure yet, need to discuss further with the team\n  priorityNeed String?\n  avatarUrl    String?\n\n  referrals Referral[]\n  notes     Note[]\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel Referral {\n  id          Int  @id @default(autoincrement())\n  clientId    Int\n  createdById Int?\n\n  organizationName String\n  resourceType     String\n  // Client's reason for referral, can be a selection input or a text input, need to discuss further with the team\n  purpose          String?\n\n  status ReferralStatus @default(INQUIRED)\n\n  //release of information\n  roiSigned   Boolean   @default(false)\n  roiSignedAt DateTime?\n\n  followUpDate DateTime?\n  isPriority   Boolean   @default(false)\n  closedAt     DateTime?\n\n  //additional input field for reporting and tracking\n  summary String?\n\n  client    Client @relation(fields: [clientId], references: [id], onDelete: Cascade)\n  createdBy User?  @relation(\"ReferralCreatedBy\", fields: [createdById], references: [id])\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel Note {\n  id          Int       @id @default(autoincrement())\n  clientId    Int\n  authorId    Int\n  content     String\n  setReminder Boolean   @default(false)\n  reminderAt  DateTime?\n\n  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)\n  author User   @relation(fields: [authorId], references: [id])\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n",
+  "inlineSchemaHash": "69f59a87dd0efe71bbd90a8c480e71c08b28162d3414e58ca8274b492a69931c",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sid\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"data\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"is_admin\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"fname\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"lname\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"alias\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sid\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"data\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"firstName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"lastName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"UserRole\"},{\"name\":\"notes\",\"kind\":\"object\",\"type\":\"Note\",\"relationName\":\"NoteToUser\"},{\"name\":\"referrals\",\"kind\":\"object\",\"type\":\"Referral\",\"relationName\":\"ReferralCreatedBy\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Client\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"firstName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"lastName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"ClientStatus\"},{\"name\":\"intakeDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"extensionStatus\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"extensionDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"priorityNeed\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"avatarUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"referrals\",\"kind\":\"object\",\"type\":\"Referral\",\"relationName\":\"ClientToReferral\"},{\"name\":\"notes\",\"kind\":\"object\",\"type\":\"Note\",\"relationName\":\"ClientToNote\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Referral\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"clientId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdById\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"organizationName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"resourceType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"purpose\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"ReferralStatus\"},{\"name\":\"roiSigned\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"roiSignedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"followUpDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"isPriority\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"closedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"summary\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"client\",\"kind\":\"object\",\"type\":\"Client\",\"relationName\":\"ClientToReferral\"},{\"name\":\"createdBy\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ReferralCreatedBy\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Note\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"clientId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"authorId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"setReminder\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"reminderAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"client\",\"kind\":\"object\",\"type\":\"Client\",\"relationName\":\"ClientToNote\"},{\"name\":\"author\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"NoteToUser\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

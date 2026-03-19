@@ -3,7 +3,6 @@ import { useParams, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import SideBar from "../components/SideBar";
 import axios from 'axios';
 
 function Home() {

@@ -1,3 +1,28 @@
+
+MVP Features: (initially develop for Manager accounts)
+  - Manager can CRUD client accounts, set time notifs, see client case management info. Staff can only view add notes.
+  - Dashboard quick reference for current enrollments
+  - Resources side bar has resource info (add table)?
+  - Clients side bar has all clients in system (active/inactive filter) * for quick lookup upon re enrollments or resource history
+
+Extra Possible Features:
+  - resource sidebar / organization directory
+  - notification engine
+  - email reminders
+  - referral status history table
+  - attachments / ROI file uploads
+  - analytics/reporting
+  - calendar view
+  - task system
+  - audit log
+
+Pseudo:
+
+
+ToDo:
+ - Setup routes 
+ - Setup controllers
+
 # PERN-Starter-Template
 Starter template, using PERN stack, keeping backend and frontend in seperate directories. 
 
