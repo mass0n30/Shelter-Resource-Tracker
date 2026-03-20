@@ -16,12 +16,26 @@ Extra Possible Features:
   - task system
   - audit log
 
-Pseudo:
+Routes Pseudo:
+  home route, mounts dashboard with client objs
+
+  note route, (mounted on client profiles pass id's through body)
+
+  client route mounts client profile
+  (admin/manager can CRUD client profiles)
+
+  referral route on client profiles
+  (maybe make a Resource Model?)
+  (referral used for timeline history)
 
 
 ToDo:
- - Setup routes 
- - Setup controllers
+ - define schema
+ - define endpoints
+ - rough wireframe 3 pages
+  * plan to use shadcn/ui + Tailwind for frontend, headless layout components to design dashboard on
+ 
+
 
 # PERN-Starter-Template
 Starter template, using PERN stack, keeping backend and frontend in seperate directories. 

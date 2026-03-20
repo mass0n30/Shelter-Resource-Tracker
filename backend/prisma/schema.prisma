@@ -111,13 +111,13 @@ model Referral {
 model Note {
   id         Int       @id @default(autoincrement())
   clientId   Int
-  authorId   Int
+  authorId   Int?  //if no authorId is provided, it's a dashboard note, not associated with any specific user
   content    String
   setReminder Boolean   @default(false)
   reminderAt DateTime?
 
   client     Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  author     User      @relation(fields: [authorId], references: [id])
+  author     User?      @relation(fields: [authorId], references: [id])
 
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt

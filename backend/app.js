@@ -8,15 +8,15 @@ require("./config/passport"); // booting strategy before any initializing
 const pgPool = require("./config/pool");
 const cors = require('cors');
 
-
 const {indexRouter} = require('./routes/index');
 const {signupRouter} = require('./routes/signup');
-const {homeRouter} = require('./routes/home');
+const {dashboardRouter} = require('./routes/dashboard');
+const {clientRouter} = require('./routes/client');
+const {referralRouter} = require('./routes/referral');
+const {noteRouter} = require('./routes/notes');
 
 const app = express();
 
-//REMOVE UPON USING REACT
-app.set('view engine', 'ejs'); 
 app.use(express.static(__dirname + "/public"));
 app.use(express.static(__dirname + "/styles"));
 
@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   expressSession({
     cookie: {
-     maxAge: 7 * 24 * 60 * 60 * 1000 // ms
+     maxAge: 7 * 24 * 60 * 60 * 1000 // tells how long session user signed in
     },
     secret: 'cats',
     resave: true,
@@ -49,7 +49,10 @@ app.use(passport.session());  //enables persistent login sessions
 app.use('/', indexRouter);
 app.use('/sign-up', signupRouter);
 
-app.use('/home', homeRouter);
+app.use('/dashboard',  passport.authenticate('jwt', { session: false }), dashboardRouter);
+app.use('/clients', passport.authenticate('jwt', { session: false }), clientRouter);
+app.use('/referrals', passport.authenticate('jwt', { session: false }), referralRouter);
+app.use('/notes', passport.authenticate('jwt', { session: false }), noteRouter);
 
 app.post("/log-out", (req, res, next) => {
   req.logout((err) => {
@@ -59,6 +62,19 @@ app.post("/log-out", (req, res, next) => {
     res.status(200).json({ message: "Logged out successfully" });
   });
 });
+
+// app level error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+
+  const statusCode = err.statusCode || 500;
+
+  res.status(statusCode).json({
+    message: err.message || 'Something went wrong!',
+  });
+});
+
+
 
 
 app.listen(5000, () => console.log('Server started on port 5000'));
