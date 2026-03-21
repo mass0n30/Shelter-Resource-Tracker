@@ -50,7 +50,7 @@ app.use('/', indexRouter);
 app.use('/sign-up', signupRouter);
 
 app.use('/dashboard',  passport.authenticate('jwt', { session: false }), dashboardRouter);
-app.use('/clients', passport.authenticate('jwt', { session: false }), clientRouter);
+app.use('/clients', clientRouter);
 app.use('/referrals', passport.authenticate('jwt', { session: false }), referralRouter);
 app.use('/notes', passport.authenticate('jwt', { session: false }), noteRouter);
 

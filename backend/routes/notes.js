@@ -1,13 +1,13 @@
 const { Router } = require("express");
-const noteController = require("../controllers/noteController");
+const controller = require("../controllers/routeController/noteController");
 
 const noteRouter = Router();
 
-noteRouter.get("/client/:clientId", noteController.getClientNotes);
+noteRouter.get("/client/:clientId", controller.noteController.getClientNotes);
 
-noteRouter.post("/client/:clientId", noteController.createNote);
+noteRouter.post("/client/:clientId", controller.noteController.createNote);
 
-noteRouter.put("/:noteId", noteController.updateNote);
-noteRouter.delete("/:noteId", noteController.deleteNote);
+noteRouter.put("/:noteId", controller.noteController.updateNote);
+noteRouter.delete("/:noteId", controller.noteController.deleteNote);
 
 module.exports = { noteRouter };

@@ -18,10 +18,10 @@ async function handleCreateUser(req, res, next) {
     await prisma.user.create({
       data: {
         email: req.body.username,
-        fname: req.body.firstname,
-        lname: req.body.lastname,
-        alias: req.body.alias,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
         password: hashedPassword,
+        role: req.body.role
       }
    });
   return res.status(201).json({ message: "Account Created Successfully" });
@@ -30,6 +30,5 @@ async function handleCreateUser(req, res, next) {
     return res.status(400).json({ errors:error });
   }
 };
-
 
 module.exports = { handleCreateUser };

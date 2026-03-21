@@ -48,6 +48,7 @@ model User {
   firstName  String
   lastName   String
   email      String    @unique
+  password   String
   role       UserRole  @default(STAFF)
 
   notes      Note[]
@@ -57,6 +58,7 @@ model User {
   updatedAt  DateTime  @updatedAt
 }
 
+// Additional fields will be added (phone/address/ ect)
 model Client {
   id            Int           @id @default(autoincrement())
   firstName     String
@@ -83,6 +85,7 @@ model Referral {
   clientId         Int
   createdById      Int?
 
+  // may add resource model instead ? 
   organizationName String
   resourceType     String
   // Client's reason for referral, can be a selection input or a text input, need to discuss further with the team
@@ -110,8 +113,8 @@ model Referral {
 
 model Note {
   id         Int       @id @default(autoincrement())
-  clientId   Int
-  authorId   Int?  //if no authorId is provided, it's a dashboard note, not associated with any specific user
+  clientId   Int?      //if no clientId is provided, it's a dashboard note, not associated with any specific client
+  authorId   Int       
   content    String
   setReminder Boolean   @default(false)
   reminderAt DateTime?

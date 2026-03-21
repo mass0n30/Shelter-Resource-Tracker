@@ -1,7 +1,7 @@
 // initiates Prisma client
 // conditional for testing or production database usage from scripts in package.json
 
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("../generated/prisma/client");
 
 
 const databaseUrl = process.env.NODE_ENV === 'test'

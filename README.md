@@ -17,21 +17,37 @@ Extra Possible Features:
   - audit log
 
 Routes Pseudo:
-  home route, mounts dashboard with client objs
+GET /dashboard route:
+- retrieve current user
+- retrieve active clients only
+- retrieve dashboard stats
+- retrieve recent notes ordered by newest
+- retrieve referrals with followUpDate close to today or overdue
+- prioritize referrals marked isPriority
+  
+  "referral close to reminder"
+    overdue → followUpDate < today
 
-  note route, (mounted on client profiles pass id's through body)
+    due today → followUpDate === today
 
-  client route mounts client profile
-  (admin/manager can CRUD client profiles)
+    upcoming soon → within next 3 days
 
-  referral route on client profiles
-  (maybe make a Resource Model?)
-  (referral used for timeline history)
+
+note route, (mounted on client profiles pass id's through body - so we can associate a new note with client, if note is made on dashboard no associated client)
+
+client route mounts client profile
+(admin/manager can CRUD client profiles)
+
+referral route on client profiles
+(maybe make a Resource Model for something like a drop down selection?)
+(referral used for timeline history)
 
 
 ToDo:
  - define schema
  - define endpoints
+ - make controllers
+ - test routes in Postman
  - rough wireframe 3 pages
   * plan to use shadcn/ui + Tailwind for frontend, headless layout components to design dashboard on
  

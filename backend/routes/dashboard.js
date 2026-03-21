@@ -6,7 +6,7 @@ const passport = require('passport');
 const { getData } = require('../controllers/viewController');
 require('../config/passport');
 
-dashboardRouter.get('/', passport.authenticate('jwt', { session: false }), async (req, res, next ) => {
+dashboardRouter.get('/', async (req, res, next ) => {
 
 //  const data = await getAllUserData(req, res, next);
 

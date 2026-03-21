@@ -1,6 +1,8 @@
 const { PrismaClient } = require('../generated/prisma/client');
 const prisma = new PrismaClient();
 
+// Use these to prevent duplicate records (user/emails on signup in future)
+
 async function checkEmail(value) {
 
   const user = await prisma.user.findUnique({
@@ -45,6 +47,8 @@ async function checkUserByEmail(value) {
     throw new Error("No found user.");
   }
 };
+
+
 
 
 module.exports = {
