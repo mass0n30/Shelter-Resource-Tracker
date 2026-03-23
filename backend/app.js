@@ -10,6 +10,7 @@ const cors = require('cors');
 
 const {indexRouter} = require('./routes/index');
 const {signupRouter} = require('./routes/signup');
+
 const {dashboardRouter} = require('./routes/dashboard');
 const {clientRouter} = require('./routes/client');
 const {referralRouter} = require('./routes/referral');
@@ -20,7 +21,7 @@ const app = express();
 app.use(express.static(__dirname + "/public"));
 app.use(express.static(__dirname + "/styles"));
 
-app.use(cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -46,12 +47,13 @@ app.use(
 
 app.use(passport.session());  //enables persistent login sessions
 
-app.use('/', indexRouter);
 app.use('/sign-up', signupRouter);
 
-app.use('/dashboard',  passport.authenticate('jwt', { session: false }), dashboardRouter);
+app.use('/', indexRouter);
+
+app.use('/dashboard', dashboardRouter);
 app.use('/clients', clientRouter);
-app.use('/referrals', passport.authenticate('jwt', { session: false }), referralRouter);
+app.use('/referrals',  referralRouter);
 app.use('/notes', passport.authenticate('jwt', { session: false }), noteRouter);
 
 app.post("/log-out", (req, res, next) => {
@@ -73,7 +75,6 @@ app.use((err, req, res, next) => {
     message: err.message || 'Something went wrong!',
   });
 });
-
 
 
 

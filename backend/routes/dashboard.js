@@ -11,15 +11,8 @@ dashboardRouter.get('/', async (req, res, next ) => {
 //  const data = await getAllUserData(req, res, next);
 
   // req.user from passport callback authentication
-  res.json({
-    user: {
-      alias: req.user.alias,
-      first: req.user.fname,
-      last: req.user.lname,
-      admin: req.user.is_admin
-    },
-   // data: orderedData
-  });
+  
+  res.json({ message: "Dashboard route is working" });
 });
 
 

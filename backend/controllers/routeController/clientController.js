@@ -17,8 +17,10 @@ async function createClient(req, res, next) {
   try {
     const newClient = await prisma.client.create({
       data: {
-        name: req.body.name,
-        email: req.body.email,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+       // intakeDate: new Date(req.body.intakeDate), // "2023-05-21" pass in that format from client side
+        priorityNeed: req.body.priorityNeed,
         // phone: req.body.phone,
         // address: req.body.address,
         // city: req.body.city,
@@ -27,7 +29,7 @@ async function createClient(req, res, next) {
     });
     return res.status(201).json(newClient);
   } catch (error) {
-    console.log('failed to create client');
+    console.log('failed to create client', error);
     return res.status(400).json({ errors:error });
   }
 };
@@ -37,9 +39,10 @@ async function updateClient(req, res, next) {
     const updatedClient = await prisma.client.update({
       where: { id: parseInt(req.params.clientId) },
       data: { 
-        name: req.body.name,
-        email: req.body.email,
-        // phone: req.body.phone,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+       // intakeDate: new Date(req.body.intakeDate), // "2023-05-21" pass in that format from client side
+        priorityNeed: req.body.priorityNeed,
         // address: req.body.address,
         // city: req.body.city,
         // dob: new Date(req.body.dob), // "1998-05-21" pass in that format from client side

@@ -5,19 +5,19 @@ async function createReferral(req, res, next) {
     const newReferral = await prisma.referral.create({
       data: {
         clientId: parseInt(req.params.clientId),
-        createdById: req.user.id,
+        createdById: 1, // req.user.id, 
         organizationName: req.body.organizationName,
         resourceType: req.body.resourceType,
         purpose: req.body.purpose,
         status: req.body.status,
         followUpDate: new Date(req.body.followUpDate),
-        priority: req.body.priority,
+        isPriority: req.body.priority,
         summary: req.body.summary,
         
       },
     });
   } catch (error) {
-    console.log('failed to create referral');
+    console.log('failed to create referral', error);
     return res.status(400).json({ errors:error });
   }
 };

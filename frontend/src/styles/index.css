@@ -62,6 +62,10 @@ body {
   color: whitesmoke;
 }
 
+input {
+  color: whitesmoke;
+}
+
 @media (min-width: 31.25em) and (max-width: 62.5em) {
   body {
     /* Tablet styles */

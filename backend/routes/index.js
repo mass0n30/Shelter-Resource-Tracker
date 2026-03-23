@@ -3,7 +3,7 @@ const { Router } = require("express");
 const indexRouter = Router();
 
 indexRouter.get("/", async (req, res, next) => {
-  res.json("home json log");
+  res.json("home boo log");
 
 });
 

@@ -124,7 +124,6 @@ function Home() {
     <>
     <Navbar/>
     <aside>
-      <SideBar/>
     </aside>
       <Outlet context={{user, data, loading, success, SetLoading, SetSuccess, SetMount, mount }} />
     <Footer/>

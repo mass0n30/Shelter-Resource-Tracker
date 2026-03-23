@@ -5,7 +5,7 @@ const controller = require('../controllers/routeController/clientController');
 
 clientRouter.get('/', passport.authenticate('jwt', { session: false }), controller.clientController.getClients);
 
-clientRouter.post('/', passport.authenticate('jwt', { session: false }), controller.clientController.createClient);
+clientRouter.post('/', controller.clientController.createClient);
 
 clientRouter.put('/:clientId', passport.authenticate('jwt', { session: false }), controller.clientController.updateClient);
 
