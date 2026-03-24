@@ -3,6 +3,7 @@ import { useParams, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import Shell from "../primitives/Shell";
 import axios from 'axios';
 
 function Home() {
@@ -48,7 +49,7 @@ function Home() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch('http://localhost:5000/home', {
+        const response = await fetch('http://localhost:5000/dashboard', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -112,9 +113,11 @@ function Home() {
     return (
       <>
       <Navbar/>
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "2rem" }}>
-          <div className="spinner"></div>
-        </div>
+        <main style={{ display: "flex", justifyContent: "center", marginTop: "2rem" }}>
+          <Shell>
+             <div style={{ width: "100%", height: "200px", backgroundColor: "#f0f0f0", borderRadius: "8px" }}></div>
+          </Shell>
+        </main>
       <Footer/>
       </>
     );
@@ -123,9 +126,9 @@ function Home() {
   return (
     <>
     <Navbar/>
-    <aside>
-    </aside>
-      <Outlet context={{user, data, loading, success, SetLoading, SetSuccess, SetMount, mount }} />
+      <Shell>
+        <Outlet context={{user, data, loading, success, SetLoading, SetSuccess, SetMount, mount }} />
+      </Shell>
     <Footer/>
     </>
 

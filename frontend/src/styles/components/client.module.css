@@ -1,0 +1,14 @@
+
+
+.clientListSection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.clientCard {
+    background: rgb(168, 255, 168);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: var(--space-md);
+}

@@ -21,6 +21,10 @@ const app = express();
 app.use(express.static(__dirname + "/public"));
 app.use(express.static(__dirname + "/styles"));
 
+app.use(cors({
+  origin: 'http://localhost:5173', 
+  credentials: true, // Allow cookies to be sent with requests
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -51,9 +55,9 @@ app.use('/sign-up', signupRouter);
 
 app.use('/', indexRouter);
 
-app.use('/dashboard', dashboardRouter);
-app.use('/clients', clientRouter);
-app.use('/referrals',  referralRouter);
+app.use('/dashboard', passport.authenticate('jwt', { session: false }), dashboardRouter);
+app.use('/clients', passport.authenticate('jwt', { session: false }), clientRouter);
+app.use('/referrals', passport.authenticate('jwt', { session: false }), referralRouter);
 app.use('/notes', passport.authenticate('jwt', { session: false }), noteRouter);
 
 app.post("/log-out", (req, res, next) => {

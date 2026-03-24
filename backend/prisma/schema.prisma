@@ -41,6 +41,8 @@ enum ReferralStatus {
   ENROLLED
   COMPLETED
   CLOSED
+  // HOUSED
+  // ECT.
 }
 
 model User {

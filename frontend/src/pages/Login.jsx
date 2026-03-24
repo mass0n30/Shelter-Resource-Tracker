@@ -47,7 +47,7 @@ function Login() {
       localStorage.setItem('usertoken', data.token);
 
       if (!data.error) {
-        navigate("/home");
+        navigate("/dashboard");
       }
     })
   };
