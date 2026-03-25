@@ -1,14 +1,12 @@
 
 /* following BEM */
 
-.card {
-
-}
-
-.card_image {
-
-}
-
-.card_image--big {
-
+.notificationsCard {
+    flex: 1;
+    background-color: rgb(47, 255, 92);
+    border-radius: var(--border-radius);
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    margin: var(--space-md);
 }

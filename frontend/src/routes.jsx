@@ -1,9 +1,10 @@
 import App from "./App"; 
-import Home from "./pages/Home"; 
+import DashBoardLayout from "./pages/DashBoardLayout"; 
+import DashBoard from "./pages/DashBoard";
 import ErrorPage from "./pages/ErrorPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import HomePage from "./pages/HomePage";
+import ClientProfile from "./pages/ClientProfile";
 
 const routes = [
   {
@@ -25,16 +26,16 @@ const routes = [
       },
       {
         path: "dashboard",
-        element: <Home />,
+        element: <DashBoardLayout />,
         children: [
           {
             index: true,
-            element: <HomePage/> 
+            element: <DashBoard/>
           },
-        //  {
-         //   path: "post/:postId",
-        //    element: <PostDetails/>
-        //  }
+          {
+           path: "profile/:clientId",
+            element: <ClientProfile/>
+          }
         ]
       },
     ]

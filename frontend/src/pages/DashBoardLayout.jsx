@@ -3,10 +3,9 @@ import { useParams, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import Shell from "../primitives/Shell";
 import axios from 'axios';
 
-function Home() {
+function DashBoard() {
 
   const [user, SetUser] = useState(null);
   const [guestMode, SetGuestMode] = useState(false);
@@ -114,9 +113,9 @@ function Home() {
       <>
       <Navbar/>
         <main style={{ display: "flex", justifyContent: "center", marginTop: "2rem" }}>
-          <Shell>
+          <div className="shell">
              <div style={{ width: "100%", height: "200px", backgroundColor: "#f0f0f0", borderRadius: "8px" }}></div>
-          </Shell>
+          </div>
         </main>
       <Footer/>
       </>
@@ -126,9 +125,9 @@ function Home() {
   return (
     <>
     <Navbar/>
-      <Shell>
+      <div className="shell">
         <Outlet context={{user, data, loading, success, SetLoading, SetSuccess, SetMount, mount }} />
-      </Shell>
+      </div>
     <Footer/>
     </>
 
@@ -136,4 +135,4 @@ function Home() {
   )
 }
 
-export default Home;
+export default DashBoard;

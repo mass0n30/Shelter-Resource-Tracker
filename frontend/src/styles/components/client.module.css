@@ -1,4 +1,12 @@
 
+.clientListStack {
+    background-color: rgb(104, 104, 104);
+    flex: 5;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+}
 
 .clientListSection {
     display: flex;
@@ -7,8 +15,54 @@
 }
 
 .clientCard {
+    min-height: 8rem;
     background: rgb(168, 255, 168);
-    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    margin-left: var(--space-md);
+    margin-right: var(--space-md);
+}
+
+.clientToggleSection {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(200px, 1fr));
+    grid-template-rows: repeat(2, 1fr);
+    max-height: 20%;
+    position: sticky;
+}
+
+
+.clientSearchInputContainer {
+    grid-row: 1/2;
+    grid-column: span 4;
+    border-radius: var(--border-radius);
+    margin: var(--space-md);
+    color: black;
+    display: flex;
+}
+
+.clientSearchInput {
+    flex: 3;
+    display: flex;
+}
+
+.clientSearchInput input {
+    width: 100%;
+    border: none;
+    border-radius: var(--border-radius);
+    background: rgba(255, 255, 255, 0.603);
+    margin: var(--space-md);
+    color: black;
+}
+
+.clientSearchButton {
     border-radius: var(--border-radius);
     padding: var(--space-md);
+    color: black;
+}
+
+.clientFilterDropDown {
+    border-radius: var(--border-radius);
+    padding: var(--space-md);
+    color: black;
 }

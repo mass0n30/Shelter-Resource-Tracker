@@ -29,7 +29,7 @@
 /* React root container using id root */
 #root, main, body {
   width: 100%;
-  min-height: 200dvh;
+  min-height: 100dvh;
   text-align: center;
   border: none;
 }
@@ -46,22 +46,15 @@ nav {
   border: none;
   position: sticky;
   top: 0;
-  flex: 1;
-  max-height: 4rem;
+  min-height: 5rem;
   width: 100%;
   background-color: rgb(66, 66, 66);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }
 
-.contentWrapper {
-  flex: 1;
-  width: var(--content-max);
-  display: flex;
-  flex-direction: column;
-}
 
 /* Shell defines boundaries, Stack defines rhythm, Cluster defines horizontal relationships. */
-
 .shell {
   flex: 2;
   width: var(--content-max);
@@ -75,6 +68,8 @@ nav {
 }
 
 .cluster {
+  flex: 1;
+  height: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm); /* change upon media queries */
@@ -92,8 +87,76 @@ body {
   color: whitesmoke;
 }
 
+::-webkit-scrollbar {
+  width: 6px; 
+  height: 12px; 
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888; 
+  border-radius: 10px; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
 input {
   color: whitesmoke;
+}
+
+.contentWrapper {
+  flex: 1;
+  width: var(--content-max);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(300px, 1fr));
+  grid-auto-rows: 1fr;
+}
+
+
+.clientList {
+  grid-column: span 3;
+  grid-row: span 6;
+  background-color: rgb(66, 66, 66);
+  border-radius: var(--radius-md);
+  width: 100%;
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+}
+
+.notifications {
+  grid-column: span 1;
+  grid-row: span 6;
+  background-color: rgb(66, 66, 66);
+  border-radius: var(--radius-md);
+  width: 100%;
+  display: flex;
+}
+
+.dashStats {
+  grid-column: span 6;
+  grid-row: span 1;
+  background-color: rgb(66, 66, 66);
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.dashStatCard {
+  background-color: rgb(168, 255, 168);
+  border-radius: var(--border-radius);
+  grid-row: 1/3;
+  grid-column: span 1;
+  margin: var(--space-md);
 }
 
 @media (min-width: 31.25em) and (max-width: 62.5em) {
