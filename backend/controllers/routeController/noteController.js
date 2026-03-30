@@ -16,7 +16,10 @@ async function createNote(req, res, next) {
   try {
     await prisma.note.create({
       data: {
-        clientId: parseInt(req.params.clientId),
+        authorId: 1, // req.user.id,
+        clientId: parseInt(req.body.clientId),
+        setReminder: req.body.setReminder,
+        reminderAt: req.body.reminderAt ? new Date(req.body.reminderAt) : null,
         content: req.body.content,
         createdAt: new Date(),
       }

@@ -63,9 +63,12 @@ model User {
 // Additional fields will be added (phone/address/ ect)
 model Client {
   id            Int           @id @default(autoincrement())
+  clientId      Int?          @unique
   firstName     String
   lastName      String
+  gender        String?
   status        ClientStatus  @default(ENROLLED)
+  bedLabel      String?
 
   intakeDate    DateTime?
   extensionStatus     Boolean       @default(false)
@@ -75,7 +78,7 @@ model Client {
   priorityNeed  String?
   avatarUrl     String?
 
-  referrals     Referral[]
+  referrals     Referral[]    
   notes         Note[]
 
   createdAt     DateTime      @default(now())

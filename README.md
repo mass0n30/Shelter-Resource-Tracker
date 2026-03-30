@@ -44,6 +44,13 @@ referral route on client profiles
 
 
 ToDo:
+ - Update test database
+ - Define upload excel route and controller modules
+ - Double check tested routes Postman
+ - Mount dashboard data
+ - Start designing inner containers *figuring data placements
+
+Done:
  - define schema
  - define endpoints
  - make controllers

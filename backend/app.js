@@ -56,9 +56,9 @@ app.use('/sign-up', signupRouter);
 app.use('/', indexRouter);
 
 app.use('/dashboard', passport.authenticate('jwt', { session: false }), dashboardRouter);
-app.use('/clients', passport.authenticate('jwt', { session: false }), clientRouter);
-app.use('/referrals', passport.authenticate('jwt', { session: false }), referralRouter);
-app.use('/notes', passport.authenticate('jwt', { session: false }), noteRouter);
+app.use('/clients', clientRouter);
+app.use('/referrals', referralRouter);
+app.use('/notes', noteRouter);
 
 app.post("/log-out", (req, res, next) => {
   req.logout((err) => {

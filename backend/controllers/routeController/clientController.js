@@ -19,8 +19,11 @@ async function createClient(req, res, next) {
       data: {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
+        clientId: req.body.clientId,
         intakeDate: new Date(req.body.intakeDate), // "2023-05-21" pass in that format from client side
         priorityNeed: req.body.priorityNeed,
+        gender: req.body.gender,
+        bedLabel: req.body.bedLabel,
         // phone: req.body.phone,
         // address: req.body.address,
         // city: req.body.city,
