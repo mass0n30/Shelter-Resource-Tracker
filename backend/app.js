@@ -63,9 +63,9 @@ const { handleCSVUpload } = require('./controllers/dataController/updateControll
 
 app.post('/upload', upload.single('csv_file'), handleCSVUpload);
 
-app.use('/clients', clientRouter);
-app.use('/referrals', referralRouter);
-app.use('/notes', noteRouter);
+app.use('/clients',passport.authenticate('jwt', { session: false }), clientRouter);
+app.use('/referrals', passport.authenticate('jwt', { session: false }), referralRouter);
+app.use('/notes', passport.authenticate('jwt', { session: false }), noteRouter);
 
 app.post("/log-out", (req, res, next) => {
   req.logout((err) => {

@@ -44,9 +44,6 @@ referral route on client profiles
 
 
 ToDo:
- - Update test database
- - Define upload excel route and controller modules
- - Double check tested routes Postman
  - Mount dashboard data
  - Start designing inner containers *figuring data placements
 
@@ -57,6 +54,9 @@ Done:
  - test routes in Postman
  - rough wireframe 3 pages
   * plan to use shadcn/ui + Tailwind for frontend, headless layout components to design dashboard on
+ - Update test database
+ - Define upload excel route and controller modules
+ - Double check tested routes Postman
  
 
 

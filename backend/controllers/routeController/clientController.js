@@ -5,8 +5,20 @@ async function getClients(req, res, next) {
   try {
     // UPDATE!
     // filter passed in body from search or enrolled/WC, ect.
-    const clients = await prisma.client.findMany();
-    return res.status(200).json(clients);
+    const filter = req.body?.filter;
+    let clients = null;
+
+    if (filter == undefined) {
+      clients = await prisma.client.findMany();
+    } else {
+      clients = await prisma.client.findMany({
+        where: {
+          status: filter.status ? filter.status : undefined,
+        },
+      });
+    }
+
+    return clients;
   } catch (error) {
     console.log('failed to get clients');
     return res.status(400).json({ errors:error });

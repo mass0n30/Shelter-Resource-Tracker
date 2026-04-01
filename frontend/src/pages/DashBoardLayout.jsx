@@ -8,6 +8,7 @@ import axios from 'axios';
 function DashBoard() {
 
   const [user, SetUser] = useState(null);
+  const [allData, SetAllData] = useState(null);
   const [guestMode, SetGuestMode] = useState(false);
   const [data, SetData] = useState(null);
   // loading state settings
@@ -61,7 +62,7 @@ function DashBoard() {
         const result = await response.json();
         
         SetUser(result.user); // (only non sensitive user data from backend)
-        // SetData(result.posts);
+        SetAllData(result.globalData); 
         // reset boolean fetch after updated posts fetch
       } catch (error) {
         SetError(error);
