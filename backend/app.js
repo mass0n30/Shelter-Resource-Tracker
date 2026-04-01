@@ -56,6 +56,13 @@ app.use('/sign-up', signupRouter);
 app.use('/', indexRouter);
 
 app.use('/dashboard', passport.authenticate('jwt', { session: false }), dashboardRouter);
+
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+const { handleCSVUpload } = require('./controllers/dataController/updateController');
+
+app.post('/upload', upload.single('csv_file'), handleCSVUpload);
+
 app.use('/clients', clientRouter);
 app.use('/referrals', referralRouter);
 app.use('/notes', noteRouter);

@@ -48,11 +48,25 @@ async function checkUserByEmail(value) {
   }
 };
 
+async function checkClientCSV(first, last) {
 
+  const client = await prisma.client.findFirst({
+    where: {
+      firstName: first,
+      lastName: last,
+    },
+  });
+  // console.log(client);
 
+  if (client) {
+    return client;
+  }
+  return null;
+}
 
 module.exports = {
   checkEmail,
   checkUser,
-  checkUserByEmail
+  checkUserByEmail,
+  checkClientCSV
 }

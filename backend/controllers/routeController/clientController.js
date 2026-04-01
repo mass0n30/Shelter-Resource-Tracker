@@ -46,6 +46,9 @@ async function updateClient(req, res, next) {
         lastName: req.body.lastName,
         intakeDate: new Date(req.body.intakeDate), // "2023-05-21" pass in that format from client side
         priorityNeed: req.body.priorityNeed,
+        gender: req.body.gender,
+        bedLabel: req.body.bedLabel,
+        // phone: req.body.phone,
         // address: req.body.address,
         // city: req.body.city,
         // dob: new Date(req.body.dob), // "1998-05-21" pass in that format from client side
@@ -88,8 +91,37 @@ async function updateExtension(req, res, next) {
   }
 }
 
+async function handleUploadFile(req, res, next) {
+
+  if (req.file == undefined) {
+    const err = new Error("No attached file");
+    err.status = 400;
+    return next(err);
+  }
+
+  const filePath = req.file.path;
+
+  console.log(req.file);
+  
+  try {
+    const cloudFileObj = await getCloudinaryObj(filePath);
+    console.log(cloudFileObj);
+
+    // ( 1/1/25 Format Formula Conversion)
+
+   return { url: cloudFileObj.url, message: "Avatar uploaded successfully" };
+
+    
+  } catch (error) {
+    console.error(error);
+    // goes to error middleware
+    next(error);
+  }
+};
+
+
 module.exports = {
   clientController: {
-    getClients, createClient, updateClient, deleteClient
+    getClients, createClient, updateClient, deleteClient, handleUploadFile
   }
 };
