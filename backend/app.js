@@ -7,9 +7,11 @@ const passport = require("passport");
 require("./config/passport"); // booting strategy before any initializing
 const pgPool = require("./config/pool");
 const cors = require('cors');
+const cron = require('node-cron');
 
 const {indexRouter} = require('./routes/index');
 const {signupRouter} = require('./routes/signup');
+
 
 const {dashboardRouter} = require('./routes/dashboard');
 const {clientRouter} = require('./routes/client');
@@ -59,9 +61,30 @@ app.use('/dashboard', passport.authenticate('jwt', { session: false }), dashboar
 
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
-const handleCSVUpload  = require('./services/csvUploadService');
+const handleCSVUpload  = require('./services/csvUpload');
+const { emailAutomate } = require('./services/emailAutomate');
 
-app.post('/upload', upload.single('csv_file'), handleCSVUpload);
+// automatic email processing for client sheets
+cron.schedule('0 6 * * *', async () => {
+  console.log('Running daily email csv automation task at 6:00 AM');
+  try {
+    await emailAutomate();
+    console.log('Email csv automation task completed successfully');
+  } catch (error) {
+    console.error('Error during email csv automation task:', error);
+  }
+});
+
+// for manual csv uploads form dashboard
+app.post('/upload', upload.single('csv_file'), async (req, res, next) => {
+  try {
+    const result = await handleCSVUpload(req.file.path);
+    res.json({ message: 'File uploaded successfully', clients: result });
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    res.status(500).json({ message: 'Error uploading file', error });
+  }
+});
 
 app.use('/clients',passport.authenticate('jwt', { session: false }), clientRouter);
 app.use('/referrals', passport.authenticate('jwt', { session: false }), referralRouter);

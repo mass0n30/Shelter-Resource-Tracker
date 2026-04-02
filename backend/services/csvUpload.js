@@ -2,13 +2,13 @@
 
 const fs = require('fs');
 const csv = require('csv-parser');
-const { checkClientCSV } = require("../../db/queries.js");
+const { checkClientCSV } = require("../db/queries.js");
 
-export default async function handleCSVUpload(req, res, next) {
+// converts attached file in file path to handle 
+async function handleCSVUpload(filePath) {
   try {
-    console.log('Received file:', req.file);
+    console.log('Received file:', filePath);
 
-    const filePath = req.file.path;
     const results = [];
 
     fs.createReadStream(filePath)
@@ -37,12 +37,36 @@ export default async function handleCSVUpload(req, res, next) {
       })
       .on('end', async () => {
         const promiseResult = await Promise.all(results);
-        res.json({ message: 'File uploaded successfully', clients: promiseResult });
+        return promiseResult;
       });
 
   } catch (error) {
     console.log('failed to upload file', error);
-    return res.status(400).json({ errors: error });
+    return error;
   }
 }
 
+// handles the stream already converted from buffer
+function handleAutoCSVUpload(stream) {
+  return new Promise((resolve, reject) => {
+    const results = [];
+
+    stream
+      .pipe(csv({ headers: false }))
+      .on('data', (row) => {
+        console.log(row);
+        results.push(row);
+      })
+      // on end event callback returns results from function call 
+      .on('end', () => {
+        console.log('CSV parsing complete');
+        resolve(results);
+      })
+      .on('error', (err) => {
+        console.error('CSV error:', err);
+        reject(err);
+      });
+  });
+}
+
+module.exports = { handleCSVUpload, handleAutoCSVUpload };

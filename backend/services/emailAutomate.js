@@ -1,83 +1,98 @@
-const cron = require('node-cron');
 const { ImapFlow } = require('imapflow');
 const { simpleParser } = require('mailparser');
+const {handleAutoCSVUpload} = require('../services/csvUpload');
+const { Readable } = require('stream');
+
+// converting bytes to be able to stream reading for csv parsing
+function bufferToStream(buffer) {
+  return Readable.from(buffer);
+}
 
 async function emailAutomate() {
- // cron.schedule('0 6 * * *', async () => {
-    console.log('Running email automation task at 6:00 AM every day');
+  console.log('Running email automation task at 6:00 AM every day');
 
-    const client = new ImapFlow({
-      host: 'imap.gmail.com',
-      port: 993,
-      secure: true,
-      auth: {
-        user: 'masson07vlog@gmail.com',
-        pass: 'motrgclidvdfsrjy'
-      }
+  const client = new ImapFlow({
+    host: 'imap.gmail.com',
+    port: 993,
+    secure: true,
+    auth: {
+      user: 'masson07vlog@gmail.com',
+      pass: 'motrgclidvdfsrjy'
+    }
+  });
+
+  // outer try catch for client connection and logout
+  // inner try catch for mailbox lock and message processing
+  try {
+    await client.connect();
+    console.log('Connected to email server');
+
+    let lock = await client.getMailboxLock('INBOX');
+
+    // using imapflow search method to find all unseen emails from specific sender
+    const messages = await client.search({
+      from: 'massoncorlette07@gmail.com',
+      seen: false,
     });
 
-    // outer try catch for client connection and logout
-    // inner try catch for mailbox lock and message processing
+    if (messages.length === 0) {
+      console.log('No matching emails');
+      return;
+    }
+
+    const latestUid = messages[messages.length - 1];
+
     try {
-      await client.connect();
-      console.log('Connected to email server');
-
-      let lock = await client.getMailboxLock('INBOX');
-
-      // using imapflow search method to find all unseen emails from specific sender
-      const messages = await client.search({
-        from: 'massoncorlette07@gmail.com',
-        seen: false,
+      // uses the uid to get full email data, including email body with buffer property
+      let message = await client.fetchOne(latestUid, {
+        envelope: true,
+        source: true
       });
 
-      if (messages.length === 0) {
-        console.log('No matching emails');
+      if (!message) {
+        console.log('No messages found');
         return;
       }
 
-      const latestUid = messages[messages.length - 1];
+      console.log('Subject:', message.envelope.subject);
 
-      try {
-        // uses the uid to get full email data, including email body with buffer property
-        let message = await client.fetchOne(latestUid, {
-          envelope: true,
-          source: true
-        });
+      // turning email into readable format from email buffer property provided by imapflow, using mailparser simpleParser
+      const parsed = await simpleParser(message.source);
 
-        if (!message) {
-          console.log('No messages found');
-          return;
-        }
-
-        console.log('Subject:', message.envelope.subject);
-
-        // turning email into readable format from email buffer property provided by imapflow, using mailparser simpleParser
-        const parsed = await simpleParser(message.source);
-
-        console.log('Parsed email body:', parsed.attachments);
-        if (!parsed.attachments || parsed.attachments.length === 0) {
-          console.log('No attachments found');
-          return;
-        }
-
-        const csvFile = parsed.attachments.find(att =>
-          att.contentType === 'text/csv'
-        );
-      
-      const csvContent = csvFile.content.toString();
-      console.log('CSV Content:', csvContent);
-      } finally {
-        lock.release();
+      if (!parsed.attachments || parsed.attachments.length === 0) {
+        console.log('No attachments found');
+        return;
       }
 
-    } catch (err) {
-      console.error('Email automation error:', err);
+      const csvFile = parsed.attachments.find(att =>
+        att.filename?.toLowerCase().includes('.csv') ||
+        att.contentType?.includes('csv')
+      );
+
+      if (!csvFile || !csvFile.content) {
+        console.log('No CSV attachment or content found');
+        return;
+      };
+
+      const csvBuffer = csvFile.content;
+      console.log(csvFile.content.toString().slice(0, 200));
+
+      // converting buffer to stream for csv parsing
+      const csvStream = bufferToStream(csvBuffer);
+
+      // calling the csv upload function with the email attachment stream
+      await handleAutoCSVUpload(csvStream);
     } finally {
-      try {
-        await client.logout();
-      } catch (e) {}
+      lock.release();
     }
- // });
+
+  } catch (err) {
+    console.error('Email automation error:', err);
+  } finally {
+    try {
+      await client.logout();
+    } catch (e) {}
+  }
 }
 
 emailAutomate(); // for command line call
