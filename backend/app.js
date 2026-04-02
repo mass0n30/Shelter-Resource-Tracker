@@ -59,7 +59,7 @@ app.use('/dashboard', passport.authenticate('jwt', { session: false }), dashboar
 
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
-const { handleCSVUpload } = require('./controllers/dataController/updateController');
+const handleCSVUpload  = require('./services/csvUploadService');
 
 app.post('/upload', upload.single('csv_file'), handleCSVUpload);
 

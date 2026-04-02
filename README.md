@@ -1,4 +1,10 @@
 
+https://github.com/postalsys/imapflow IMAP library (for email synch)
+https://nodemailer.com/extras/mailparser/ Parsing tool 
+https://www.npmjs.com/package/node-cron Scheduling tool for node tasks
+  https://crontab.guru/ Schedule time syntax
+
+
 MVP Features: (initially develop for Manager accounts)
   - Manager can CRUD client accounts, set time notifs, see client case management info. Staff can only view add notes.
   - Dashboard quick reference for current enrollments
@@ -44,7 +50,7 @@ referral route on client profiles
 
 
 ToDo:
- - Mount dashboard data
+ - configure email automation
  - Start designing inner containers *figuring data placements
 
 Done:
@@ -57,6 +63,7 @@ Done:
  - Update test database
  - Define upload excel route and controller modules
  - Double check tested routes Postman
+ - Mount dashboard data
  
 
 

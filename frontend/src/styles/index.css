@@ -123,7 +123,6 @@ input {
   grid-column: span 3;
   grid-row: span 6;
   background-color: rgb(66, 66, 66);
-  border-radius: var(--radius-md);
   width: 100%;
   max-height: 75vh;
   display: flex;
@@ -136,7 +135,6 @@ input {
   grid-column: span 1;
   grid-row: span 6;
   background-color: rgb(66, 66, 66);
-  border-radius: var(--radius-md);
   width: 100%;
   display: flex;
 }
