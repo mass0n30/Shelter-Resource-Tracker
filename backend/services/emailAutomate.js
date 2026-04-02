@@ -81,7 +81,9 @@ async function emailAutomate() {
       const csvStream = bufferToStream(csvBuffer);
 
       // calling the csv upload function with the email attachment stream
-      await handleAutoCSVUpload(csvStream);
+      const results = await handleAutoCSVUpload(csvStream);
+      console.log('CSV processing results:', results);
+      
     } finally {
       lock.release();
     }

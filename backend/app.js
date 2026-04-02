@@ -61,7 +61,7 @@ app.use('/dashboard', passport.authenticate('jwt', { session: false }), dashboar
 
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
-const handleCSVUpload  = require('./services/csvUpload');
+const { handleCSVUpload }  = require('./services/csvUpload');
 const { emailAutomate } = require('./services/emailAutomate');
 
 // automatic email processing for client sheets
@@ -69,6 +69,7 @@ cron.schedule('0 6 * * *', async () => {
   console.log('Running daily email csv automation task at 6:00 AM');
   try {
     await emailAutomate();
+    // update controller used here for returned csv data 
     console.log('Email csv automation task completed successfully');
   } catch (error) {
     console.error('Error during email csv automation task:', error);
@@ -76,6 +77,7 @@ cron.schedule('0 6 * * *', async () => {
 });
 
 // for manual csv uploads form dashboard
+// further logic added for uploading prior days, ect. ?
 app.post('/upload', upload.single('csv_file'), async (req, res, next) => {
   try {
     const result = await handleCSVUpload(req.file.path);

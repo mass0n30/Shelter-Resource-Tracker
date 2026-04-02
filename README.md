@@ -50,7 +50,6 @@ referral route on client profiles
 
 
 ToDo:
- - configure email automation
  - Start designing inner containers *figuring data placements
 
 Done:
@@ -64,6 +63,7 @@ Done:
  - Define upload excel route and controller modules
  - Double check tested routes Postman
  - Mount dashboard data
+ - configure email automation
  
 
 
