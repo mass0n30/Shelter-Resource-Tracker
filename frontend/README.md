@@ -1,5 +1,135 @@
 # React + Vite
 
+## Containers, layout + Responsive Design - vanilla CSS
+## UI System Setup (shadcn + forms)
+
+### Core Stack Libraries
+
+* `shadcn/ui` → UI components (modals, inputs, etc.)
+* `react-hook-form` → form state
+* `zod` → validation
+---
+
+## Installation
+
+```bash
+npm install react-hook-form zod @hookform/resolvers
+npx shadcn-ui@latest init
+```
+---
+
+## Add Core Components
+
+```bash
+npx shadcn-ui@latest add input
+npx shadcn-ui@latest add button
+npx shadcn-ui@latest add select
+npx shadcn-ui@latest add card
+npx shadcn-ui@latest add badge
+npx shadcn-ui@latest add dropdown-menu
+npx shadcn-ui@latest add scroll-area
+
+npx shadcn-ui@latest add dialog
+npx shadcn-ui@latest add form
+npx shadcn-ui@latest add switch
+npx shadcn-ui@latest add calendar
+npx shadcn-ui@latest add popover
+npx shadcn-ui@latest add sheet
+npx shadcn-ui@latest add textarea
+npx shadcn-ui@latest add sonner 
+```
+eventually use progress bars/loaders/spinners
+---
+
+## Standard Feature Pattern
+
+Every feature (client edit, profile edit, etc.)
+
+1. Modal (Dialog)
+2. Form (react-hook-form)
+3. Validation (zod)
+4. UI components (shadcn)
+5. Submit → API
+
+---
+
+## Modal Example
+
+```jsx
+<Dialog>
+  <DialogTrigger>Edit</DialogTrigger>
+
+  <DialogContent>
+    <FormComponent />
+  </DialogContent>
+</Dialog>
+```
+
+---
+
+## Form Example
+
+```jsx
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const schema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1)
+});
+
+const form = useForm({
+  resolver: zodResolver(schema),
+  defaultValues: {
+    firstName: "",
+    lastName: ""
+  }
+});
+```
+
+---
+
+## Switch (boolean fields)
+
+```jsx
+<Switch
+  checked={form.watch("active")}
+  onCheckedChange={(val) => form.setValue("active", val)}
+/>
+```
+
+---
+
+## Date Picker
+
+```jsx
+<Popover>
+  <PopoverTrigger>Select Date</PopoverTrigger>
+
+  <PopoverContent>
+    <Calendar
+      mode="single"
+      selected={form.watch("date")}
+      onSelect={(date) => form.setValue("date", date)}
+    />
+  </PopoverContent>
+</Popover>
+```
+
+---
+
+## Build Order (IMPORTANT)
+
+1. Modal opens
+2. Form submits (console.log)
+3. Validation works
+4. Hook to backend
+5. Replace inputs with styled components
+6. Polish UI
+
+---
+
 Vite and Vitest setup now run:
 npm install
 npm run dev

@@ -4,9 +4,11 @@
 @import './components/button.module.css';
 @import './components/card.module.css';
 
-
-/* global styles here imported in main.jsx */
-
+/* stylelint-disable at-rule-no-unknown */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
 
 /* absolute global styling */
 :root {
