@@ -94,7 +94,7 @@ model Referral {
   organizationName String
   resourceType     String
   // Client's reason for referral, can be a selection input or a text input, need to discuss further with the team
-  purpose          String?
+  purpose          String? // or just Note
 
   status           ReferralStatus  @default(INQUIRED)
 

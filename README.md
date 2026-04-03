@@ -2,7 +2,7 @@
 https://github.com/postalsys/imapflow IMAP library (for email synch)
 https://nodemailer.com/extras/mailparser/ Parsing tool 
 https://www.npmjs.com/package/node-cron Scheduling tool for node tasks
-  https://crontab.guru/ Schedule time syntax
+https://crontab.guru/ Schedule time syntax
 
 
 MVP Features: (initially develop for Manager accounts)
@@ -10,13 +10,14 @@ MVP Features: (initially develop for Manager accounts)
   - Dashboard quick reference for current enrollments
   - Resources side bar has resource info (add table)?
   - Clients side bar has all clients in system (active/inactive filter) * for quick lookup upon re enrollments or resource history
+  - attachments / file uploads (client sheets)
 
-Extra Possible Features:
+Extra Possible Features (after making core MVP product):
   - resource sidebar / organization directory
   - notification engine
   - email reminders
   - referral status history table
-  - attachments / ROI file uploads
+  - cloudify document upload storing
   - analytics/reporting
   - calendar view
   - task system

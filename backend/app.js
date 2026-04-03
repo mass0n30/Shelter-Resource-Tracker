@@ -65,15 +65,19 @@ const { handleCSVUpload }  = require('./services/csvUpload');
 const { emailAutomate } = require('./services/emailAutomate');
 
 // automatic email processing for client sheets
-cron.schedule('0 6 * * *', async () => {
-  console.log('Running daily email csv automation task at 6:00 AM');
+
+cron.schedule('6 * * *', async () => {
+  console.log('Running email csv automation task at 6:00 AM every day');
+
   try {
     await emailAutomate();
-    // update controller used here for returned csv data 
     console.log('Email csv automation task completed successfully');
   } catch (error) {
     console.error('Error during email csv automation task:', error);
   }
+
+}, {
+  timezone: 'America/New_York'
 });
 
 // for manual csv uploads form dashboard

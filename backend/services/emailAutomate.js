@@ -16,8 +16,8 @@ async function emailAutomate() {
     port: 993,
     secure: true,
     auth: {
-      user: 'masson07vlog@gmail.com',
-      pass: 'motrgclidvdfsrjy'
+      user: 'masson07vlog@gmail.com', // Indeed configuration upon deployment for work
+      pass: 'motrgclidvdfsrjy' // bypassing oAuth for testing, using app password for security
     }
   });
 
@@ -83,7 +83,7 @@ async function emailAutomate() {
       // calling the csv upload function with the email attachment stream
       const results = await handleAutoCSVUpload(csvStream);
       console.log('CSV processing results:', results);
-      
+
     } finally {
       lock.release();
     }
@@ -97,7 +97,7 @@ async function emailAutomate() {
   }
 }
 
-emailAutomate(); // for command line call
+// emailAutomate(); // for command line call
 
 
 module.exports = { emailAutomate };
