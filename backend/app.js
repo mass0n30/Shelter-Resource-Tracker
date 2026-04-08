@@ -10,6 +10,7 @@ const cors = require('cors');
 const cron = require('node-cron');
 
 const {indexRouter} = require('./routes/index');
+const {profileRouter} = require('./routes/profile');
 const {signupRouter} = require('./routes/signup');
 
 
@@ -57,6 +58,8 @@ app.use('/sign-up', signupRouter);
 
 app.use('/', indexRouter);
 
+app.use('/profile',  profileRouter);
+
 app.use('/dashboard', passport.authenticate('jwt', { session: false }), dashboardRouter);
 
 const multer = require('multer');
@@ -66,7 +69,7 @@ const { emailAutomate } = require('./services/emailAutomate');
 
 // automatic email processing for client sheets
 
-cron.schedule('6 * * *', async () => {
+cron.schedule('0 6 * * *', async () => {
   console.log('Running email csv automation task at 6:00 AM every day');
 
   try {

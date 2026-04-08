@@ -1,6 +1,6 @@
 
 // use a library like react-big-calendar or fullcalendar to display calendar of appointments, events, and deadlines for clients and resources
-function Calendar() {
+function CalendarView() {
   return (
     <div className="calendar">
       <h1>Calendar</h1>
@@ -8,4 +8,4 @@ function Calendar() {
   );
 }
 
-export default Calendar;
+export default CalendarView;

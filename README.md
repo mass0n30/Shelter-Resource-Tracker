@@ -51,7 +51,7 @@ referral route on client profiles
 
 
 ToDo:
- - Start designing inner containers *figuring data placements
+
 
 Done:
  - define schema
@@ -65,6 +65,9 @@ Done:
  - Double check tested routes Postman
  - Mount dashboard data
  - configure email automation
+ - Start designing inner containers *figuring data placements
+ - Start install commands and setting up shadUI, zod, calender libraries and components
+ - Make modals, toggles, forms
  
 
 

@@ -65,3 +65,7 @@
   gap: var(--space-md);
   padding: var(--space-sm);
 }
+
+.dialogContent {
+  background-color: #1a1a1a;
+}

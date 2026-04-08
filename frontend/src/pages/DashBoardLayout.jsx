@@ -3,6 +3,7 @@ import { useParams, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import ClientForm from "../components/forms/ClientForm";
 import axios from 'axios';
 
 function DashBoard() {
@@ -20,6 +21,7 @@ function DashBoard() {
   const [mount, SetMount] = useState(false);
 
   const [toggle, SetToggle] = useState(true);
+  const [toggleForm, SetToggleForm] = useState(false);
 
   const token = localStorage.getItem('usertoken');
   const navigate = useNavigate();
@@ -123,10 +125,16 @@ function DashBoard() {
     );
   }
 
+  // show Sonner badge upon creating new client, note, referral, ect.
   return (
     <>
     <Navbar/>
       <div className="shell">
+        
+        {toggleForm &&
+        
+          <ClientForm SetToggleForm={SetToggleForm} 
+        />}
         <Outlet context={{user, data, loading, success, SetLoading, SetSuccess, SetMount, mount }} />
       </div>
     <Footer/>

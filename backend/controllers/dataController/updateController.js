@@ -20,6 +20,7 @@ async function handleUpdateUser(req, res, next) {
         email: req.body.email,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
+        password: hashedPassword,
         // reset password email authentication ?
       }
    });

@@ -1,5 +1,10 @@
 # React + Vite
 
+# Planned Styling
+Vanilla CSS = layout logic (outer containers)
+Tailwind = visual tweaks (inline)
+shadcn = UI primitives
+
 ## Containers, layout + Responsive Design - vanilla CSS
 ## UI System Setup (shadcn + forms)
 
@@ -21,22 +26,22 @@ npx shadcn-ui@latest init
 ## Add Core Components
 
 ```bash
-npx shadcn-ui@latest add input
-npx shadcn-ui@latest add button
-npx shadcn-ui@latest add select
-npx shadcn-ui@latest add card
-npx shadcn-ui@latest add badge
-npx shadcn-ui@latest add dropdown-menu
-npx shadcn-ui@latest add scroll-area
+npx shadcn@latest add input
+npx shadcn@latest add button
+npx shadcn@latest add select
+npx shadcn@latest add card
+npx shadcn@latest add badge
+npx shadcn@latest add dropdown-menu
+npx shadcn@latest add scroll-area
 
-npx shadcn-ui@latest add dialog
-npx shadcn-ui@latest add form
-npx shadcn-ui@latest add switch
-npx shadcn-ui@latest add calendar
-npx shadcn-ui@latest add popover
-npx shadcn-ui@latest add sheet
-npx shadcn-ui@latest add textarea
-npx shadcn-ui@latest add sonner 
+npx shadcn@latest add dialog
+npx shadcn@latest add form
+npx shadcn@latest add switch
+npx shadcn@latest add calendar
+npx shadcn@latest add popover
+npx shadcn@latest add sheet
+npx shadcn@latest add textarea
+npx shadcn@latest add sonner
 ```
 eventually use progress bars/loaders/spinners
 ---

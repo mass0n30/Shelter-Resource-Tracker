@@ -7,5 +7,6 @@ const {validateUser} = require('../controllers/validation');
 
 indexRouter.post("/", validateUser(), authenticateUser);
 
+
 module.exports = {indexRouter};
 
