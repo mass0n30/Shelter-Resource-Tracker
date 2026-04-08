@@ -2,6 +2,7 @@ import * as React from "react"
 import { cva } from "class-variance-authority";
 import { Slot } from "radix-ui"
 
+// cn is a utility function that combines class names conditionally. It takes multiple class name arguments and returns a single string of class names, filtering out any falsy values. This is useful for applying classes based on certain conditions without having to manually concatenate strings.
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(

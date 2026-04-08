@@ -1,33 +1,13 @@
-@import './base/variables.css';
-@import './base/typography.css';
-@import './components/button.module.css';
-@import './components/card.module.css';
+
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import './base/variables.css';
+@import './base/typography.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* absolute global styling */
-:root {
-  font-family: var(--font-family);
-  font-size: var(--text-base);
-
-  color: var(--color-text);
-  background-color: var(--color-background);
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  /* Tailwind defined colors, to resuse in vanilla CSS */
-  --background: 255 255 255;  /* white */
-  --foreground: 0 0 0;        /* black */
-  --border: 220 220 220;      /* gray */ 
-}
 
 /* base meaning global styles, defined for Tailwind */
 /* use for all inner containers, since my outer containers are set */
@@ -37,6 +17,20 @@
     --font-sans: 'Geist Variable', sans-serif;
   }
   :root {
+    font-family: var(--font-family);
+    font-size: var(--text-base);
+
+    color: var(--color-text);
+    background-color: var(--color-background);
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    --cell-size: var(--space-lg);
+    --cell-radius: var(--border-radius);
+
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
