@@ -2,8 +2,8 @@ import App from "./App";
 import DashBoardLayout from "./pages/DashBoardLayout"; 
 import DashBoard from "./pages/DashBoard";
 import ErrorPage from "./pages/ErrorPage";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Login from "./components/forms/LoginForm";
+import Signup from "./components/forms/SignupForm";
 import ClientProfile from "./pages/ClientProfile";
 
 const routes = [

@@ -1,5 +1,8 @@
 
 import styles from '../../styles/components/client.module.css';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 function ClientList() {
 
@@ -24,13 +27,13 @@ function ClientToggleSection() {
     <div className={styles.clientToggleSection}>
       <div className={styles.clientSearchInputContainer}>
         <div className={styles.clientSearchInput}>
-          <input type="text" placeholder='Search Clients...' />
+          <Input placeholder='Search Clients' />
           <div className={styles.clientSearchButton}>
-            <button>Search</button>
+            <Button>Search</Button>
           </div>
         </div>
         <div className={styles.clientFilterDropDown}>
-          <button>Filter</button>
+          <Button>Filter</Button>
         </div>
       </div>
 

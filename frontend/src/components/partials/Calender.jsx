@@ -29,12 +29,12 @@ export default function CalendarPopover({ date, setDate }) {
           {date ? format(date, "PPP") : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="bg-color-foreground w-auto p-0">
+      <PopoverContent className="bg-color-white w-auto p-0">
           <Calendar
             mode="single"
             selected={date}
             onSelect={setDate}
-            className="rounded-lg border"
+            className="rounded-lg border bg-color-white p-3 shadow-md "
             captionLayout="dropdown"
           />        
       </PopoverContent>
