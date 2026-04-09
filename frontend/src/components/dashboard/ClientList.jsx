@@ -21,10 +21,13 @@ function ClientList() {
   );
 }
 
+import { ClientCombobox } from '../partials/ComboBox';
+
 function ClientToggleSection() {
 
   return (
     <div className={styles.clientToggleSection}>
+      <ClientCombobox />
       <div className={styles.clientSearchInputContainer}>
         <div className={styles.clientSearchInput}>
           <Input placeholder='Search Clients' />

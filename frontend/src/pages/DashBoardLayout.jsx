@@ -10,7 +10,6 @@ function DashBoard() {
 
   const [user, SetUser] = useState(null);
   const [allData, SetAllData] = useState(null);
-  const [guestMode, SetGuestMode] = useState(false);
   const [data, SetData] = useState(null);
   // loading state settings
   const [loading, SetLoading] = useState(true);
@@ -26,14 +25,24 @@ function DashBoard() {
   const token = localStorage.getItem('usertoken');
   const navigate = useNavigate();
   
-  // for protected routes with axios instance
+  // for protected routes with token
   const authRouter = axios.create({
-    baseURL: 'http://localhost:5000',
+    baseURL: `${import.meta.env.VITE_API_URL}`,
     headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json', 
-    }
+      },
   });
+
+  // for multer form data (file (avatar img) uploads)
+  const authRouterForm = axios.create({
+    baseURL: `${import.meta.env.VITE_API_URL}`,
+    headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data', 
+      },
+  });
+
 
   //spinner upon mount with delay, post creation message with delay
   useEffect(() => {
@@ -51,13 +60,8 @@ function DashBoard() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch('http://localhost:5000/dashboard', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json', 
-          },
-        });
+        const response = await axios.get('/dashboard');
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -70,51 +74,17 @@ function DashBoard() {
         SetError(error);
       } 
     };
-
-    const fetchGuestMode = async () => {
-      try {
-                                        //using env variable for base URL ???                                          
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/home/guest`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json', 
-          },
-        });
-        if (!response.ok) {
-          navigate('/');
-
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-
-        SetGuestMode(true);
-        // SetData(result.data);
-
-        // reset boolean fetch after updated posts fetch
-      } catch (error) {
-        SetError(error);
-      } 
-    };
-
     // initiate GET home fetch if there's a token else continue guest mode
      if (token) {
       fetchUser();
-     } else {
-      fetchGuestMode();
-     }
+     } 
 
   }, [token, mount]);  // token dependency?
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-  
   // skeleton loader Navbar/sidebar, ect. 
   if (loading) {
     return (
       <>
-      <Navbar/>
+      <Navbar authRouter={authRouter} authRouterForm={authRouterForm} />
         <main style={{ display: "flex", justifyContent: "center", marginTop: "2rem" }}>
           <div className="shell">
              <div style={{ width: "100%", height: "200px", backgroundColor: "#f0f0f0", borderRadius: "8px" }}></div>
@@ -128,18 +98,17 @@ function DashBoard() {
   // show Sonner badge upon creating new client, note, referral, ect.
   return (
     <>
-    <Navbar/>
+    <Navbar authRouter={authRouter} authRouterForm={authRouterForm} />
       <div className="shell">
         
         {toggleForm &&
-        
-          <ClientForm SetToggleForm={SetToggleForm} 
-        />}
-        <Outlet context={{user, data, loading, success, SetLoading, SetSuccess, SetMount, mount }} />
+
+          <ClientForm SetToggleForm={SetToggleForm} authRouter={authRouter} authRouterForm={authRouterForm} />
+        }
+        <Outlet context={{user, data, loading, success, SetLoading, SetSuccess, SetMount, mount, authRouter, authRouterForm }} />
       </div>
     <Footer/>
     </>
-
 
   )
 }

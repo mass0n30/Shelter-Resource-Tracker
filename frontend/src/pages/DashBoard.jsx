@@ -6,7 +6,7 @@ import ClientList from '../components/dashboard/ClientList';
 import Notifications from '../components/dashboard/Notifications';
 
 function DashBoard() {
-  const { user, data, success, SetSuccess, SetLoading, SetNewFetch } = useOutletContext();
+  const { user, data, success, SetSuccess, SetLoading, SetNewFetch, authRouter, authRouterForm } = useOutletContext();
 
   return (
     <div className='contentWrapper'>

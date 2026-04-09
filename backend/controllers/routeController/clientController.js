@@ -31,11 +31,12 @@ async function createClient(req, res, next) {
       data: {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        clientId: req.body.clientId,
-        intakeDate: new Date(req.body.intakeDate), // "2023-05-21" pass in that format from client side
+        clientId: parseInt(req.body.clientId),
+        intakeDate: req.body?.intakeDate || new Date(), // "2023-05-21" pass in that format from client side
         priorityNeed: req.body.priorityNeed,
         gender: req.body.gender,
         bedLabel: req.body.bedLabel,
+        status: req.body.status,
         // phone: req.body.phone,
         // address: req.body.address,
         // city: req.body.city,
@@ -56,7 +57,7 @@ async function updateClient(req, res, next) {
       data: { 
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        intakeDate: new Date(req.body.intakeDate), // "2023-05-21" pass in that format from client side
+        intakeDate: req.body?.intakeDate || new Date(), // "2023-05-21" pass in that format from client side
         priorityNeed: req.body.priorityNeed,
         gender: req.body.gender,
         bedLabel: req.body.bedLabel,

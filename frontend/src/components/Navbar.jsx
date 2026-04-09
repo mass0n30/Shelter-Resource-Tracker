@@ -3,7 +3,7 @@ import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import ClientForm from "./forms/ClientForm";
 
 // asChild injects ref, defined with React.forwardRef in ui/dialog DialogTrigger, into the button component, allowing it to function as the trigger for the dialog.
-function Navbar() {
+function Navbar({ authRouter, authRouterForm }) {
 
   return (
     <nav>
@@ -11,7 +11,7 @@ function Navbar() {
         <DialogTrigger asChild>
           <button>Create Client</button>
         </DialogTrigger>
-        <ClientForm />
+        <ClientForm authRouter={authRouter} authRouterForm={authRouterForm} />
       </Dialog>
       <div>Navbar Text</div>
     </nav>

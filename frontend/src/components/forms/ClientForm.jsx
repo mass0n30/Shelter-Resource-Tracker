@@ -28,29 +28,47 @@ const schema = z.object({
   bedLabel: z.string().min(1).max(5),
 });
 
-export default function ClientForm() {
+export default function ClientForm({ authRouter, authRouterForm }) {
 
   const [date, setDate] = useState(new Date());
 
-  const form = useForm({
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      priorityNeed: "",
-      bedLabel: "",
-      gender: "",
-      status: "",
-    },
-    resolver: zodResolver(schema),
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    clientId: "",
+    priorityNeed: "",
+    bedLabel: "",
+    gender: "",
+    status: "",
   });
 
+  // helper function to update form data state on input change
+  const updateField = (key, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   // handle form submission, creating client 
-  const onSubmit = (data) => {
-    console.log(data);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await authRouter.post("/clients", formData);
+
+      console.log("Client created:", response.data);
+
+    } catch (error) {
+      console.error(
+        "Error creating client:",
+        error.response?.data || error.message
+      );
+    }
   };
 
   return (
-    <DialogContent className={'bg-white, rounded-lg, shadow-lg, w-full, max-w-md, ' + styles.dialogContent}>
+    <DialogContent className={' rounded-lg shadow-lg w-full max-w-md ' + styles.dialogContent}>
       <DialogHeader>
         <DialogTitle>Create Client</DialogTitle>
         <DialogDescription>
@@ -58,44 +76,43 @@ export default function ClientForm() {
         </DialogDescription>
       </DialogHeader>
 
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <FieldGroup>
+      <form onSubmit={handleSubmit} className="grid w-full gap-4 py-4">
+          <FieldGroup>
+            <Field>
+              <Input value={formData.firstName} onChange={(e) => updateField("firstName", e.target.value)} placeholder="First Name" />
+            </Field>
+            <Field>
+              <Input value={formData.lastName} onChange={(e) => updateField("lastName", e.target.value)} placeholder="Last Name" />
+            </Field>
+            <Field>
+              <Input value={formData.clientId} onChange={(e) => updateField("clientId", e.target.value)} placeholder="Client ID" />
+            </Field>
+
+            <Field>
+              <Select value={formData.gender} onValueChange={(value) => updateField("gender", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup label="Choose a gender">
+                    <SelectItem value="male" onClick={() => updateField("gender", "male")}>Male</SelectItem>
+                    <SelectItem value="female" onClick={() => updateField("gender", "female")}>Female</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Field>
           <Field>
-            <Input onChange={(e) => form.setValue("firstName", e.target.value)} placeholder="First Name" />
-          </Field>
-          <Field>
-            <Input onChange={(e) => form.setValue("lastName", e.target.value)} placeholder="Last Name" />
-          </Field>
-          <Field>
-            <Input onChange={(e) => form.setValue("clientId", e.target.value)} placeholder="Client ID" />
+            <Input value={formData.priorityNeed} onChange={(e) => updateField("priorityNeed", e.target.value)} placeholder="Priority Need" />
           </Field>
 
           <Field>
-            <Select onValueChange={(value) => form.setValue("gender", value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Gender" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup label="Choose a gender">
-                  <SelectItem value="male" onClick={() => form.setValue("gender", "male")}>Male</SelectItem>
-                  <SelectItem value="female" onClick={() => form.setValue("gender", "female")}>Female</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </Field>
-
-          <Field>
-            <Input onChange={(e) => form.setValue("priorityNeed", e.target.value)} placeholder="Priority Need" />
-          </Field>
-
-          <Field>
-            <Input onChange={(e) => form.setValue("bedLabel", e.target.value)} placeholder="Bed Label" />
+            <Input value={formData.bedLabel} onChange={(e) => updateField("bedLabel", e.target.value)} placeholder="Bed Label" />
           </Field>
 
           <CalendarPopover date={date} setDate={setDate} />
 
           <Field>
-            <Select onValueChange={(value) => form.setValue("status", value)}>
+            <Select value={formData.status} onValueChange={(value) => updateField("status", value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select Status" />
               </SelectTrigger>
@@ -110,9 +127,17 @@ export default function ClientForm() {
             </Select>
           </Field>
         </FieldGroup>
-        <Field orientation="horizontal">
-          <button type="button" onClick={() => form.reset()}>Reset</button>
-          <button type="submit">Save</button>
+        <Field orientation="horizontal" className="justify-around space-x-2">
+          <button type="button" onClick={() => setFormData({
+            firstName: "",
+            lastName: "",
+            clientId: "",
+            priorityNeed: "",
+            bedLabel: "",
+            gender: "",
+            status: "",
+          })}>Reset</button>
+          <button type="submit">Create Client</button>
         </Field>
       </form>
     </DialogContent>
