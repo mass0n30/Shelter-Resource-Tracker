@@ -84,33 +84,56 @@ function DashBoard() {
   if (loading) {
     return (
       <>
-      <Navbar authRouter={authRouter} authRouterForm={authRouterForm} />
-        <main style={{ display: "flex", justifyContent: "center", marginTop: "2rem" }}>
-          <div className="shell">
-             <div style={{ width: "100%", height: "200px", backgroundColor: "#f0f0f0", borderRadius: "8px" }}></div>
+        <Navbar authRouter={authRouter} authRouterForm={authRouterForm} />
+
+        <main className="flex justify-center mt-8 px-4">
+          <div className="w-full max-w-7xl">
+            <div className="w-full h-48 bg-gray-100 rounded-lg" />
           </div>
         </main>
-      <Footer/>
+
+        <Footer />
       </>
     );
   }
 
   // show Sonner badge upon creating new client, note, referral, ect.
-  return (
-    <>
+return (
+  <>
     <Navbar authRouter={authRouter} authRouterForm={authRouterForm} />
-      <div className="shell">
-        
-        {toggleForm &&
 
-          <ClientForm SetToggleForm={SetToggleForm} authRouter={authRouter} authRouterForm={authRouterForm} />
-        }
-        <Outlet context={{user, data, loading, success, SetLoading, SetSuccess, SetMount, mount, authRouter, authRouterForm }} />
+    <main className="flex justify-center px-4 py-6">
+      <div className="w-full max-w-7xl flex">
+
+        {toggleForm && (
+          <ClientForm
+            SetToggleForm={SetToggleForm}
+            authRouter={authRouter}
+            authRouterForm={authRouterForm}
+          />
+        )}
+
+        <Outlet
+          context={{
+            user,
+            data,
+            loading,
+            success,
+            SetLoading,
+            SetSuccess,
+            SetMount,
+            mount,
+            authRouter,
+            authRouterForm,
+          }}
+        />
+
       </div>
-    <Footer/>
-    </>
+    </main>
 
-  )
+    <Footer />
+  </>
+);
 }
 
 export default DashBoard;

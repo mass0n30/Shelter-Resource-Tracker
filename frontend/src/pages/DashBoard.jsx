@@ -9,7 +9,7 @@ function DashBoard() {
   const { user, data, success, SetSuccess, SetLoading, SetNewFetch, authRouter, authRouterForm } = useOutletContext();
 
   return (
-    <div className='contentWrapper'>
+    <div className="flex-1 w-full h-screen  auto-rows-fr">
       <DashStats data={data} />
       <ClientList data={data} />
       <Notifications data={data} SetSuccess={SetSuccess} SetLoading={SetLoading} SetNewFetch={SetNewFetch}/>

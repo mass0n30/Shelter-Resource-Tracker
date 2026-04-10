@@ -7,7 +7,7 @@ import Timeline from "../components/profile/Timeline";
 export default function ClientProfile() {
 
   return (
-    <div className="clientProfile">
+    <div >
       
     </div>
   );

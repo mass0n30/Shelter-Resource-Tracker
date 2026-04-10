@@ -1,5 +1,43 @@
 # React + Vite
 
+UI SYSTEM MENTAL MODEL
+
+Radix UI
+- Handles behavior (keyboard nav, focus, accessibility)
+- No styling
+
+shadcn/ui
+- Prebuilt components using Radix (sometimes)
+- Styled with Tailwind
+- Code is copied → YOU own it
+
+Tailwind
+- Your design layer (colors, spacing, layout)
+
+---
+
+USAGE PATTERN (MOST IMPORTANT)
+
+<Component className="..." />
+
+- Use component as-is
+- Add styling via className
+- Do NOT edit internals unless necessary
+
+---
+
+CONTROL LEVELS
+
+1. Default usage (90%)
+   → use + style with Tailwind
+
+2. Light customization
+   → tweak className / props
+
+3. Internal edits (rare)
+   → only if behavior needs changing
+
+
 # Planned Styling
 Vanilla CSS = layout logic (outer containers)
 Tailwind = visual tweaks (inline)

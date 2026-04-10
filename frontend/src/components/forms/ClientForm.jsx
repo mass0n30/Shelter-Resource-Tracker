@@ -15,7 +15,6 @@ import {
   FieldSet,
 } from "@/components/ui/field"
 import CalendarPopover from "../partials/Calender";
-import styles from '../../styles/components/form.module.css';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -68,7 +67,7 @@ export default function ClientForm({ authRouter, authRouterForm }) {
   };
 
   return (
-    <DialogContent className={' rounded-lg shadow-lg w-full max-w-md ' + styles.dialogContent}>
+    <DialogContent className={' rounded-lg shadow-lg w-full max-w-md '}>
       <DialogHeader>
         <DialogTitle>Create Client</DialogTitle>
         <DialogDescription>
