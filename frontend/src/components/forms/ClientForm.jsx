@@ -67,7 +67,7 @@ export default function ClientForm({ authRouter, authRouterForm }) {
   };
 
   return (
-    <DialogContent className={' rounded-lg shadow-lg w-full max-w-md '}>
+    <DialogContent className={'bg-background rounded-lg shadow-lg w-full max-w-md '}>
       <DialogHeader>
         <DialogTitle>Create Client</DialogTitle>
         <DialogDescription>
