@@ -3,11 +3,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 
-function ClientList() {
+function ClientList({className}) {
 
   return (
-    <div className={'clientList'}>
-      <ClientToggleSection />
+    <div className={`clientList ${className}`}>
       <div className="min-h-32 bg-gray-200 rounded-md mx-4"> 
         <ClientCard/>
         <ClientCard/>
@@ -22,35 +21,26 @@ function ClientList() {
 
 import { ClientCombobox } from '../partials/ComboBox';
 
-function ClientToggleSection() {
+function ClientToggleSection({className}) {
   return (
-    <div className="w-full flex flex-col gap-4 sticky top-0 bg-white z-10 p-4 shadow-sm">
-
-      {/* Top Row */}
-      <div className="w-full">
-        <ClientCombobox />
-      </div>
+    <div className={`border-border-400 border-2 px-4 py-2 flex flex-col gap-4 ${className}`}>
 
       {/* Search + Filter Row */}
       <div className="w-full flex items-center gap-2">
 
         {/* Search Input + Button */}
         <div className="flex flex-1 items-center gap-2">
-          <Input
-            placeholder="Search Clients"
-            className="flex-1"
-          />
+        <ClientCombobox />
           <Button>
             Search
           </Button>
+          <Button >
+            Filter
+          </Button>
         </div>
 
-        {/* Filter Button */}
-        <Button variant="outline">
-          Filter
-        </Button>
-
       </div>
+      <ClientList className="flex-1" />
     </div>
   );
 }

@@ -1,9 +1,9 @@
 
 // order Notes and timed Resources in this section? Day of or soon timed in Banners ?
-function Notifications({ data, SetSuccess, SetLoading, SetNewFetch }) {
+function Notifications({className, data, SetSuccess, SetLoading, SetNewFetch }) {
 
   return (
-<div className="col-span-1 row-span-6 w-full flex">
+    <div className={className}>
       <div className="flex-1 p-4">
         <h2 className="text-lg font-semibold">Notifications</h2>
         <ul className="mt-2">

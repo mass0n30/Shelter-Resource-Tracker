@@ -9,6 +9,8 @@ export default {
       colors: {
         primary: "var(--color-primary)",
         secondary: "var(--color-secondary)",
+        destructive: "var(--color-destructive)",
+        success: "var(--color-success)",
         background: "var(--color-background)",
         foreground: "var(--color-foreground)",
         muted: "var(--color-muted)",

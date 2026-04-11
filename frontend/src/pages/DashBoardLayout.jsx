@@ -56,7 +56,6 @@ function DashBoard() {
     return () => clearTimeout(timer, successTimer); 
   } ,[loading, SetSuccess, SetLoading]);
 
-  // USE AXIOS FOR CLEANER FETCH BLOCKS
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -100,7 +99,7 @@ function DashBoard() {
   // show Sonner badge upon creating new client, note, referral, ect.
 return (
   <>
-    <Navbar authRouter={authRouter} authRouterForm={authRouterForm} />
+    <Navbar className="bg-white shadow" authRouter={authRouter} authRouterForm={authRouterForm} />
 
     <main className="flex justify-center px-4 py-6">
       <div className="w-full max-w-7xl flex">

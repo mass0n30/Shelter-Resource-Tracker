@@ -1,6 +1,6 @@
-function DashStats() {
+function DashStats({data, className}) {
   return (
-    <div className="w-full grid grid-cols-4 grid-rows-2 gap-4">
+    <div className={`flex gap-md ${className}`}>
       <DashStatCard />
       <DashStatCard />
       <DashStatCard />
@@ -9,9 +9,9 @@ function DashStats() {
   );
 }
 
-function DashStatCard() {
+function DashStatCard({data}) {
   return (
-    <div className="row-span-2 bg-gray-100 rounded-lg p-4 shadow-sm">
+    <div className={`flex-1  bg-gray-100 rounded-lg shadow-sm p-4 flex flex-col items-center justify-center`}>
       
     </div>
   );
