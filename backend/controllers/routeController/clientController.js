@@ -21,7 +21,7 @@ async function getClients(req, res, next) {
     return clients;
   } catch (error) {
     console.log('failed to get clients');
-    return res.status(400).json({ errors:error });
+    throw error;
   }
 };
 

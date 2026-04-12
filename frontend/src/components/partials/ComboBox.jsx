@@ -11,8 +11,8 @@ const clients = ["John Doe", "Jane Smith", "Alice Johnson", "Bob Brown"]
 
 export function ClientCombobox() {
   return (
-    <div className="w-full max-w-sm">
-      <Combobox items={clients}>
+    <div className={`w-full h-full`}>
+      <Combobox items={clients} className="w-full h-full">
         
         <ComboboxInput
           placeholder="Select a client"

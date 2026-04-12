@@ -9,6 +9,8 @@ require('../config/passport');
 
 dashboardRouter.get('/', async (req, res, next ) => {
 
+  console.log('Dashboard route hit, fetching data...');
+
   Promise.all([
     getAllUserData(req, res, next), // includes users referrals and personal notes
     clientController.getClients(req, res, next),

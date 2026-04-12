@@ -14,7 +14,7 @@ async function getAllUserData(req, res, next) {
     return user;
   } catch (error) {
     console.log('failed to get user data');
-    return res.status(400).json({ errors:error });
+    throw error;
   }
 };
 
@@ -24,7 +24,7 @@ async function getAllReferrals(req, res, next) {
     return referrals;
   } catch (error) {
     console.log('failed to get user referrals');
-    return res.status(400).json({ errors:error });
+    throw error;
   };
 }
 
@@ -34,7 +34,7 @@ async function getAllNotes(req, res, next) {
     return notes;
   } catch (error) {
     console.log('failed to get user notes');
-    return res.status(400).json({ errors:error });
+    throw error;
   }
 }
 
@@ -43,10 +43,10 @@ async function handleGetClientReferrals(req, res, next) {
     const referrals = await prisma.referral.findMany({
       where: { client_id: parseInt(req.params.clientId) },
     });
-    return res.status(200).json(referrals);
+    return referrals;
   } catch (error) {
     console.log('failed to get referrals');
-    return res.status(400).json({ errors:error });
+    throw error;
   }
 };
 
@@ -55,10 +55,9 @@ async function handleGetClientNotes(req, res, next) {
     const notes = await prisma.note.findMany({
       where: { client_id: parseInt(req.params.clientId) },
     });
-    return res.status(200).json(notes);
+    return notes;
   } catch (error) {
-    console.log('failed to get notes');
-    return res.status(400).json({ errors:error });
+    throw error;
   }
 };
 

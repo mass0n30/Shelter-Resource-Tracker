@@ -11,7 +11,7 @@ function DashStats({data, className}) {
 
 function DashStatCard({data}) {
   return (
-    <div className={`flex-1  bg-gray-100 rounded-lg shadow-sm p-4 flex flex-col items-center justify-center`}>
+    <div className={`flex-1  bg-gray-100 rounded-md shadow-md p-4 flex flex-col items-center justify-center`}>
       
     </div>
   );

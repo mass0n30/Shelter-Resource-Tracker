@@ -12,9 +12,10 @@ function DashBoard() {
   return (
     <div className="flex-1 w-full h-screen grid grid-cols-1 grid-rows-10 md:grid-cols-4
       grid-rows-auto gap-4 p-4">
-      <DashStats data={data} className="col-span-1  md:col-span-4 row-span-2" />
-      <ClientList data={data} className="col-span-1 md:col-span-3 row-span-8" />
-      <Notifications className="col-span-1 md:col-span-1 row-span-10" data={data} SetSuccess={SetSuccess} SetLoading={SetLoading} SetNewFetch={SetNewFetch} />
+      <DashStats className="col-span-1  md:col-span-4 row-span-2" />
+      <ClientList className="border-border-400 border-2 rounded-md col-span-1 md:col-span-3 row-span-8"
+      clientData={data.clients} />
+      <Notifications className="border-border-400 border-2 rounded-md col-span-1 md:col-span-1 row-span-10" data={data} SetSuccess={SetSuccess} SetLoading={SetLoading} SetNewFetch={SetNewFetch} />
     </div>
   )
 }

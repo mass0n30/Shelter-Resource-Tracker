@@ -6,7 +6,7 @@ import Footer from "../components/Footer";
 import ClientForm from "../components/forms/ClientForm";
 import axios from 'axios';
 
-function DashBoard() {
+function DashBoardLayout() {
 
   const [user, SetUser] = useState(null);
   const [allData, SetAllData] = useState(null);
@@ -53,21 +53,22 @@ function DashBoard() {
     const successTimer = setTimeout(() => {
       SetSuccess(false);
     }, 5000);
-    return () => clearTimeout(timer, successTimer); 
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(successTimer);
+    };
   } ,[loading, SetSuccess, SetLoading]);
+
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get('/dashboard');
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result = await response.json();
+        const response = await authRouter.get('/dashboard');
+        // AXIOS Already Parses JSON, no need for response.json() like fetch !!!! Same on Backend Controllers !
+        const result = response.data;
         
         SetUser(result.user); // (only non sensitive user data from backend)
-        SetAllData(result.globalData); 
+        SetData(result.globalData); // all clients, notes, referrals for dashboard display, consider separate fetches for each in future if performance issues arise with large data sets
         // reset boolean fetch after updated posts fetch
       } catch (error) {
         SetError(error);
@@ -78,9 +79,9 @@ function DashBoard() {
       fetchUser();
      } 
 
-  }, [token, mount]);  // token dependency?
+  }, [token]);  // token dependency?
   // skeleton loader Navbar/sidebar, ect. 
-  if (loading) {
+  if (loading || !data || !user) {
     return (
       <>
         <Navbar authRouter={authRouter} authRouterForm={authRouterForm} />
@@ -97,7 +98,8 @@ function DashBoard() {
   }
 
   // show Sonner badge upon creating new client, note, referral, ect.
-return (
+ if (data ) {
+  return (
   <>
     <Navbar className="bg-white shadow" authRouter={authRouter} authRouterForm={authRouterForm} />
 
@@ -133,6 +135,7 @@ return (
     <Footer />
   </>
 );
+ }
 }
 
-export default DashBoard;
+export default DashBoardLayout;
