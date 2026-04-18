@@ -95,9 +95,9 @@ app.post('/upload', upload.single('csv_file'), async (req, res, next) => {
   }
 });
 
-app.use('/clients',passport.authenticate('jwt', { session: false }), clientRouter);
-app.use('/referrals', passport.authenticate('jwt', { session: false }), referralRouter);
-app.use('/notes', passport.authenticate('jwt', { session: false }), noteRouter);
+app.use('/dashboard/clients',passport.authenticate('jwt', { session: false }), clientRouter);
+app.use('/dashboard/referrals', passport.authenticate('jwt', { session: false }), referralRouter);
+app.use('/dashboard/notes', passport.authenticate('jwt', { session: false }), noteRouter);
 
 app.post("/log-out", (req, res, next) => {
   req.logout((err) => {

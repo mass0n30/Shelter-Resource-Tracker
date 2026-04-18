@@ -33,7 +33,7 @@ const routes = [
             element: <DashBoard/>
           },
           {
-           path: "profile/:clientId",
+            path: "clients/:clientId",
             element: <ClientProfile/>
           }
         ]

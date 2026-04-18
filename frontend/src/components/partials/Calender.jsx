@@ -23,21 +23,34 @@ export default function CalendarPopover({ date, setDate }) {
         <Button
           variant="outline"
           data-empty={!date}
-          className="bg-color-foreground justify-start text-left font-normal data-[empty=true]:text-muted-foreground"
+          className="bg-foreground justify-start text-left font-normal data-[empty=true]:text-muted-foreground"
         >
-          <CalendarIcon />
           {date ? format(date, "PPP") : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="bg-color-white w-auto p-0">
+      <PopoverContent className="bg-white w-auto p-0">
           <Calendar
             mode="single"
             selected={date}
             onSelect={setDate}
-            className="rounded-lg border bg-color-white p-3 shadow-md "
             captionLayout="dropdown"
           />        
       </PopoverContent>
     </Popover>
+  )
+}
+
+
+export function CalendarEmbedded({ date, setDate, className }) {
+  return (
+    <div className={cn("bg-white rounded-lg border p-3 shadow-md", className)}>
+      <Calendar
+        mode="single"
+        selected={date}
+        onSelect={setDate}
+        captionLayout="dropdown"
+        className="w-full border-0 bg-color-white p-0 text-color-foreground shadow-none"
+      />
+    </div>
   )
 }

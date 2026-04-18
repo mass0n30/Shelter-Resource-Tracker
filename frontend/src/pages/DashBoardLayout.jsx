@@ -3,13 +3,11 @@ import { useParams, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import ClientForm from "../components/forms/ClientForm";
 import axios from 'axios';
 
 function DashBoardLayout() {
 
   const [user, SetUser] = useState(null);
-  const [allData, SetAllData] = useState(null);
   const [data, SetData] = useState(null);
   // loading state settings
   const [loading, SetLoading] = useState(true);
@@ -18,9 +16,6 @@ function DashBoardLayout() {
 
   // useful for navigation 
   const [mount, SetMount] = useState(false);
-
-  const [toggle, SetToggle] = useState(true);
-  const [toggleForm, SetToggleForm] = useState(false);
 
   const token = localStorage.getItem('usertoken');
   const navigate = useNavigate();
@@ -44,7 +39,6 @@ function DashBoardLayout() {
   });
 
 
-  //spinner upon mount with delay, post creation message with delay
   useEffect(() => {
     const timer = setTimeout(() => {
       SetLoading(false);
@@ -72,6 +66,7 @@ function DashBoardLayout() {
         // reset boolean fetch after updated posts fetch
       } catch (error) {
         SetError(error);
+        return navigate('/login'); // redirect to login if token invalid or expired, consider separate error handling for different status codes in future (e.g. 401 vs 403) for better UX
       } 
     };
     // initiate GET home fetch if there's a token else continue guest mode
@@ -84,15 +79,11 @@ function DashBoardLayout() {
   if (loading || !data || !user) {
     return (
       <>
-        <Navbar authRouter={authRouter} authRouterForm={authRouterForm} />
-
         <main className="flex justify-center mt-8 px-4">
           <div className="w-full max-w-7xl">
             <div className="w-full h-48 bg-gray-100 rounded-lg" />
           </div>
         </main>
-
-        <Footer />
       </>
     );
   }
@@ -100,39 +91,21 @@ function DashBoardLayout() {
   // show Sonner badge upon creating new client, note, referral, ect.
  if (data ) {
   return (
-  <>
-    <Navbar className="bg-white shadow" authRouter={authRouter} authRouterForm={authRouterForm} />
-
-    <main className="flex justify-center px-4 py-6">
-      <div className="w-full max-w-7xl flex">
-
-        {toggleForm && (
-          <ClientForm
-            SetToggleForm={SetToggleForm}
-            authRouter={authRouter}
-            authRouterForm={authRouterForm}
-          />
-        )}
-
-        <Outlet
-          context={{
-            user,
-            data,
-            loading,
-            success,
-            SetLoading,
-            SetSuccess,
-            SetMount,
-            mount,
-            authRouter,
-            authRouterForm,
-          }}
-        />
-
-      </div>
-    </main>
-
-    <Footer />
+    <>
+      <Outlet
+        context={{
+          user,
+          data,
+          loading,
+          success,
+          SetLoading,
+          SetSuccess,
+          SetMount,
+          mount,
+          authRouter,
+          authRouterForm,
+        }}
+      />
   </>
 );
  }

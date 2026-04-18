@@ -5,11 +5,16 @@ async function getClients(req, res, next) {
   try {
     // UPDATE!
     // filter passed in body from search or enrolled/WC, ect.
+    // Only Returning currently enrolled upon mount! 
     const filter = req.body?.filter;
     let clients = null;
 
     if (filter == undefined) {
-      clients = await prisma.client.findMany();
+      clients = await prisma.client.findMany({
+        where: {
+          status: "ENROLLED",
+        },
+      });
     } else {
       clients = await prisma.client.findMany({
         where: {
@@ -24,6 +29,20 @@ async function getClients(req, res, next) {
     throw error;
   }
 };
+
+async function getClientById(req, res, next) {
+    console.log('Getting client by ID:', req.params.clientId);
+  try {
+    const client = await prisma.client.findUnique({
+      where: { id: parseInt(req.params.clientId) },
+    });
+    console.log('Client data retrieved:', client);
+    return res.json(client);
+  } catch (error) {
+    console.log('failed to get client by id');
+    throw error;
+  }
+}
 
 async function createClient(req, res, next) {   
   try {
@@ -135,6 +154,6 @@ async function handleUploadFile(req, res, next) {
 
 module.exports = {
   clientController: {
-    getClients, createClient, updateClient, deleteClient, handleUploadFile
+    getClients, getClientById, createClient, updateClient, deleteClient, handleUploadFile
   }
 };

@@ -55,11 +55,11 @@
 
 
   button.btn-primary {
-    @apply bg-primary text-white hover:bg-primary/90;
+    @apply bg-primary text-black hover:bg-primary/90;
   }
 
   button.btn-secondary {
-    @apply bg-secondary text-white hover:bg-secondary/90;
+    @apply bg-secondary text-black hover:bg-secondary/90;
   }
 }
 

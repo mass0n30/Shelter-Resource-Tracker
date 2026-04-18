@@ -3,12 +3,14 @@ const clientRouter = Router();
 const passport = require("passport");
 const controller = require('../controllers/routeController/clientController');
 
-clientRouter.get('/', passport.authenticate('jwt', { session: false }), controller.clientController.getClients);
+clientRouter.get('/', controller.clientController.getClients);
 
-clientRouter.post('/', passport.authenticate('jwt', { session: false }), controller.clientController.createClient);
+clientRouter.post('/', controller.clientController.createClient);
 
-clientRouter.put('/:clientId', passport.authenticate('jwt', { session: false }), controller.clientController.updateClient);
+clientRouter.get('/:clientId', controller.clientController.getClientById);
 
-clientRouter.delete('/:clientId', passport.authenticate('jwt', { session: false }), controller.clientController.deleteClient);
+clientRouter.put('/:clientId',controller.clientController.updateClient);
+
+clientRouter.delete('/:clientId', controller.clientController.deleteClient);
 
 module.exports = { clientRouter };

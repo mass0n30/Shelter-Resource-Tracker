@@ -23,13 +23,21 @@ function Calendar({
   const defaultClassNames = getDefaultClassNames()
 
   return (
-      <DayPicker className="p-4" 
+    <DayPicker
+      classNames={{
+        ...defaultClassNames,
+        day_today: "border border-amber-500",
+        day_selected: "bg-secondary text-white",
+        day: "bg-gray-100", 
+      }}
       animate
       mode="single"
       selected={selected}
       onSelect={onSelect}
-
-      />
+      components={{
+        DayButton: CalendarDayButton
+      }}
+    />
   );
 }
 
@@ -51,27 +59,26 @@ function CalendarDayButton({
     <Button
       ref={ref}
       variant="default"
-      size="default"
+      size="sm"
       data-day={day.date.toLocaleDateString(locale?.code)}
-      data-selected-single={
-        modifiers.selected &&
-        !modifiers.range_start &&
-        !modifiers.range_end &&
-        !modifiers.range_middle
-      }
-      data-range-start={modifiers.range_start}
-      data-range-end={modifiers.range_end}
-      data-range-middle={modifiers.range_middle}
       className={cn(
-        "relative isolate z-10 flex aspect-square size-auto w-full min-w-[var(--cell-size)] flex-col gap-1 border-0 leading-none font-normal",
-        "data-[range-end=true]:rounded-[var(--cell-radius)]",
-        "data-[range-end=true]:rounded-r-[var(--cell-radius)]",
-        "data-[range-start=true]:rounded-[var(--cell-radius)]",
-        "data-[range-start=true]:rounded-l-[var(--cell-radius)]",
-        defaultClassNames.day,
+        // base styles for all day buttons
+        "relative p-md isolate z-10 flex aspect-square w-full min-w-[var(--cell-size)] items-center justify-center text-sm",
+
+        // default styles for the day button upon hover and focus
+        "bg-gray-100 text-gray-900",
+
+        modifiers.today && "border border-amber-500",
+
+        modifiers.selected && "bg-blue-600 text-white",
+
+        !modifiers.selected && "hover:bg-gray-200",
+
         className
       )}
-      {...props} />
+      {...props}
+    />
+      
   );
 }
 

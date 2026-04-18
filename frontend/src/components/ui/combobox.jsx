@@ -16,9 +16,11 @@ import { ChevronDownIcon, XIcon, CheckIcon } from "lucide-react"
 const Combobox = ComboboxPrimitive.Root
 
 function ComboboxValue({
+  className,
   ...props
+
 }) {
-  return <ComboboxPrimitive.Value data-slot="combobox-value" {...props} />;
+  return <ComboboxPrimitive.Value data-slot="combobox-value" className={className} {...props} />;
 }
 
 function ComboboxTrigger({
@@ -85,7 +87,7 @@ function ComboboxInput({
 function ComboboxContent({
   className,
   side = "bottom",
-  sideOffset = 6,
+  sideOffset = 11,
   align = "start",
   alignOffset = 0,
   anchor,
@@ -99,7 +101,7 @@ function ComboboxContent({
         align={align}
         alignOffset={alignOffset}
         anchor={anchor}
-        className="isolate z-50">
+        className="shadow-lg z-50">
         <ComboboxPrimitive.Popup
           data-slot="combobox-content"
           data-chips={!!anchor}
@@ -145,7 +147,7 @@ function ComboboxItem({
       <ComboboxPrimitive.ItemIndicator
         render={
           <span
-            className="pointer-events-none absolute right-2 flex size-4 items-center justify-center" />
+            className="pointer-events-none absolute flex size-4 items-center justify-center" />
         }>
         <CheckIcon className="pointer-events-none" />
       </ComboboxPrimitive.ItemIndicator>
