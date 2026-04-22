@@ -7,12 +7,14 @@ import {
   ComboboxList,
   ComboboxValue,
 } from "@/components/ui/combobox"
+import { all } from "axios";
 
 import { useState, useEffect } from "react"
 
 // value prop in <ComboboxItem> is mandatory for internal state management of the combobox, but we also want to set the search term to the selected client's name, syncing state with internal state of the combobox, so we pass the search term as value and update it on selection
 export function ClientCombobox({ currentClients, setViewedClients, setClientId }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [allClients, setAllClients] = useState(currentClients);
 
   const handleSetClient = (id, name) => {
     setClientId(id);
@@ -46,7 +48,9 @@ export function ClientCombobox({ currentClients, setViewedClients, setClientId }
       >
         <ComboboxInput
           placeholder="Select a client"
+          value={searchTerm}
           onChange={(e) => {
+            e.preventDefault();
             const val = e.target.value;
             setSearchTerm(val);
 
@@ -57,6 +61,11 @@ export function ClientCombobox({ currentClients, setViewedClients, setClientId }
             );
             // updating viewed clients upon every keystroke 
             setViewedClients(filtered);
+
+            if (val === "" || val === null || val === undefined || val.trim() === "") {
+              setViewedClients(allClients);
+              setClientId(null);
+            }
           }}
           className="w-full px-3 py-2 border rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
         />

@@ -23,12 +23,12 @@ export default function CalendarPopover({ date, setDate }) {
         <Button
           variant="outline"
           data-empty={!date}
-          className="bg-foreground justify-start text-left font-normal data-[empty=true]:text-muted-foreground"
+          className="bg-background text-foreground justify-start text-left font-normal data-[empty=true]:text-muted-foreground hover:bg-primary"
         >
           {date ? format(date, "PPP") : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="bg-white w-auto p-0">
+      <PopoverContent className="bg-background w-auto p-0">
           <Calendar
             mode="single"
             selected={date}

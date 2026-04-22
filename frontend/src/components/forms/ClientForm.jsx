@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectContent, SelectGroup, SelectValue, SelectItem } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectGroup, SelectValue, SelectItem , SelectLabel} from "@/components/ui/select";
 import { DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
   Field,
@@ -20,16 +20,40 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 // zod schema for form validation before req sent to backend, where validation chain is also implemented for security and data integrity
 const schema = z.object({
-  firstName: z.string().min(2).max(100),
-  lastName: z.string().min(2).max(100),
-  clientId: z.string().min(1).max(10),
-  priorityNeed: z.string().min(1).max(255),
-  bedLabel: z.string().min(1).max(5),
+  firstName: z
+    .string({ required_error: "First name is required" })
+    .trim()
+    .min(2, { message: "First name must be at least 2 characters" })
+    .max(100, { message: "First name is too long" }),
+
+  lastName: z
+    .string({ required_error: "Last name is required" })
+    .trim()
+    .min(2, { message: "Last name must be at least 2 characters" })
+    .max(100, { message: "Last name is too long" }),
+
+  clientId: z
+    .string({ required_error: "Client ID is required" })
+    .regex(/^\d+$/, "Client ID must be a number")
+    .min(1, { message: "Client ID is required" })
+    .max(10, { message: "Client ID too long" }),
+
+  priorityNeed: z
+    .string({ required_error: "Priority need is required" })
+    .min(1, { message: "Priority need is required" })
+    .max(255, { message: "Priority need is too long" }),
+
+  bedLabel: z
+    .string({ required_error: "Bed label is required" })
+    .trim()
+    .min(1, { message: "Bed label is required" })
+    .max(5, { message: "Bed label is too long" }),
 });
 
 export default function ClientForm({ authRouter, authRouterForm }) {
 
   const [date, setDate] = useState(new Date());
+  const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -53,8 +77,16 @@ export default function ClientForm({ authRouter, authRouterForm }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // catching any validation errors before sending req to backend, where validation chain is also implemented for security and data integrity on backend
+  const result = schema.safeParse(formData);
+
+  if (!result.success) {
+    setError(result.error.issues[0].message);
+    return;
+  }
+
     try {
-      const response = await authRouter.post("/clients", formData);
+      const response = await authRouter.post("/dashboard/clients", formData);
 
       console.log("Client created:", response.data);
 
@@ -74,6 +106,12 @@ export default function ClientForm({ authRouter, authRouterForm }) {
           Fill out the form below to create a new client.
         </DialogDescription>
       </DialogHeader>
+  
+      {error && (
+        <span className="text-red-500 text-sm">
+          Error was encountered: {error}
+        </span>
+      )}
 
       <form onSubmit={handleSubmit} className="grid w-full gap-4 py-4">
           <FieldGroup>
@@ -88,17 +126,15 @@ export default function ClientForm({ authRouter, authRouterForm }) {
             </Field>
 
             <Field>
-              <Select value={formData.gender} onValueChange={(value) => updateField("gender", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Gender" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup label="Choose a gender">
-                    <SelectItem value="male" onClick={() => updateField("gender", "male")}>Male</SelectItem>
-                    <SelectItem value="female" onClick={() => updateField("gender", "female")}>Female</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <select
+                value={formData.gender}
+                onChange={(e) => updateField("gender", e.target.value)}
+                className="border px-3 py-2 rounded-lg bg-background text-muted w-full"
+              >
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
             </Field>
           <Field>
             <Input value={formData.priorityNeed} onChange={(e) => updateField("priorityNeed", e.target.value)} placeholder="Priority Need" />
@@ -111,19 +147,16 @@ export default function ClientForm({ authRouter, authRouterForm }) {
           <CalendarPopover date={date} setDate={setDate} />
 
           <Field>
-            <Select value={formData.status} onValueChange={(value) => updateField("status", value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="ENROLLED">Enrolled</SelectItem>
-                  <SelectItem value="WC">Winter Contingency (WC)</SelectItem>
-                  <SelectItem value="INACTIVE">Inactive</SelectItem>
-                  <SelectItem value="ARCHIVED">Archived</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <select
+              value={formData.status || ""}
+              onChange={(e) => updateField("status", e.target.value)}
+              className="w-full border px-3 py-2 rounded-lg bg-background text-muted "
+              name="Select Status"
+            >
+              <option value="">Select Status</option>
+              <option value="ENROLLED">Enrolled</option>
+              <option value="WC">Winter Contingency (WC)</option>
+            </select>
           </Field>
         </FieldGroup>
         <Field orientation="horizontal" className="justify-around space-x-2">

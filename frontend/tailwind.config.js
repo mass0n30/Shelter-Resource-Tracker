@@ -6,12 +6,24 @@ export default {
 
   theme: {
     extend: {
+    screens: {
+      'sm': '640px',
+      // scale down font further and adjust flex/grid layouts possibly?
+
+      'md': '1000px',
+      // scaled down font and flex/grid changes
+
+      'lg': '1280px',
+      // default beyond this at 1280px
+
+    },
       colors: {
         primary: "var(--color-primary)",
         secondary: "var(--color-secondary)",
         destructive: "var(--color-destructive)",
         success: "var(--color-success)",
         background: "var(--color-background)",
+        backgroundAlt: "var(--color-background-alt)",
         foreground: "var(--color-foreground)",
         muted: "var(--color-muted)",
         border: "var(--color-border)",

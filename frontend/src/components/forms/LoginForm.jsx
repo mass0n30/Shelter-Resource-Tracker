@@ -62,6 +62,7 @@ function Login() {
 
       if (!data.error) {
         navigate("/dashboard");
+        return;
       }
     });
   };
@@ -143,15 +144,6 @@ function Login() {
               <Button variant="secondary">Sign Up</Button>
             </Link>
           </div>
-
-          <Button
-            variant="outline"
-            className="w-full flex items-center justify-between"
-            onClick={handleGuestSubmit}
-          >
-            <span>Continue as Guest</span>
-            <CircleUserRound className="w-4 h-4" />
-          </Button>
 
         </CardContent>
       </Card>

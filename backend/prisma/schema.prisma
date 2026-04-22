@@ -30,9 +30,7 @@ enum UserRole {
 enum ClientStatus {
   ENROLLED
   WC  // Winter Contigency
-  EXITED
-  SUSPENDED
-  BANNED
+  INACTIVE
 }
 
 enum ReferralStatus {
