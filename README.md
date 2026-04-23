@@ -51,7 +51,20 @@ referral route on client profiles
 
 
 ToDo:
-
+  - Fix backspace bug, setting enrolled to default
+  - Add Extension status? 
+    * adding option on client page 
+  - Edit option for Client Info
+    * importing clientform for edit
+    * add delete and confirm delete option
+  - Add Resource and Note create Forms for client
+    * normalize forms?
+  - Create hook for Resource and Note post req
+  - Make skeleton Resource, note and timeline components to put inside profiles
+  - Get dash card stats
+  - Toggal displayed clients from Dash Card selection (Toggles search bar container off screen, replacing with banner?)
+  - Make notifications container slide up/pop up on mobile view?
+  - 
 
 Done:
  - define schema
@@ -68,6 +81,8 @@ Done:
  - Start designing inner containers *figuring data placements
  - Start install commands and setting up shadUI, zod, calender libraries and components
  - Make modals, toggles, forms
+- Apply Filter dependency
+- Update Clients non-active if past exit date
  
 
 

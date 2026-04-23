@@ -3,12 +3,40 @@ const { prisma } = require("../../db/prismaClient.js");
 
 async function getClients(req, res, next) {
   try {
-    // UPDATE!
-    // filter passed in body from search or enrolled/WC, ect.
-    // Only Returning currently enrolled upon mount! 
-    const filter = req.body?.filter;
     let clients = null;
+    const now = new Date();
+    const filter = req.query?.filter;
 
+    // upating clients that are passed outtakeData to INACTIVE, so they are not included in the stayed overnight query return, and to maintain accurate client status in the system
+    await prisma.client.updateMany({
+      where: {
+        outtakeDate: {
+          lte: now, 
+        },
+      },
+      data: {
+        status: "INACTIVE",
+      },
+    });
+
+    // for Stayed over night clients, updated by CSV pipeline and db query everyday
+    if (filter === "STAYED_OVERNIGHT") {
+      // past 32 hours to account for clients who stayed overnight and were updated by the CSV pipeline, which runs at 8am daily, so captures stays from 4pm the previous day to 4pm the current day
+      const pastWindow = new Date(now.getTime() - 32 * 60 * 60 * 1000);
+
+      const clients = await prisma.client.findMany({
+        where: {
+          intakeDate: {
+            gte: pastWindow,
+            lte: now,
+          },
+          status: "ENROLLED",
+        },
+      });
+      return res.json({ clients });
+    }
+
+    // default enrolled client mount return
     if (filter == undefined) {
       clients = await prisma.client.findMany({
         where: {
@@ -16,11 +44,15 @@ async function getClients(req, res, next) {
         },
       });
     } else {
+      // else get by filter 
       clients = await prisma.client.findMany({
         where: {
-          status: filter.status ? filter.status : undefined,
+          status: filter ? filter : undefined,
         },
       });
+    }
+    if (req.query?.filter) {
+      return res.json({ clients });
     }
 
     return clients;
@@ -52,6 +84,7 @@ async function createClient(req, res, next) {
         lastName: req.body.lastName,
         clientId: parseInt(req.body.clientId),
         intakeDate: req.body?.intakeDate || new Date(), // "2023-05-21" pass in that format from client side
+        outtakeDate: req.body?.outtakeDate || null,
         priorityNeed: req.body.priorityNeed,
         gender: req.body.gender,
         bedLabel: req.body.bedLabel,

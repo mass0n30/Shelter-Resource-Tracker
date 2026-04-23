@@ -50,13 +50,18 @@ async function checkUserByEmail(value) {
 
 async function checkClientCSV(first, last) {
 
+  const currentDate = new Date();
+
   const client = await prisma.client.findFirst({
     where: {
       firstName: first,
       lastName: last,
+     
+    },
+    data: {
+      intakeDate: currentDate,
     },
   });
-  // console.log(client);
 
   if (client) {
     return client;

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from "react-router-dom";
 import DashStats from '../components/dashboard/DashStats';
-import ClientList from '../components/dashboard/ClientList';
+import ClientToggleSection from '../components/dashboard/ClientList';
 import Notifications from '../components/dashboard/Notifications';
 import Navbar from '../components/Navbar';
 import ClientForm from "../components/forms/ClientForm";
@@ -31,8 +31,8 @@ function DashBoard() {
             <div className="flex-1 w-full h-screen grid grid-cols-1 grid-rows-10 lg:grid-cols-4
               grid-rows-auto gap-4 md:p-4">
               <DashStats className="col-span-1 row-span-3 lg:row-span-2 lg:col-span-4" />
-              <ClientList className="border-border-400 border-2 rounded-md col-span-1 lg:col-span-3 row-span-10"
-              clientData={data.clients} />
+              <ClientToggleSection className="border-border-400 bg-background-alt border-2 rounded-md col-span-1 lg:col-span-3 row-span-10"
+              clientData={data.clients} authRouter={authRouter} authRouterForm={authRouterForm} />
               <Notifications className="border-border-400 shadow-md border-2 rounded-md col-span-1 lg:col-span-1 row-span-10" data={data} SetSuccess={SetSuccess} SetLoading={SetLoading} SetNewFetch={SetNewFetch} />
             </div>
           </div>

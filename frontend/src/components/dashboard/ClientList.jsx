@@ -5,6 +5,8 @@ import { LayoutGrid, List, CalendarDays, Funnel, ChevronDown } from 'lucide-reac
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Combobox,ComboboxValue, ComboboxContent } from "@/components/ui/combobox";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import ClientForm from '../forms/ClientForm';
 import { useOutletContext } from "react-router-dom";
 
 function ClientList({className, viewedClients}) {
@@ -45,7 +47,7 @@ function ClientList({className, viewedClients}) {
 function ClientCard({client}) {
 
   return (
-    <div className="flex-1 min-w-80 max-w-50 min-h-40 bg-backgroundAlt shadow-sm p-4 items-center border rounded-xl p-4 shadow-sm hover:shadow-md transition cursor-pointer">
+    <div className="flex-1 min-w-80 max-w-50 min-h-40 bg-background shadow-sm p-4 items-center border rounded-xl p-4 shadow-sm hover:shadow-md transition cursor-pointer">
   <div className="flex items-center justify-between">
     <div className="flex items-center gap-sm">
       <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-600">
@@ -59,7 +61,7 @@ function ClientCard({client}) {
       </div>
     </div>
 
-    <span className="text-sm px-2 py-1 rounded bg-green-100 text-green-700">
+    <span className={`text-sm px-2 py-1 rounded ${client.status === 'ENROLLED' ? 'bg-green-100 text-green-700' : client.status === 'INACTIVE' ? 'bg-red-100 text-red-700' : client.status === 'WC' ? 'bg-blue-100 text-blue-700' : client.status === 'STAYED_OVERNIGHT' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
       {client.status}
     </span>
   </div>
@@ -73,9 +75,10 @@ function ClientCard({client}) {
   );
 };
 
-import { ClientCombobox } from '../partials/ComboBox';
+import { ClientSearch } from '../partials/Search';
+import { useEffect } from 'react';
 
-function ClientToggleSection({className, clientData}) {
+function ClientToggleSection({className, clientData, authRouter, authRouterForm}) {
   // for filtering during search and filter, separate from clientData to preserve original data for resetting filters
   const [viewedClients, setViewedClients] = useState(clientData);
   // for searching by name
@@ -84,6 +87,22 @@ function ClientToggleSection({className, clientData}) {
   const [filter, setFilter] = useState("ENROLLED");
   const [calendarOpen, setCalendarOpen] = useState(false);
 
+  useEffect(() => {
+    const fetchClients = async () => {
+    try {
+      const response = await authRouter.get("/dashboard/clients", {
+        params: {
+          filter: filter,
+        },
+      });
+      setViewedClients(response.data.clients);
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+    }
+  };
+  fetchClients();
+  }, [filter]);
+
   return (
     <div className={`px-4 py-2 flex flex-col shadow-md ${className}`}>
 
@@ -91,14 +110,20 @@ function ClientToggleSection({className, clientData}) {
       <div className="w-full flex items-center gap-md p-md pb-sm">
 
         {/* Search Input + Button */}
-        <div className="flex flex-1 flex-col gap-2 md:flex-row md:items-center">
+        <div className="flex flex-1 flex-col gap-2">
 
-          <div className="w-full md:flex-1">
-            <ClientCombobox currentClients={viewedClients} setViewedClients={setViewedClients} setClientId={setClientId} />
+          <div className="w-full">
+            <ClientSearch currentClients={viewedClients} setViewedClients={setViewedClients} setClientId={setClientId} filter={filter} setFilter={setFilter} />
           </div>
 
           <div className="flex justify-start gap-2 md:justify-start">
-            <Button>
+            <Button variant="outline" onClick={() => {
+              if (clientId) {
+                setViewedClients(clientData.filter(client => client.id === clientId));
+              } else {
+                setViewedClients(clientData);
+              }
+            }}>
               Search
             </Button>
 
@@ -106,6 +131,7 @@ function ClientToggleSection({className, clientData}) {
               <Button
                 onClick={() => setFilterOpen(prev => !prev)}
                 className="min-w-[160px] flex items-center gap-1 px-3"
+                variant={filterOpen ? "outline" : "outline"}
               >
                 <Funnel />
                 Filter
@@ -152,11 +178,20 @@ function ClientToggleSection({className, clientData}) {
           <div className="text-sm ml-2 text-muted-foreground align-center flex items-center font-medium italic">
             {filter === "STAYED_OVERNIGHT" ? "Clients Who Stayed Overnight" : filter === "ENROLLED" ? "Enrolled Clients" : filter === "WC" ? "Winter Contingency Clients" : filter === "INACTIVE" ? "Inactive Clients" : ""}
           </div>
-          <Button>
-            <CalendarDays color="#000000" />
-          </Button>
+        <div className="flex items-center gap-2">
+          <div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline">Create Client</Button>
+              </DialogTrigger>
+              <ClientForm authRouter={authRouter} authRouterForm={authRouterForm} />
+            </Dialog>
+          </div>
+            <Button variant="outline">
+              <CalendarDays color="#000000" />
+            </Button>
+          </div>
         </div>
-
       </div>
       <div>
         <Combobox>
@@ -170,19 +205,6 @@ function ClientToggleSection({className, clientData}) {
   );
 }
 
-import {
-  Field,
-  FieldGroup
-} from "@/components/ui/field"; 
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectItem
-} from "@/components/ui/select";
-import { set } from 'zod';
 
 
 export default ClientToggleSection;

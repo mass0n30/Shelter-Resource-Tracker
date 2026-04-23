@@ -31,7 +31,7 @@ function Calendar({
         day: "bg-gray-100", 
       }}
       animate
-      mode="single"
+      mode={props.mode || "single"}
       selected={selected}
       onSelect={onSelect}
       components={{

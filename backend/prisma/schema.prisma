@@ -70,8 +70,9 @@ model Client {
   bedLabel      String?
 
   intakeDate    DateTime?
+  outtakeDate   DateTime?     
+  lastStayDate  DateTime?     @default(now())
   extensionStatus     Boolean       @default(false)
-  extensionDate   DateTime?
 
   // Input text or a selection input, not sure yet, need to discuss further with the team
   priorityNeed  String?

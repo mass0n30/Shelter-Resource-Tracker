@@ -16,9 +16,9 @@
     --color-destructive: #ef4444;
     --color-success: #22c55e;
     --color-background: #f9fafb;
-    --color-background-alt: #f3f4f6;
+    --color-background-alt: #ffffff;
     --color-foreground: #111827;
-    --color-muted: #6b7280;
+    --color-muted: #6b7280cb;
     --color-border: #e5e7eb;
 
     /* RADIUS */
@@ -46,10 +46,27 @@
 
   button {
     background-color: var(--color-primary);
-    color: var(--color-background);  
-    padding: 0.5rem 1rem;
+    color: var(--color-background);
+    padding: var(--space-sm) var(--space-md);
     border-radius: var(--radius-md);
   }
+
+  input {
+    border: 1px solid var(--color-border);
+    padding: var(--space-sm);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+
+  @media (max-width: 1280px) {
+
+
+    main {
+      flex: 1;
+    }
+  }
+
 }
 
 /* apply base styles to components */
