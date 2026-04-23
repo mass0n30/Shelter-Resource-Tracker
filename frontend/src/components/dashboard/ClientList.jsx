@@ -1,7 +1,7 @@
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { LayoutGrid, List, CalendarDays, Funnel, ChevronDown } from 'lucide-react';
+import { LayoutGrid, List, CalendarDays, Funnel, ChevronDown, BedDouble } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Combobox,ComboboxValue, ComboboxContent } from "@/components/ui/combobox";
@@ -25,7 +25,7 @@ function ClientList({className, viewedClients}) {
 
   return (
     <div className={`clientList ${className}`}>
-      <div className={`flex-1 gap-md justify-center rounded-md flex flex-wrap p-md pt-0`}>
+      <div className={`flex-1 gap-md justify-center rounded-md grid grid-cols-1 md:grid-cols-2 gap-4 p-md pt-0`}>
         {viewedClients.map(client => (
           <Button
             key={client.id}
@@ -44,36 +44,68 @@ function ClientList({className, viewedClients}) {
   );
 };
 
-function ClientCard({client}) {
-
+function ClientCard({ client }) {
   return (
-    <div className="flex-1 min-w-80 max-w-50 min-h-40 bg-background shadow-sm p-4 items-center border rounded-xl p-4 shadow-sm hover:shadow-md transition cursor-pointer">
-  <div className="flex items-center justify-between">
-    <div className="flex items-center gap-sm">
-      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-600">
-        <p>{client?.avatar ? <img src={client.avatar} alt={`${client.firstName} ${client.lastName}`} /> : <span>{client.firstName.charAt(0)}{client.lastName.charAt(0)}</span>}</p>
-      </div>
-      <div className="flex flex-col">
-        <h2 className="font-semibold text-lg">{client.firstName} {client.lastName}</h2>
-        <div className="flex justify-start text-xs text-muted-foreground">
-          <p>{client.bedLabel}</p>
+    <div className="flex-1 min-w-0 bg-background border rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition cursor-pointer">
+      
+      <div className="flex items-center justify-between">
+        
+        <div className="flex items-center gap-2 sm:gap-3">
+          
+          {/* Avatar */}
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-200 flex items-center justify-center text-xs sm:text-sm font-medium text-gray-600">
+            {client?.avatar ? (
+              <img
+                src={client.avatar}
+                alt={`${client.firstName} ${client.lastName}`}
+              />
+            ) : (
+              <span>
+                {client.firstName.charAt(0)}
+                {client.lastName.charAt(0)}
+              </span>
+            )}
+          </div>
+
+          {/* Name + Bed */}
+          <div className="flex flex-col">
+            <h2 className="font-semibold text-sm sm:text-base md:text-lg">
+              {client.firstName} {client.lastName}
+            </h2>
+
+            <div className="text-[10px] align-start flex sm:text-xs text-muted-foreground">
+              {client.bedLabel}
+            </div>
+          </div>
+
         </div>
+
+        {/* Status Badge */}
+        <span
+          className={`text-[10px] sm:text-xs md:text-sm px-2 py-1 rounded ${
+            client.status === "ENROLLED"
+              ? "bg-green-100 text-green-700"
+              : client.status === "INACTIVE"
+              ? "bg-red-100 text-red-700"
+              : client.status === "WC"
+              ? "bg-blue-100 text-blue-700"
+              : client.status === "STAYED_OVERNIGHT"
+              ? "bg-blue-100 text-blue-700"
+              : "bg-gray-100 text-gray-700"
+          }`}
+        >
+          {client.status}
+        </span>
       </div>
-    </div>
+      {/* Bottom Row */}
+      <div className="mt-3 sm:mt-4 flex justify-between text-xs sm:text-sm">
+        <span>Resources</span>
+        <span className="font-medium">2</span>
+      </div>
 
-    <span className={`text-sm px-2 py-1 rounded ${client.status === 'ENROLLED' ? 'bg-green-100 text-green-700' : client.status === 'INACTIVE' ? 'bg-red-100 text-red-700' : client.status === 'WC' ? 'bg-blue-100 text-blue-700' : client.status === 'STAYED_OVERNIGHT' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
-      {client.status}
-    </span>
-  </div>
-
-
-  <div className="mt-4 flex justify-between text-sm">
-    <span>Resources</span>
-    <span className="font-medium">2</span>
-  </div>
     </div>
   );
-};
+}
 
 import { ClientSearch } from '../partials/Search';
 import { useEffect } from 'react';

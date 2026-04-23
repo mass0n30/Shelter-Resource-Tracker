@@ -63,16 +63,44 @@ async function getClients(req, res, next) {
 };
 
 async function getClientById(req, res, next) {
-    console.log('Getting client by ID:', req.params.clientId);
+  console.log('Getting client by ID:', req.params.clientId);
+
   try {
     const client = await prisma.client.findUnique({
       where: { id: parseInt(req.params.clientId) },
+
+      include: {
+        referrals: {
+          include: {
+            createdBy: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        },
+
+        notes: {
+          include: {
+            author: {  
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
     });
-    console.log('Client data retrieved:', client);
+
     return res.json(client);
+
   } catch (error) {
-    console.log('failed to get client by id');
-    throw error;
+    console.error("Error fetching client:", error);
+    next(error);
   }
 }
 

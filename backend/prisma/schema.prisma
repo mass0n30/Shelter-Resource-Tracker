@@ -31,6 +31,7 @@ enum ClientStatus {
   ENROLLED
   WC  // Winter Contigency
   INACTIVE
+  // HOUSED ?
 }
 
 enum ReferralStatus {

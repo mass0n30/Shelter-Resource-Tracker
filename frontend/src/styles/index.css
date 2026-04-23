@@ -42,6 +42,7 @@
     color: var(--color-foreground);
     min-width: 320px;
     cursor: default;
+    overflow-x: hidden;
   }
 
   button {

@@ -11,22 +11,11 @@ import ClientForm from "../components/forms/ClientForm";
 function DashBoard() {
   const { user, data, success, SetSuccess, SetLoading, SetNewFetch, authRouter, authRouterForm } = useOutletContext();
 
-  const [toggle, SetToggle] = useState(true);
-  const [toggleForm, SetToggleForm] = useState(false);
-
   return (
     <>
       <Navbar className="bg-white shadow" authRouter={authRouter} authRouterForm={authRouterForm} user={user} />
       <main className="flex justify-center px-4 py-6">
           <div className="w-full max-w-7xl flex">
-
-            {toggleForm && (
-              <ClientForm
-                SetToggleForm={SetToggleForm}
-                authRouter={authRouter}
-                authRouterForm={authRouterForm}
-              />
-            )}
 
             <div className="flex-1 w-full h-screen grid grid-cols-1 grid-rows-10 lg:grid-cols-4
               grid-rows-auto gap-4 md:p-4">

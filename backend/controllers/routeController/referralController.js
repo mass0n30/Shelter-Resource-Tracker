@@ -16,6 +16,7 @@ async function createReferral(req, res, next) {
         
       },
     });
+    return res.status(201).json(newReferral, { message: "Referral Created Successfully" });
   } catch (error) {
     console.log('failed to create referral', error);
     return res.status(400).json({ errors:error });
@@ -40,7 +41,7 @@ async function updateReferral(req, res, next) {
         summary: req.body.summary,
       },
     });
-    return res.status(200).json(updatedReferral);
+    return res.status(200).json(updatedReferral, { message: "Referral Updated Successfully" });
   } catch (error) {
     console.log('failed to update referral');
     return res.status(400).json({ errors:error });
