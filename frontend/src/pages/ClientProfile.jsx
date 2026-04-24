@@ -4,11 +4,13 @@ import { Button } from "@base-ui/react";
 import NoteForm from "../components/forms/NoteForm";
 import ResourceForm from "../components/forms/ResourceForm";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import { ArrowLeft, LucideBedDouble, Plus, FilePlus } from "lucide-react";
+import { ArrowLeft, LucideBedDouble, Plus, FilePlus, HashIcon, EditIcon } from "lucide-react";
 
 export default function ClientProfile() {
   const { clientId } = useParams();
   const [clientData, setClientData] = useState(null);
+
+  
 
   const {
     authRouter,
@@ -60,37 +62,43 @@ function ClientInfoSectionToggle({ clientData, className }) {
   return (
     <div className={`flex flex-col max-w-7xl bg-white p-4 rounded-md ${className}`}>
       <div className="flex gap-2 mb-4 md:gap-4">
-        <button
-          className={`flex-1 px-4 py-2 rounded ${
-            activeSection === "resources" ? "bg-blue-500 text-white" : "bg-gray-200"
+        <Button
+          className={`flex-1 text-xs md:text-sm ${
+            activeSection === "resources"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-700"
           }`}
           onClick={() => setActiveSection("resources")}
         >
           Resources
-        </button>
+        </Button>
 
-        <button
-          className={`flex-1 px-4 py-2 rounded ${
-            activeSection === "notes" ? "bg-blue-500 text-white" : "bg-gray-200"
+        <Button
+          className={`flex-1 text-xs md:text-sm ${
+            activeSection === "notes"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-700"
           }`}
           onClick={() => setActiveSection("notes")}
         >
           Notes
-        </button>
+        </Button>
 
-        <button
-          className={`flex-1 px-4 py-2 rounded ${
-            activeSection === "timeline" ? "bg-blue-500 text-white" : "bg-gray-200"
+        <Button
+          className={`flex-1 text-xs md:text-sm ${
+            activeSection === "timeline"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-700"
           }`}
           onClick={() => setActiveSection("timeline")}
         >
           Timeline
-        </button>
+        </Button>
       </div>
 
       <div>
-        {activeSection === "resources" && <Resources clientData={clientData.referrals} />}
-        {activeSection === "notes" && <Notes clientData={clientData.notes} />}
+        {activeSection === "resources" && <Resources referrals={clientData.referrals} />}
+        {activeSection === "notes" && <Notes notes={clientData.notes} />}
         {activeSection === "timeline" && <Timeline clientId={clientData.id} />}
       </div>
     </div>
@@ -107,7 +115,7 @@ function Banner({ clientData, className, authRouter }) {
           <div className="flex flex-1 mb-2">
             <Button
               variant="ghost"
-              className="flex flex-1 justify-start gap-4 bg-transparent p-0 h-auto rounded-md text-gray-600 hover:bg-gray-200"
+              className="flex flex-1 justify-start gap-4 bg-transparent p-sm h-auto rounded-md text-gray-600 hover:bg-gray-200"
               onClick={() => window.history.back()}
             >
               <ArrowLeft className="mr-1 mt-0.5" />
@@ -135,7 +143,7 @@ function Banner({ clientData, className, authRouter }) {
             <div className="flex flex-col flex-1">
 
               <div className="flex flex-col sm:flex-row gap-0 sm:gap-2 flex-1 items-start sm:items-center justify-between">
-                <div className="font-semibold text-xs sm:text-sm md:text-xl">
+                <div className="font-semibold text-sm sm:text-md md:text-xl">
                   {clientData.firstName} {clientData.lastName}
                 </div>
                 <div className="text-muted-foreground text-xs md:text-sm">
@@ -148,7 +156,10 @@ function Banner({ clientData, className, authRouter }) {
                   <LucideBedDouble className="inline mr-1" />
                   {clientData.bedLabel}
                 </p>
-                <p>Client ID: {clientData.clientId}</p>
+                <p>
+                  <HashIcon className="inline sm:mr-1" />
+                  {clientData.clientId}
+                </p>
               </div>
 
             </div>
@@ -165,7 +176,7 @@ function Banner({ clientData, className, authRouter }) {
                 className="flex-1 flex w-full items-center justify-start gap-1"
               >
                 <Plus className="inline mr-1 mb-1 h-4" />
-                <div className="text-xs">Add Resource</div>
+                <div className="text-xs md:text-sm">Resource</div>
               </Button>
             </DialogTrigger>
 
@@ -185,7 +196,7 @@ function Banner({ clientData, className, authRouter }) {
                 className="flex-1 flex w-full items-center justify-start gap-1"
               >
                 <FilePlus className="inline mr-1 mb-1 h-4" />
-                <div className="text-xs">Add Note</div>
+                <div className="text-xs md:text-sm">Note</div>
               </Button>
             </DialogTrigger>
 
@@ -214,10 +225,10 @@ function Information({clientData, className}) {
   );
 }
 
-function Notes({clientData}) {
+function Notes({notes}) {
   return (
     <div className="bg-grey-100 p-4 rounded-md">
-      {clientData.map(note => (
+      {notes?.map(note => (
         <div key={note.id} className="border-b border-grey-200 py-2">
           <p className="font-semibold">{note.content}</p>
           <p className="text-sm text-grey-600">{note.content}</p>
@@ -235,10 +246,101 @@ function Timeline({clientId}) {
   );
 }
 
-function Resources({clientData}) {
+function Resources({referrals}) {
+
+  console.log("Referrals in Resources component:", referrals);
   return (
-    <div className="bg-grey-100 p-4 rounded-md">
-      <p>Resources for client: {clientData.firstName} {clientData.lastName}</p>
+    <div className="bg-gray-100 p-3 sm:p-4 rounded-xl space-y-3">
+
+      {referrals?.map((resource) => (
+        <div
+          key={resource.id}
+          className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition"
+        >
+          
+          {/* TOP ROW */}
+          <div className="flex items-start justify-between gap-2">
+            
+            <div>
+              <h3 className="font-semibold text-sm sm:text-base">
+                {resource.organizationName}
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                {resource.resourceType}
+              </p>
+            </div>
+
+            {/* STATUS */}
+            <span
+              className={`text-[10px] sm:text-xs px-2 py-1 rounded-full font-medium ${
+                resource.status === "INQUIRED"
+                  ? "bg-gray-100 text-gray-700"
+                  : resource.status === "REFERRED"
+                  ? "bg-blue-100 text-blue-700"
+                  : resource.status === "PENDING"
+                  ? "bg-yellow-100 text-yellow-700"
+                  : resource.status === "ENROLLED"
+                  ? "bg-green-100 text-green-700"
+                  : resource.status === "COMPLETED"
+                  ? "bg-purple-100 text-purple-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {resource.status}
+            </span>
+          </div>
+
+          {/* PURPOSE */}
+          {resource.purpose && (
+            <p className="mt-2 text-xs sm:text-sm text-gray-700">
+              {resource.purpose}
+            </p>
+          )}
+
+          {/* SUMMARY */}
+          {resource.summary && (
+            <p className="mt-1 text-xs text-muted-foreground italic">
+              {resource.summary}
+            </p>
+          )}
+
+          {/* META ROW */}
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-xs text-muted-foreground">
+            
+            {/* FOLLOW UP */}
+            {resource.followUpDate && (
+              <span>
+                Follow-up:{" "}
+                <span className="font-medium text-gray-700">
+                  {new Date(resource.followUpDate).toLocaleDateString()}
+                </span>
+              </span>
+            )}
+
+            {/* PRIORITY */}
+            {resource.isPriority && (
+              <span className="text-red-600 font-medium">
+                ⚠ Priority
+              </span>
+            )}
+
+          </div>
+
+          {/* FOOTER */}
+          <div className="mt-3 flex flex-wrap justify-between text-[10px] text-muted-foreground">
+            
+            <span>
+              By {resource.createdBy?.firstName} {resource.createdBy?.lastName}
+            </span>
+
+            <span>
+              {new Date(resource.createdAt).toLocaleDateString()}
+            </span>
+
+          </div>
+
+        </div>
+      ))}
     </div>
   );
 }

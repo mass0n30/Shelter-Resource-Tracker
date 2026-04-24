@@ -42,6 +42,31 @@ async function getClients(req, res, next) {
         where: {
           status: "ENROLLED",
         },
+        include: {
+          referrals: {
+            include: {
+              createdBy: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                },
+              },
+            },
+          },
+
+          notes: {
+            include: {
+              author: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                  email: true,
+                },
+              },
+            },
+          },  
+        },
       });
     } else {
       // else get by filter 

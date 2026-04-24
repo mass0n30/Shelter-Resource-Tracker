@@ -31,13 +31,6 @@ GET /dashboard route:
 - retrieve recent notes ordered by newest
 - retrieve referrals with followUpDate close to today or overdue
 - prioritize referrals marked isPriority
-  
-  "referral close to reminder"
-    overdue → followUpDate < today
-
-    due today → followUpDate === today
-
-    upcoming soon → within next 3 days
 
 
 note route, (mounted on client profiles pass id's through body - so we can associate a new note with client, if note is made on dashboard no associated client)
@@ -51,15 +44,29 @@ referral route on client profiles
 
 
 ToDo:
-  - Add Extension status? 
-    * adding option on client page 
-  - Edit option for Client Info
-    * importing clientform for edit
+  - Edit option for Resources + Notes
+      * give drop down options for resource type?
+  - Edit option for Client Info 
+    * import and using clientform for edit
+    * adding extension option (shows in UI if client is extended from boolean, out date can be edited anyway)
     * add delete and confirm delete option
+  - Note form, normalize and add UI showing note for Client (using name)
   - Make skeleton Resource, note and timeline components to put inside profiles
   - Get dash card stats
   - Toggal displayed clients from Dash Card selection (Toggles search bar container off screen, replacing with banner?)
   - Make notifications container slide up/pop up on mobile view?
+  - Notifications container shows alerts (Upcoming, Marked, Important Distinction?)
+  - Notes section (filter Public, Personal, Priority?)
+
+About the Notification Section: 
+    On Dashboard notifications, referrals follow up dates upcoming time and overdue along with Notes showing author. Notes can be made private or public. 
+  
+  "referral close to reminder"
+    overdue → followUpDate < today
+
+    due today → followUpDate === today
+
+    upcoming soon → within next 3 days
 
 
 Done:

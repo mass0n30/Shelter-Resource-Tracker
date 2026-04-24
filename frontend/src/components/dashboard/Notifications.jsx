@@ -20,13 +20,13 @@ function Notifications({className, data, SetSuccess, SetLoading, SetNewFetch }) 
         <div className="flex items-center gap-2 mb-4">
           <div className="flex flex-1 items-center justify-center gap-2 mb-4">
             <Button onClick={() => setToggle("reminders")} variant="outline" className={`flex flex-1 border-2 border-border py-2 px-2 h-auto p-0 rounded-md text-foreground bg-transparent hover:bg-transparent ${toggle === "reminders" ? "border-2 border-primary" : ""}`}>
-              <Bell className={`mr-1 w-4 h-4 lg:w-5 lg:h-5 ${toggle === "reminders" ? "" : "text-muted opacity-60"}`} />
+              <Bell className={`mr-1 w-4 h-4 lg:w-5 lg:h-5 ${toggle === "reminders" ? "fill-yellow-400" : "text-muted opacity-60"}`} />
               <h2 className={`text-sm ${toggle === "reminders" ? "" : "text-muted opacity-80"}`}>Reminders</h2>
             </Button>
           </div>
           <div className={"flex flex-1 items-center justify-center gap-2 mb-4"}>
-            <Button onClick={() => setToggle("notes")} variant="outline" className={`flex flex-1 border-2 border-border py-2 px-2 h-auto p-0 rounded-md text-foreground bg-transparent hover:bg-transparent ${toggle === "notes" ? "border-2 border-primary" : ""}`}>
-              <Notebook className={`mr-1 w-4 h-4 lg:w-5 lg:h-5 ${toggle === "notes" ? "" : "text-muted opacity-60"}`} />
+            <Button onClick={() => setToggle("notes")} variant="outline" className={`flex flex-1 border-2 border-border py-2 px-2 h-auto p-0 rounded-md text-foreground bg-transparent hover:bg-transparent ${toggle === "notes" ? "border-2 border-primary " : ""}`}>
+              <Notebook className={`mr-1 w-4 h-4 lg:w-5 lg:h-5 ${toggle === "notes" ? "fill-primary" : "text-muted opacity-60"}`} />
               <h2 className={`text-sm ${toggle === "notes" ? "" : "text-muted opacity-80"}`}>Notes</h2>
             </Button>
           </div>
