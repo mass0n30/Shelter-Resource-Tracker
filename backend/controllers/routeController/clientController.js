@@ -1,6 +1,32 @@
 const Router = require("express");
 const { prisma } = require("../../db/prismaClient.js");
 
+const clientInclude = {
+  referrals: {
+    include: {
+      createdBy: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+      },
+    },
+  },
+
+  notes: {
+    include: {
+      author: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+      },
+    },
+  },
+};
+
 async function getClients(req, res, next) {
   try {
     let clients = null;
@@ -30,6 +56,7 @@ async function getClients(req, res, next) {
             gte: pastWindow,
             lte: now,
           },
+          include: clientInclude,
           status: "ENROLLED",
         },
       });
@@ -42,31 +69,7 @@ async function getClients(req, res, next) {
         where: {
           status: "ENROLLED",
         },
-        include: {
-          referrals: {
-            include: {
-              createdBy: {
-                select: {
-                  firstName: true,
-                  lastName: true,
-                  email: true,
-                },
-              },
-            },
-          },
-
-          notes: {
-            include: {
-              author: {
-                select: {
-                  firstName: true,
-                  lastName: true,
-                  email: true,
-                },
-              },
-            },
-          },  
-        },
+        include: clientInclude,
       });
     } else {
       // else get by filter 
@@ -74,6 +77,7 @@ async function getClients(req, res, next) {
         where: {
           status: filter ? filter : undefined,
         },
+        include: clientInclude,
       });
     }
     if (req.query?.filter) {
@@ -93,32 +97,7 @@ async function getClientById(req, res, next) {
   try {
     const client = await prisma.client.findUnique({
       where: { id: parseInt(req.params.clientId) },
-
-      include: {
-        referrals: {
-          include: {
-            createdBy: {
-              select: {
-                firstName: true,
-                lastName: true,
-                email: true,
-              },
-            },
-          },
-        },
-
-        notes: {
-          include: {
-            author: {  
-              select: {
-                firstName: true,
-                lastName: true,
-                email: true,
-              },
-            },
-          },
-        },
-      },
+      include: clientInclude,
     });
 
     return res.json(client);

@@ -21,3 +21,23 @@ export function getAllDashboardStats(clients, referrals) {
 
   return { totalClients, urgentCases, followUps, newClients };
 }
+
+export function getClientStats(client) {
+  if (!client.referrals) {
+    return {};
+  }
+  const totalReferrals = client.referrals.length;
+  const urgentReferrals = client.referrals.filter(referral => referral.isPriority).length;
+  const upcomingFollowUps = client.referrals.filter(referral => {
+    const followUpDate = new Date(referral.followUpDate);
+    const today = new Date();
+    return followUpDate > today;
+  }).length;
+  const expiredFollowUps = client.referrals.filter(referral => {
+    const followUpDate = new Date(referral.followUpDate);
+    const today = new Date();
+    return followUpDate < today && referral.followUpDate !== null && referral.status !== "COMPLETED"; 
+  }).length;
+
+  return { totalReferrals, urgentReferrals, upcomingFollowUps, expiredFollowUps };
+}

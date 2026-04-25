@@ -1,13 +1,14 @@
 
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { LayoutGrid, List, CalendarDays, Funnel, ChevronDown, BedDouble } from 'lucide-react';
+import { ClockAlert, List, CalendarDays, Funnel, ChevronDown, BedDouble } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Combobox,ComboboxValue, ComboboxContent } from "@/components/ui/combobox";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import ClientForm from '../forms/ClientForm';
 import { useOutletContext } from "react-router-dom";
+import { getClientStats } from '@/lib/utils';
 
 function ClientList({className, viewedClients}) {
     const { user, data, success, SetSuccess, SetLoading, loading, SetNewFetch, authRouter, authRouterForm } = useOutletContext();
@@ -25,26 +26,31 @@ function ClientList({className, viewedClients}) {
 
   return (
     <div className={`clientList ${className}`}>
-      <div className={`flex-1 gap-md justify-center rounded-md grid grid-cols-1 md:grid-cols-2 gap-4 p-md pt-0`}>
-        {viewedClients.map(client => (
-          <Button
-            key={client.id}
-            variant="ghost"
-            className="w-full h-auto p-0 justify-start rounded-xl bg-transparent hover:bg-transparent"
-            onClick={() => {
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-md pt-0">
+
+        {viewedClients.map((client) => {
+          const clientStats = getClientStats(client);
+          return (
+            <Button
+              key={client.id}
+              variant="ghost"
+              className="w-full h-auto p-0 justify-start rounded-xl bg-transparent hover:bg-transparent"
+              onClick={() => {
               SetLoading(true);
               navigate(`/dashboard/clients/${client.id}`);
             }}
           >
-            <ClientCard client={client} />
+            <ClientCard client={client} clientStats={clientStats} />
           </Button>
-        ))}
+        );
+      })}
       </div>
     </div>
   );
-};
+}
 
-function ClientCard({ client }) {
+function ClientCard({ client, clientStats }) {
+  console.log(clientStats?.upcomingFollowUps);
   return (
     <div className="flex-1 min-w-0 bg-background border rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition cursor-pointer">
       
@@ -94,15 +100,20 @@ function ClientCard({ client }) {
               : "bg-gray-100 text-gray-700"
           }`}
         >
-          {client.status}
+          {client?.status}
         </span>
       </div>
       {/* Bottom Row */}
       <div className="mt-3 sm:mt-4 flex justify-between text-xs sm:text-sm">
-        <span>Resources</span>
-        <span className="font-medium">2</span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-sm">
+            {clientStats?.totalReferrals > 0 && <div className='p-xs text-xs text-white rounded-md bg-muted'>Resources {clientStats.totalReferrals}</div>}
+            {clientStats?.urgentReferrals > 0 && <div className='flex gap-xs p-xs text-xs text-white rounded-md bg-red-600'><ClockAlert /> Urgent  {clientStats.urgentReferrals}</div>}
+            {clientStats?.upcomingFollowUps > 0 && <div className='p-xs text-xs text-white rounded-md bg-blue-600'>Upcoming {clientStats.upcomingFollowUps}</div>}
+            {clientStats?.expiredFollowUps > 0 && <div className='p-xs text-xs text-white rounded-md bg-orange-600'>Expired {clientStats.expiredFollowUps}</div>}
+          </div>
+        </div>
       </div>
-
     </div>
   );
 }

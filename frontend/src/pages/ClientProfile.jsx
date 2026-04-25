@@ -11,7 +11,6 @@ export default function ClientProfile() {
   const [clientData, setClientData] = useState(null);
 
   
-
   const {
     authRouter,
     loading,
@@ -251,12 +250,14 @@ function Resources({referrals}) {
 
   console.log("Referrals in Resources component:", referrals);
   return (
-    <div className="bg-gray-100 p-3 sm:p-4 rounded-xl space-y-3 overflow-y-auto position-relative ">
+    <div className="flex flex-col bg-gray-100 p-3 sm:p-4 rounded-xl space-y-3 overflow-y-auto position-relative ">
 
       {referrals?.map((resource) => (
-        <div
+        <Button
           key={resource.id}
-          className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md transition"
+          onClick={() => setToggleKey(resource.id === toggleKey ? null : resource.id)}
+          variant="outline"
+          className="bg-white text-foreground border rounded-lg p-4 shadow-sm hover:shadow-md transition"
         >
           
           {/* TOP ROW */}
@@ -290,57 +291,61 @@ function Resources({referrals}) {
               {resource.status}
             </span>
           </div>
+          {resource.id === toggleKey && (
+          <div className="flex items-center gap-2 mt-1">
+            {/* PURPOSE */}
+            {resource.purpose && (
+              <p className="mt-2 text-xs sm:text-sm text-gray-700">
+                {resource.purpose}
+              </p>
+            )}
 
-          {/* PURPOSE */}
-          {resource.purpose && (
-            <p className="mt-2 text-xs sm:text-sm text-gray-700">
-              {resource.purpose}
-            </p>
-          )}
+            {/* SUMMARY */}
+            {resource.summary && (
+              <p className="mt-1 text-xs text-muted-foreground italic">
+                {resource.summary}
+              </p>
+            )}
 
-          {/* SUMMARY */}
-          {resource.summary && (
-            <p className="mt-1 text-xs text-muted-foreground italic">
-              {resource.summary}
-            </p>
-          )}
-
-          {/* META ROW */}
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-xs text-muted-foreground">
+            {/* META ROW */}
             
-            {/* FOLLOW UP */}
-            {resource.followUpDate && (
-              <span>
-                Follow-up:{" "}
-                <span className="font-medium text-gray-700">
-                  {new Date(resource.followUpDate).toLocaleDateString()}
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-xs text-muted-foreground">
+              
+              {/* FOLLOW UP */}
+              {resource.followUpDate && (
+                <span>
+                  Follow-up:{" "}
+                  <span className="font-medium text-gray-700">
+                    {new Date(resource.followUpDate).toLocaleDateString()}
+                  </span>
                 </span>
+              )}
+
+              {/* PRIORITY */}
+              {resource.isPriority && (
+                <span className="text-red-600 font-medium">
+                  ⚠ Priority
+                </span>
+              )}
+
+            </div>
+
+            {/* FOOTER */}
+            <div className="mt-3 flex flex-wrap justify-between text-[10px] text-muted-foreground">
+              
+              <span>
+                By {resource.createdBy?.firstName} {resource.createdBy?.lastName}
               </span>
-            )}
 
-            {/* PRIORITY */}
-            {resource.isPriority && (
-              <span className="text-red-600 font-medium">
-                ⚠ Priority
+              <span>
+                {new Date(resource.createdAt).toLocaleDateString()}
               </span>
-            )}
 
+            </div>
           </div>
-
-          {/* FOOTER */}
-          <div className="mt-3 flex flex-wrap justify-between text-[10px] text-muted-foreground">
-            
-            <span>
-              By {resource.createdBy?.firstName} {resource.createdBy?.lastName}
-            </span>
-
-            <span>
-              {new Date(resource.createdAt).toLocaleDateString()}
-            </span>
-
-          </div>
-
-        </div>
+          )}
+        </Button>
+        
       ))}
     </div>
   );

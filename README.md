@@ -47,17 +47,9 @@ ToDo:
   - Edit option for Resources + Notes
       * Go off figma design (drop down for click to edit and reveal details)
       * edit follow up dates
-  - Edit option for Client Info 
-    * import and using clientform for edit
-    * adding extension option (shows in UI if client is extended from boolean, out date can be edited anyway)
-    * add delete and confirm delete option
   - Note form, normalize and add UI showing note for Client (using name)
   - Make skeleton Resource, note and timeline components to put inside profiles
-  - Toggal displayed clients from Dash Card selection
-    * Filtering Enrolled clients
-    * Display Urgent Icon
-    * Add Filter selected in place of "Enrolled Clients"
-    
+
   - Make notifications container slide up/pop up on mobile view?
   - Notifications container shows alerts (Upcoming, Marked, Important Distinction?)
   - Notes section (filter Public, Personal, Priority?)
@@ -93,8 +85,8 @@ Done:
 - Add Resource and Note create Forms for client
   * normalize forms?
 - Create hook for Resource and Note post req
-- Get dash card stats
- 
+- Get dash card stats  - Toggal displayed clients from  Dash Card selection
+
 
 
 # PERN-Starter-Template
