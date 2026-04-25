@@ -110,9 +110,7 @@ function ClientCard({ client }) {
 import { ClientSearch } from '../partials/Search';
 import { useEffect } from 'react';
 
-function ClientToggleSection({className, clientData, authRouter, authRouterForm}) {
-  // for filtering during search and filter, separate from clientData to preserve original data for resetting filters
-  const [viewedClients, setViewedClients] = useState(clientData);
+function ClientToggleSection({className, clientData, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter}) {
   // for searching by name
   const [clientId, setClientId] = useState(null);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -120,6 +118,10 @@ function ClientToggleSection({className, clientData, authRouter, authRouterForm}
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   useEffect(() => {
+    if (dashStatFilter) {
+      setDashStatFilter(null);
+    }
+
     const fetchClients = async () => {
     try {
       const response = await authRouter.get("/dashboard/clients", {
@@ -208,8 +210,13 @@ function ClientToggleSection({className, clientData, authRouter, authRouterForm}
       <div className="w-full flex items-center pl-md pr-md pb-lg gap-md">
         <div className="flex-1 justify-between gap-2 flex">
           <div className="text-sm ml-2 text-muted-foreground align-center flex items-center font-medium italic">
-            {filter === "STAYED_OVERNIGHT" ? "Clients Who Stayed Overnight" : filter === "ENROLLED" ? "Enrolled Clients" : filter === "WC" ? "Winter Contingency Clients" : filter === "INACTIVE" ? "Inactive Clients" : ""}
+            {filter === "STAYED_OVERNIGHT" ? "Clients Who Stayed Overnight" : filter === "ENROLLED" || (dashStatFilter !== null) ? "Enrolled Clients" : filter === "WC" ? "Winter Contingency Clients" : filter === "INACTIVE" ? "Inactive Clients" : ""}         {dashStatFilter && (
+            <div className="text-sm ml-2 text-muted-foreground align-center flex items-center font-medium italic">
+              {dashStatFilter === "URGENT" ? "Clients with Urgent Referrals" : dashStatFilter === "FOLLOW_UP" ? "Clients with Upcoming Follow-ups" : dashStatFilter === "NEW" ? "New Clients (Last 30 Days)" : ""}
+            </div>
+          )}
           </div>
+          
         <div className="flex items-center gap-2">
           <div>
             <Dialog>

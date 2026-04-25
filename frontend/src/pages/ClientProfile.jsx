@@ -96,7 +96,7 @@ function ClientInfoSectionToggle({ clientData, className }) {
         </Button>
       </div>
 
-      <div>
+      <div className="flex-1 h-full">
         {activeSection === "resources" && <Resources referrals={clientData.referrals} />}
         {activeSection === "notes" && <Notes notes={clientData.notes} />}
         {activeSection === "timeline" && <Timeline clientId={clientData.id} />}
@@ -247,10 +247,11 @@ function Timeline({clientId}) {
 }
 
 function Resources({referrals}) {
+  const [toggleKey, setToggleKey] = useState(null);
 
   console.log("Referrals in Resources component:", referrals);
   return (
-    <div className="bg-gray-100 p-3 sm:p-4 rounded-xl space-y-3">
+    <div className="bg-gray-100 p-3 sm:p-4 rounded-xl space-y-3 overflow-y-auto position-relative ">
 
       {referrals?.map((resource) => (
         <div

@@ -26,8 +26,7 @@ const schema = z.object({
   status: z.string().optional(),
 
   roiSigned: z.boolean().optional(),
-  followUpDate: z.date().optional(),
-
+  followUpDate: z.date().nullable().optional(),
   isPriority: z.boolean().optional(),
   summary: z.string().optional(),
 });
@@ -42,7 +41,7 @@ export default function ResourceForm({ authRouter, clientId }) {
     organizationName: "",
     resourceType: "",
     purpose: "",
-    status: "INQUIRED",
+    status: "",
 
     roiSigned: false,
     followUpDate: null,
@@ -74,7 +73,7 @@ export default function ResourceForm({ authRouter, clientId }) {
     try {
       const payload = {
         ...formData,
-        followUpDate: date?.from || null,
+        followUpDate: date || null,
       };
 
       const response = await authRouter.post(`/dashboard/referrals/client/${clientId}`, payload);
@@ -108,11 +107,19 @@ export default function ResourceForm({ authRouter, clientId }) {
           </Field>
 
           <Field>
-            <Input
-              placeholder="Resource Type (Housing, Job, Medical...)"
-              value={formData.resourceType}
-              onChange={(e) => updateField("resourceType", e.target.value)}
-            />
+          <select 
+            value={formData.resourceType}
+            onChange={(e) => updateField("resourceType", e.target.value)}
+            className="w-full border px-3 py-2 rounded-lg bg-background"
+          >
+            <option value="" disabled>Select Resource Type</option>
+            <option value="HOUSING">Housing</option>
+            <option value="EMPLOYMENT">Employment</option>
+            <option value="MEDICAL">Medical</option>
+            <option value="SUBSTANCE_USE">Substance Use</option>
+            <option value="FINANCIAL_ASSISTANCE">Financial Assistance</option>
+            <option value="OTHER">Other</option>
+          </select>
           </Field>
 
           <Field>
@@ -130,6 +137,7 @@ export default function ResourceForm({ authRouter, clientId }) {
               onChange={(e) => updateField("status", e.target.value)}
               className="w-full border px-3 py-2 rounded-lg bg-background"
             >
+              <option value="" disabled>Select Status</option>
               <option value="INQUIRED">Inquired</option>
               <option value="REFERRED">Referred</option>
               <option value="PENDING">Pending</option>

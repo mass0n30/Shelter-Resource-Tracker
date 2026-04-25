@@ -45,6 +45,16 @@ enum ReferralStatus {
   // ECT.
 }
 
+enum ResourceType {
+  HOUSING
+  EMPLOYMENT
+  MEDICAL
+  LEGAL
+  SUBSTANCE_USE
+  FINANCIAL_ASSISTANCE
+  OTHER
+}
+
 model User {
   id         Int       @id @default(autoincrement())
   firstName  String
@@ -93,7 +103,7 @@ model Referral {
 
   // may add resource model instead ? 
   organizationName String
-  resourceType     String
+  resourceType     ResourceType
   // Client's reason for referral, can be a selection input or a text input, need to discuss further with the team
   purpose          String? // or just Note
 
@@ -109,6 +119,7 @@ model Referral {
 
 //additional input field for reporting and tracking
   summary          String?
+  // contact info for resource ?
 
   client           Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
   createdBy        User?           @relation("ReferralCreatedBy", fields: [createdById], references: [id])
