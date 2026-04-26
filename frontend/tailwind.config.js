@@ -30,6 +30,7 @@ export default {
       },
 
       borderRadius: {
+        xs: "var(--radius-xs)",
         sm: "var(--radius-sm)",
         DEFAULT: "var(--radius-md)",
         lg: "var(--radius-lg)",

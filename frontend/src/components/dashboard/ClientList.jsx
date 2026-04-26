@@ -1,5 +1,4 @@
 
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ClockAlert, List, CalendarDays, Funnel, ChevronDown, BedDouble } from 'lucide-react';
 import { useState } from 'react';
@@ -120,6 +119,7 @@ function ClientCard({ client, clientStats }) {
 
 import { ClientSearch } from '../partials/Search';
 import { useEffect } from 'react';
+import CalendarView from './CalenderView';
 
 function ClientToggleSection({className, clientData, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter}) {
   // for searching by name
@@ -237,7 +237,7 @@ function ClientToggleSection({className, clientData, authRouter, authRouterForm,
               <ClientForm authRouter={authRouter} authRouterForm={authRouterForm} />
             </Dialog>
           </div>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => setCalendarOpen(prev => !prev)}>
               <CalendarDays color="#000000" />
             </Button>
           </div>
@@ -249,6 +249,9 @@ function ClientToggleSection({className, clientData, authRouter, authRouterForm,
             <ComboboxValue />
           </ComboboxContent>
         </Combobox>
+      </div>
+      <div className="flex items-center justify-center gap-2 p-0  lg:p-lg px-md">
+      {calendarOpen && <CalendarView />}
       </div>
       <ClientList className="flex-col" viewedClients={viewedClients}/>
     </div>  

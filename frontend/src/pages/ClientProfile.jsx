@@ -4,7 +4,8 @@ import { Button } from "@base-ui/react";
 import NoteForm from "../components/forms/NoteForm";
 import ResourceForm from "../components/forms/ResourceForm";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import { ArrowLeft, LucideBedDouble, Plus, FilePlus, HashIcon, EditIcon } from "lucide-react";
+import { Ellipsis, TriangleAlert, ArrowLeft, LucideBedDouble, Plus, FilePlus, HashIcon, EditIcon, Calendar, Calendar1Icon } from "lucide-react";
+import { RESOURCE_CONFIG } from "../lib/utils";
 
 export default function ClientProfile() {
   const { clientId } = useParams();
@@ -63,9 +64,8 @@ function ClientInfoSectionToggle({ clientData, className }) {
       <div className="flex gap-2 mb-4 md:gap-4">
         <Button
           className={`flex-1 text-xs md:text-sm ${
-            activeSection === "resources"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700"
+            activeSection !== "resources"
+              && "bg-gray-200 text-gray-700"
           }`}
           onClick={() => setActiveSection("resources")}
         >
@@ -74,9 +74,8 @@ function ClientInfoSectionToggle({ clientData, className }) {
 
         <Button
           className={`flex-1 text-xs md:text-sm ${
-            activeSection === "notes"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700"
+            activeSection !== "notes"
+              && "bg-gray-200 text-gray-700"
           }`}
           onClick={() => setActiveSection("notes")}
         >
@@ -85,9 +84,8 @@ function ClientInfoSectionToggle({ clientData, className }) {
 
         <Button
           className={`flex-1 text-xs md:text-sm ${
-            activeSection === "timeline"
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-700"
+            activeSection !== "timeline"
+              && "bg-gray-200 text-gray-700"
           }`}
           onClick={() => setActiveSection("timeline")}
         >
@@ -225,14 +223,54 @@ function Information({clientData, className}) {
 }
 
 function Notes({notes}) {
+  console.log(notes);
   return (
-    <div className="bg-grey-100 p-4 rounded-md">
-      {notes?.map(note => (
-        <div key={note.id} className="border-b border-grey-200 py-2">
-          <p className="font-semibold">{note.content}</p>
-          <p className="text-sm text-grey-600">{note.content}</p>
-        </div>
+    <div className="bg-gray-100 p-4 rounded-xl space-y-3">
+
+      {notes?.map((note) => (
+        <div
+          key={note.id}
+          className="flex justify-between bg-white border rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition"
+        >
+          <div className="flex flex-col items-start gap-1">
+            <span className="w-full font-medium mb-sm flex justify-start text-xs text-muted-foreground">
+              {note.author?.firstName} {note.author?.lastName}
+            </span>
+
+            <div className="flex flex-col items-start gap-1">
+      
+              <p className="text-xs sm:text-sm text-gray-900">
+                {note.content}
+              </p>
+              <span className="text-xs text-muted">
+                {new Date(note.createdAt).toLocaleDateString()}
+              </span>
+            </div>
+
+            {/* META ROW */}
+            <div className="mt-2 flex flex-wrap items-center justify-between text-xs text-muted-foreground gap-2">
+    
+            </div>
+
+            {/* REMINDER */}
+            {note.setReminder && note.reminderDate && (
+              <div className="mt-3 flex items-center gap-2 text-xs sm:text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-2 py-1">
+                <Calendar className="w-3 h-3" />
+                <span>
+                  Reminder: {new Date(note.reminderDate).toLocaleDateString()}
+                </span>
+              </div>
+            )}
+            </div>
+            <div>
+              <Button className={'bg-white text-foreground border rounded-lg px-3 py-1 shadow-sm hover:shadow-md transition'} >
+                <Ellipsis className="w-3 h-3 sm:w-4 sm:h-4 color-foreground" />
+              </Button>
+            </div>
+
+          </div>
       ))}
+
     </div>
   );
 }
@@ -248,31 +286,46 @@ function Timeline({clientId}) {
 function Resources({referrals}) {
   const [toggleKey, setToggleKey] = useState(null);
 
-  console.log("Referrals in Resources component:", referrals);
   return (
     <div className="flex flex-col bg-gray-100 p-3 sm:p-4 rounded-xl space-y-3 overflow-y-auto position-relative ">
 
-      {referrals?.map((resource) => (
-        <Button
-          key={resource.id}
-          onClick={() => setToggleKey(resource.id === toggleKey ? null : resource.id)}
-          variant="outline"
-          className="bg-white text-foreground border rounded-lg p-4 shadow-sm hover:shadow-md transition"
-        >
-          
-          {/* TOP ROW */}
-          <div className="flex items-start justify-between gap-2">
-            
-            <div>
-              <h3 className="font-semibold text-sm sm:text-base">
-                {resource.organizationName}
-              </h3>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                {resource.resourceType}
-              </p>
-            </div>
+{referrals?.map((resource) => {
+  const config = RESOURCE_CONFIG[resource.resourceType] || {};
+  const Icon = config.icon;
 
-            {/* STATUS */}
+    return (
+      <Button
+        key={resource.id}
+        onClick={() => setToggleKey(resource.id === toggleKey ? null : resource.id)}
+        variant="outline"
+        className="bg-white text-foreground border rounded-lg p-4 shadow-sm hover:shadow-md transition"
+      >
+        
+        {/* TOP ROW */}
+        <div className="pb-sm flex items-start justify-between gap-2">
+          <div className="flex flex-col items-start gap-xs">
+            <div className="flex items-center gap-sm">
+            <h3 className="font-semibold text-sm sm:text-base">
+              {resource.organizationName}
+            </h3>
+            {resource.isPriority && (
+              <span className="flex gap-xs items-center text-red-600 font-medium text-xs sm:text-md">
+                <TriangleAlert className="w-md" />
+               <div className="hidden sm:block">
+                Priority
+               </div>
+              </span>
+            )}
+            </div>
+            <p className="color text-xs sm:text-sm text-muted flex items-center gap-1">
+              {Icon && <Icon className=" w-3 h-3" />}
+              {config.label || resource.resourceType}
+            </p>
+          </div>
+
+
+          {/* STATUS */}
+          <div className="flex  items-center gap-sm">
             <span
               className={`text-[10px] sm:text-xs px-2 py-1 rounded-full font-medium ${
                 resource.status === "INQUIRED"
@@ -290,63 +343,166 @@ function Resources({referrals}) {
             >
               {resource.status}
             </span>
+            <Button className={'bg-white text-foreground border rounded-lg px-3 py-1 shadow-sm hover:shadow-md transition'} >
+              <Ellipsis className="w-3 h-3 sm:w-4 sm:h-4 color-foreground" />
+            </Button>
           </div>
-          {resource.id === toggleKey && (
-          <div className="flex items-center gap-2 mt-1">
-            {/* PURPOSE */}
-            {resource.purpose && (
-              <p className="mt-2 text-xs sm:text-sm text-gray-700">
-                {resource.purpose}
-              </p>
-            )}
+        </div>
 
-            {/* SUMMARY */}
-            {resource.summary && (
-              <p className="mt-1 text-xs text-muted-foreground italic">
-                {resource.summary}
-              </p>
-            )}
+        {resource.id === toggleKey && (
+          <div className="flex flex-col pt-lg border-t-2 border-gray-300 items-center gap-2 mt-1">
+            <div className="flex-1 w-full flex justify-between items-center gap-1 text-xs text-muted-foreground">
+              <div className="flex flex-col sm:flex-row justify-start items-center gap-1">
+                <span className="font-medium text-gray-700">
+                  Assigned:{" "}
+                </span>
+                {resource.createdAt && (
+                  <span className="flex items-center gap-1">
+                    <span className="font-medium text-gray-700 ">
+                      {new Date(resource.createdAt).toLocaleDateString()}
+                    </span>
+                  </span>
+                )}
+              </div>
 
-            {/* META ROW */}
-            
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-xs text-muted-foreground">
-              
-              {/* FOLLOW UP */}
+              <div className="flex flex-col sm:flex-row justify-start items-center gap-1">
+                <span className="font-medium text-gray-700">
+                  Assigned By:{" "}
+                </span>
+                {resource?.createdBy?.firstName && (
+                  <span className="flex items-center gap-1">
+                    <span className="font-medium text-gray-700 ">
+                      {resource.createdBy.firstName} {resource.createdBy?.lastName}
+                    </span>
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="flex-1 w-full flex justify-start items-center border-2 border-primary bg-blue-100 p-xs rounded-xs gap-1 text-xs text-muted-foreground">
               {resource.followUpDate && (
-                <span>
-                  Follow-up:{" "}
+                <span className="flex border  items-center gap-1">
+                <Calendar1Icon className="w-3 h-3" />
+                  Next Follow-up:{" "}
                   <span className="font-medium text-gray-700">
                     {new Date(resource.followUpDate).toLocaleDateString()}
                   </span>
                 </span>
               )}
-
-              {/* PRIORITY */}
-              {resource.isPriority && (
-                <span className="text-red-600 font-medium">
-                  ⚠ Priority
-                </span>
+            </div>
+            <div className="flex-3 w-full flex flex-col justify-start items-center gap-md text-xs text-muted-foreground">
+              {/* PURPOSE */}
+              {resource.purpose && (
+                <div className="flex-1 w-full flex flex-wrap flex-col justify-start items-start border-gray-300 pt-2">
+                  <span className="font-medium text-gray-700">
+                    Purpose
+                  </span>
+                  <p className="mt-1 flex flex-wrap text-xs text-muted-foreground italic">
+                    {resource.purpose}
+                  </p>
+                </div>
               )}
 
-            </div>
+              {/* SUMMARY */}
+              {resource.summary && (
+                <div className="flex-1 w-full flex flex-wrap flex-col justify-start items-start border p-sm rounded-xs bg-gray-100 border-gray-300 pt-2">
+                  <span className="font-medium text-gray-700">
+                    Note
+                  </span>
+                  <p className="mt-1 flex flex-wrap text-xs text-muted-foreground italic">
+                    {resource.summary}
+                  </p>
+                </div>
+              )}
 
-            {/* FOOTER */}
-            <div className="mt-3 flex flex-wrap justify-between text-[10px] text-muted-foreground">
-              
-              <span>
-                By {resource.createdBy?.firstName} {resource.createdBy?.lastName}
-              </span>
+              {/* FOOTER */}
+              <div className="w-full mt-3 flex flex-col gap-sm flex-wrap items-start justify-start sm:text-xs text-muted-foreground">
+                <span className="text-md font-medium text-gray-700">
+                  Update Status
+                </span>
 
-              <span>
-                {new Date(resource.createdAt).toLocaleDateString()}
-              </span>
+                <div className="flex flex-wrap gap-1 sm:gap-2">
 
+                  <Button
+                    size="sm"
+                    className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium
+                      ${resource.status === "INQUIRED"
+                        ? "bg-gray-100 text-gray-700 ring-1 ring-gray-300"
+                        : "bg-gray-50 text-gray-600 hover:bg-gray-100"}
+                    `}
+                    onClick={() => updateStatus(resource.id, "INQUIRED")}
+                  >
+                    Inquired
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium
+                      ${resource.status === "REFERRED"
+                        ? "bg-blue-100 text-blue-700 ring-1 ring-blue-300"
+                        : "bg-blue-50 text-blue-600 hover:bg-blue-100"}
+                    `}
+                    onClick={() => updateStatus(resource.id, "REFERRED")}
+                  >
+                    Referred
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium
+                      ${resource.status === "PENDING"
+                        ? "bg-yellow-100 text-yellow-700 ring-1 ring-yellow-300"
+                        : "bg-yellow-50 text-yellow-700 hover:bg-yellow-100"}
+                    `}
+                    onClick={() => updateStatus(resource.id, "PENDING")}
+                  >
+                    Pending
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium
+                      ${resource.status === "ENROLLED"
+                        ? "bg-green-100 text-green-700 ring-1 ring-green-300"
+                        : "bg-green-50 text-green-700 hover:bg-green-100"}
+                    `}
+                    onClick={() => updateStatus(resource.id, "ENROLLED")}
+                  >
+                    Enrolled
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium
+                      ${resource.status === "COMPLETED"
+                        ? "bg-purple-100 text-purple-700 ring-1 ring-purple-300"
+                        : "bg-purple-50 text-purple-700 hover:bg-purple-100"}
+                    `}
+                    onClick={() => updateStatus(resource.id, "COMPLETED")}
+                  >
+                    Completed
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium
+                      ${resource.status === "CLOSED"
+                        ? "bg-red-100 text-red-700 ring-1 ring-red-300"
+                        : "bg-red-50 text-red-700 hover:bg-red-100"}
+                    `}
+                    onClick={() => updateStatus(resource.id, "CLOSED")}
+                  >
+                    Closed
+                  </Button>
+
+                </div>
+              </div>
             </div>
           </div>
-          )}
-        </Button>
-        
-      ))}
+        )}
+
+      </Button>
+    );
+  })}
     </div>
   );
 }

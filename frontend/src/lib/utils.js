@@ -1,9 +1,49 @@
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge"
+import {
+  Home,
+  Briefcase,
+  HeartPulse,
+  Scale,
+  DollarSign,
+  AlertCircle,
+  Package,
+} from "lucide-react";
 
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
+
+export const RESOURCE_CONFIG = {
+  HOUSING: {
+    label: "Housing",
+    icon: Home,
+  },
+  EMPLOYMENT: {
+    label: "Employment",
+    icon: Briefcase,
+  },
+  MEDICAL: {
+    label: "Medical",
+    icon: HeartPulse,
+  },
+  LEGAL: {
+    label: "Legal",
+    icon: Scale,
+  },
+  FINANCIAL_ASSISTANCE: {
+    label: "Financial Assistance",
+    icon: DollarSign,
+  },
+  SUBSTANCE_USE: {
+    label: "Substance Use",
+    icon: AlertCircle,
+  },
+  OTHER: {
+    label: "Other",
+    icon: Package,
+  },
+};
 
 export function getAllDashboardStats(clients, referrals) {
   const totalClients = clients.length;

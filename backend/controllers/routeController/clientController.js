@@ -33,6 +33,7 @@ async function getClients(req, res, next) {
     const now = new Date();
     const filter = req.query?.filter;
 
+    // use Scheduled Cron instead of get Request ??
     // upating clients that are passed outtakeData to INACTIVE, so they are not included in the stayed overnight query return, and to maintain accurate client status in the system
     await prisma.client.updateMany({
       where: {
