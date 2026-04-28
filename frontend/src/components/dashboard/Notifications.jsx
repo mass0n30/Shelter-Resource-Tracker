@@ -3,12 +3,30 @@ import { useState, useEffect } from "react";
 import { Button } from "@base-ui/react";
 import { set } from "zod";
 // order Notes and timed Resources in this section? Day of or soon timed in Banners ?
-function Notifications({className, data, SetSuccess, SetLoading, SetNewFetch }) {
+function Notifications({className, data, SetSuccess, SetLoading, SetNewFetch, authRouter, authRouterForm}) {
   const [toggle, setToggle] = useState("reminders");
 
   // add a toggle expansion on desktop and mobile ?
   const handleToggle = () => {
     setToggle(!toggle);
+  };
+
+  const handleNoteToggle = async () => {
+    setToggle("notes");
+    if (toggle === "notes") {
+    await authRouter.post('/dashboard/notes/mark-read');
+    }
+  };
+
+  const handleCompleteNote = async (noteId) => {
+    try {
+      await authRouter.post(`/dashboard/notes/${noteId}/complete`);
+      SetSuccess(true);
+      SetLoading(true);
+      SetNewFetch(true);
+    } catch (error) {
+      console.error('Error marking note as complete:', error);
+    }
   };
 
   return (
@@ -25,7 +43,7 @@ function Notifications({className, data, SetSuccess, SetLoading, SetNewFetch }) 
             </Button>
           </div>
           <div className={"flex flex-1 items-center justify-center gap-2 mb-4"}>
-            <Button onClick={() => setToggle("notes")} variant="outline" className={`flex flex-1 border-2 border-border py-2 px-2 h-auto p-0 rounded-md text-foreground bg-transparent hover:bg-transparent ${toggle === "notes" ? "border-2 border-primary " : ""}`}>
+            <Button onClick={() => handleNoteToggle()} variant="outline" className={`flex flex-1 border-2 border-border py-2 px-2 h-auto p-0 rounded-md text-foreground bg-transparent hover:bg-transparent ${toggle === "notes" ? "border-2 border-primary " : ""}`}>
               <Notebook className={`mr-1 w-4 h-4 lg:w-5 lg:h-5 ${toggle === "notes" ? "fill-primary" : "text-muted opacity-60"}`} />
               <h2 className={`text-sm ${toggle === "notes" ? "" : "text-muted opacity-80"}`}>Notes</h2>
             </Button>

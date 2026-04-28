@@ -48,6 +48,8 @@ async function checkUserByEmail(value) {
   }
 };
 
+
+// Eventually implement updating client Bed ??? From csv parsing data?
 async function checkClientCSV(first, last) {
 
   const currentDate = new Date();
@@ -58,12 +60,17 @@ async function checkClientCSV(first, last) {
       lastName: last,
      
     },
-    data: {
-      intakeDate: currentDate,
-    },
   });
 
   if (client) {
+    await prisma.client.update({
+      where: { id: client.id },
+      data: {
+        intakeDate: currentDate,
+        lastStayDate: currentDate,
+        hereLastNight: true,
+      },
+    });
     return client;
   }
   return null;

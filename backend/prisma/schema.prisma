@@ -21,6 +21,12 @@ model Session {
   expiresAt DateTime
 }
 
+model UpdateData {
+  id        Int      @id @default(autoincrement())
+  data      String   
+  createdAt DateTime @default(now())
+}
+
 enum UserRole {
   ADMIN
   MANAGER
@@ -83,6 +89,7 @@ model Client {
   intakeDate    DateTime?
   outtakeDate   DateTime?     
   lastStayDate  DateTime?     @default(now())
+  hereLastNight Boolean       @default(false)
   extensionStatus     Boolean       @default(false)
 
   // Input text or a selection input, not sure yet, need to discuss further with the team
@@ -135,6 +142,7 @@ model Note {
   content    String
   setReminder Boolean   @default(false)
   reminderAt DateTime?
+  visibility String?   @default("private") // "private" or "public"
 
   client     Client?    @relation(fields: [clientId], references: [id], onDelete: Cascade)
   author     User?      @relation(fields: [authorId], references: [id])
@@ -143,3 +151,12 @@ model Note {
   updatedAt  DateTime  @updatedAt
 }
 
+model Notification {
+  id          Int       @id @default(autoincrement())
+  type        String
+  message     String
+  data        Json      @default("{}")
+
+  createdAt   DateTime  @default(now())
+  read        Boolean   @default(false)
+}

@@ -18,6 +18,19 @@ async function getAllUserData(req, res, next) {
   }
 };
 
+async function getUpdateData(req, res, next) {
+  try {
+    const updateData = await prisma.updateData.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 1,
+    });
+    return updateData;
+  } catch (error) {
+    console.log('failed to get update data');
+    throw error;
+  }
+};
+
 async function getAllReferrals(req, res, next) {
   try {
     const referrals = await prisma.referral.findMany();
@@ -61,4 +74,4 @@ async function handleGetClientNotes(req, res, next) {
   }
 };
 
-module.exports = { handleGetClientReferrals, handleGetClientNotes, getAllNotes, getAllReferrals, getAllUserData }
+module.exports = { handleGetClientReferrals, handleGetClientNotes, getAllNotes, getUpdateData, getAllReferrals, getAllUserData }

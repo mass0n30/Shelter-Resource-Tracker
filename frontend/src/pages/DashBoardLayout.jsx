@@ -9,6 +9,7 @@ function DashBoardLayout() {
 
   const [user, SetUser] = useState(null);
   const [data, SetData] = useState(null);
+  const [notifications, setNotifications] = useState([]);
   // loading state settings
   const [loading, SetLoading] = useState(true);
   const [success, SetSuccess] = useState(false);
@@ -53,6 +54,21 @@ function DashBoardLayout() {
     };
   } ,[loading, SetSuccess, SetLoading]);
 
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await authRouter.get('/dashboard/notifications');
+        setNotifications(res.data);
+        
+        // marking notifcations read after loading them???
+        // await authRouter.post('/dashboard/notifications/mark-read');
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchNotifications();
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -102,6 +118,7 @@ function DashBoardLayout() {
           SetSuccess,
           SetMount,
           mount,
+          notifications,
           authRouter,
           authRouterForm,
         }}

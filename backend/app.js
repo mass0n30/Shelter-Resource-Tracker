@@ -74,6 +74,7 @@ cron.schedule('0 6 * * *', async () => {
 
   try {
     await emailAutomate();
+
     console.log('Email csv automation task completed successfully');
   } catch (error) {
     console.error('Error during email csv automation task:', error);

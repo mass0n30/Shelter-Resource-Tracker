@@ -57,9 +57,9 @@ async function getClients(req, res, next) {
             gte: pastWindow,
             lte: now,
           },
-          include: clientInclude,
           status: "ENROLLED",
         },
+        include: clientInclude,
       });
       return res.json({ clients });
     }

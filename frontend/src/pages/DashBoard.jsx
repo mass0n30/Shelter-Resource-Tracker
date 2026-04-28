@@ -4,13 +4,14 @@ import { useOutletContext } from "react-router-dom";
 import DashStats from '../components/dashboard/DashStats';
 import ClientToggleSection from '../components/dashboard/ClientList';
 import Notifications from '../components/dashboard/Notifications';
+import NotificationsAlert from '../components/dashboard/NotificationsAlert';
 import Navbar from '../components/Navbar';
 import ClientForm from "../components/forms/ClientForm";
 import { getAllDashboardStats } from '@/lib/utils';
 
 
 function DashBoard() {
-  const { user, data, success, SetSuccess, SetLoading, SetNewFetch, authRouter, authRouterForm } = useOutletContext();
+  const { user, data, success, SetSuccess, SetLoading, SetNewFetch, notifications, authRouter, authRouterForm } = useOutletContext();
 
   // for filtering during search and filter, separate from clientData to preserve original data for resetting filters
   const [viewedClients, setViewedClients] = useState(data.clients);
@@ -66,9 +67,20 @@ function DashBoard() {
               grid-rows-auto gap-4 md:p-4">
               <DashStats className="col-span-1 row-span-3 lg:row-span-2 lg:col-span-4" data={dashboardStats} 
               dashStatFilter={dashStatFilter} setDashStatFilter={setDashStatFilter} setViewedClients={setViewedClients} />
+              {notifications?.length > 0 && (
+                <div className="col-span-1 lg:col-span-4">
+                  <NotificationsAlert
+                    data={notifications[0]}
+                    SetSuccess={SetSuccess}
+                    SetLoading={SetLoading}
+                    SetNewFetch={SetNewFetch}
+                    authRouter={authRouter}
+                  />
+                </div>
+              )}            
               <ClientToggleSection className="border-border-400 bg-background-alt border-2 rounded-md col-span-1 lg:col-span-3 row-span-10" dashStatFilter={dashStatFilter} setDashStatFilter={setDashStatFilter}
               viewedClients={viewedClients} setViewedClients={setViewedClients} clientData={data.clients} authRouter={authRouter} authRouterForm={authRouterForm} />
-              <Notifications className="border-border-400 shadow-md border-2 rounded-md col-span-1 lg:col-span-1 row-span-10" data={data} SetSuccess={SetSuccess} SetLoading={SetLoading} SetNewFetch={SetNewFetch} />
+              <Notifications className="border-border-400 shadow-md border-2 rounded-md col-span-1 lg:col-span-1 row-span-10" data={data} SetSuccess={SetSuccess} SetLoading={SetLoading} SetNewFetch={SetNewFetch} authRouter={authRouter} authRouterForm={authRouterForm} />
             </div>
           </div>
         </main>
