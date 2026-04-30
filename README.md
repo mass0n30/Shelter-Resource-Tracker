@@ -23,47 +23,35 @@ Extra Possible Features (after making core MVP product):
   - task system
   - audit log
 
-Routes Pseudo:
-GET /dashboard route:
-- retrieve current user
-- retrieve active clients only
-- retrieve dashboard stats
-- retrieve recent notes ordered by newest
-- retrieve referrals with followUpDate close to today or overdue
-- prioritize referrals marked isPriority
 
+Note 4/28:
+    Follow up dates seem to expire correctly, along with new client filter in dash stats. Cron CSV parsing update feature returns unmatched enrolled clients and clients who stayed last night from client excel sheet from email attachment. Of course these configs should be confirmed to work again before deployments. 
 
-note route, (mounted on client profiles pass id's through body - so we can associate a new note with client, if note is made on dashboard no associated client)
-
-client route mounts client profile
-(admin/manager can CRUD client profiles)
-
-referral route on client profiles
-(maybe make a Resource Model for something like a drop down selection?)
-(referral used for timeline history)
-
+***Notification Reminder System Overview**
+  Notifications = action required
+  Notes = information only
+  Notifications are scoped to user unless explicitly shared
+  Avoid global notifications by default
 
 ToDo:
-  - Edit option for Resources + Notes
-      * Go off figma design (drop down for click to edit and reveal details)
-      * edit follow up dates
-  - Note form, normalize and add UI showing note for Client (using name)
-  - Make skeleton Resource, note and timeline components to put inside profiles
+  Frontend
+  - Edit and delete option and confirmation + backend controllers
+  - Make edit and confirm delete forms
+  - Normalize Forms (congruent design acrossed all modal forms)
+  - Notification Reminders sidebar design (go off figma, checking schema design for filter options, be deliberate here!)
+    * Filter and order by prioritys and dates
+    * overdue → followUpDate < today / due today → followUpDate === today / upcoming soon → within next 3 days (asc by followUp and reminder dates w/ priority at top)
+    * Make notifications container slide up/pop up on mobile view?
+    * Notifications container shows alerts (Upcoming, Marked, Important Distinction?)
+    * Notes section (filter Public, Personal, Priority?)
+    * Edit and convert to Reminder option to notes (Notify Team option (makes global))
+  - Add last updated from cron update showing in UI
+  - Add loading skeletons
+  - Add timeline modules and logic (shadUI?)
 
-  - Make notifications container slide up/pop up on mobile view?
-  - Notifications container shows alerts (Upcoming, Marked, Important Distinction?)
-  - Notes section (filter Public, Personal, Priority?)
-
-About the Notification Section: 
-    On Dashboard notifications, referrals follow up dates upcoming time and overdue along with Notes showing author. Notes can be made private or public. 
-  
-  "referral close to reminder"
-    overdue → followUpDate < today
-
-    due today → followUpDate === today
-
-    upcoming soon → within next 3 days
-
+  Backend
+   - Consider other scheduled jobs (cron) for time-based updates (dashboard notifs)
+   
 
 Done:
  - define schema

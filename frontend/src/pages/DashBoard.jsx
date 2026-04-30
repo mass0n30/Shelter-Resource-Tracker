@@ -6,7 +6,6 @@ import ClientToggleSection from '../components/dashboard/ClientList';
 import Notifications from '../components/dashboard/Notifications';
 import NotificationsAlert from '../components/dashboard/NotificationsAlert';
 import Navbar from '../components/Navbar';
-import ClientForm from "../components/forms/ClientForm";
 import { getAllDashboardStats } from '@/lib/utils';
 
 
@@ -44,6 +43,7 @@ function DashBoard() {
       case "NEW":
         filtered = clients.filter(client => {
           const createdAt = new Date(client.createdAt);
+                                            // milliseconds to days conversion
           return (new Date() - createdAt) / (1000 * 60 * 60 * 24) <= 30;
         });
         break;

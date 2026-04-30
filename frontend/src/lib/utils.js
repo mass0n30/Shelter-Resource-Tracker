@@ -45,6 +45,20 @@ export const RESOURCE_CONFIG = {
   },
 };
 
+export async function setLoadDelay(setLoading, delay = 2000) {
+  const start = Date.now();
+  setLoading(true);
+  await new Promise(res => setTimeout(res, delay));
+  // ensure at least 500ms loading time
+  const elapsed = Date.now() - start;
+  const minTime = 500;
+
+    if (elapsed < minTime) {
+      await new Promise(res => setTimeout(res, minTime - elapsed));
+    }
+    setLoading(false);
+}
+
 export function getAllDashboardStats(clients, referrals) {
   const totalClients = clients.length;
   const urgentCases = clients.filter(client => client.referrals.some(referral => referral.isPriority)).length;

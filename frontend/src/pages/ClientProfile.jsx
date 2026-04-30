@@ -3,30 +3,39 @@ import { useOutletContext, useParams } from "react-router-dom";
 import { Button } from "@base-ui/react";
 import NoteForm from "../components/forms/NoteForm";
 import ResourceForm from "../components/forms/ResourceForm";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import  DropdownEditDelete from "../components/partials/Dropdown";
+import  { DropdownNoteEditDelete } from "../components/partials/Dropdown";
+
+import { setLoadDelay } from "../lib/utils";
+import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Ellipsis, TriangleAlert, ArrowLeft, LucideBedDouble, Plus, FilePlus, HashIcon, EditIcon, Calendar, Calendar1Icon } from "lucide-react";
 import { RESOURCE_CONFIG } from "../lib/utils";
 
 export default function ClientProfile() {
   const { clientId } = useParams();
   const [clientData, setClientData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   
   const {
     authRouter,
-    loading,
   } = useOutletContext();
 
-  useEffect(() => {
-    const fetchClientData = async () => {
-      try {
-        const response = await authRouter.get(`/dashboard/clients/${clientId}`);
-        setClientData(response.data);
-      } catch (error) {
-        console.error("Error fetching client data:", error);
-      }
-    };
+  const fetchClientData = async () => {
+    try {
+      await setLoadDelay(setLoading);
+      const response = await authRouter.get(`/dashboard/clients/${clientId}`);
+      setClientData(response.data);
+    } catch (error) {
+      console.error("Error fetching client data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // fetching upon mount
+  useEffect(() => {
     fetchClientData();
   }, [clientId]);
 
@@ -39,16 +48,20 @@ export default function ClientProfile() {
       <Banner
         clientData={clientData}
         authRouter={authRouter}
+        fetchClientData={fetchClientData}
         className="w-full bg-gray-100 min-h-[200px]"
       />
 
       <div className="flex-1 max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-4 gap-4 p-4">
         <ClientInfoSectionToggle
           clientData={clientData}
+          authRouter={authRouter}
+          fetchClientData={fetchClientData}
           className="md:col-span-3"
         />
         <Information
           clientData={clientData}
+          fetchClientData={fetchClientData}
           className="md:col-span-1"
         />
       </div>
@@ -56,7 +69,7 @@ export default function ClientProfile() {
   );
 }
 
-function ClientInfoSectionToggle({ clientData, className }) {
+function ClientInfoSectionToggle({ clientData, authRouter, fetchClientData, className }) {
   const [activeSection, setActiveSection] = useState("resources");
 
   return (
@@ -94,15 +107,16 @@ function ClientInfoSectionToggle({ clientData, className }) {
       </div>
 
       <div className="flex-1 h-full">
-        {activeSection === "resources" && <Resources referrals={clientData.referrals} />}
-        {activeSection === "notes" && <Notes notes={clientData.notes} />}
-        {activeSection === "timeline" && <Timeline clientId={clientData.id} />}
+        {activeSection === "resources" && <Resources fetchClientData={fetchClientData} referrals={clientData.referrals} authRouter={authRouter} />}
+        {activeSection === "notes" && <Notes fetchClientData={fetchClientData} notes={clientData.notes} authRouter={authRouter} />}
+        {activeSection === "timeline" && <Timeline fetchClientData={fetchClientData} clientId={clientData.id} authRouter={authRouter} />}
       </div>
     </div>
   );
 }
 
-function Banner({ clientData, className, authRouter }) {
+
+function Banner({ clientData, className, authRouter, fetchClientData }) {
   return (
     <div className={`flex items-center justify-center ${className}`}>
       <div className="max-w-7xl flex-1 flex items-center justify-between gap-4 px-4">
@@ -177,10 +191,15 @@ function Banner({ clientData, className, authRouter }) {
               </Button>
             </DialogTrigger>
 
-            <DialogContent>
+            <DialogContent className="bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
+              <VisuallyHidden>
+                <DialogTitle>{`Create Resource for ${clientData.firstName} ${clientData.lastName}`}</DialogTitle>
+              </VisuallyHidden>
+                <h2>{`Create Resource for ${clientData.firstName} ${clientData.lastName}`}</h2>
               <ResourceForm
                 authRouter={authRouter}
                 clientId={clientData.id}
+                fetchClientData={fetchClientData}
               />
             </DialogContent>
           </Dialog>
@@ -198,9 +217,14 @@ function Banner({ clientData, className, authRouter }) {
             </DialogTrigger>
 
             <DialogContent>
+              <VisuallyHidden>
+                <DialogTitle>{`Create Note for ${clientData.firstName} ${clientData.lastName}`}</DialogTitle>
+              </VisuallyHidden>
+            
               <NoteForm
                 authRouter={authRouter}
                 clientId={clientData.id}
+                fetchClientData={fetchClientData}
               />
             </DialogContent>
           </Dialog>
@@ -212,7 +236,7 @@ function Banner({ clientData, className, authRouter }) {
   );
 }
 
-function Information({clientData, className}) {
+function Information({clientData, fetchClientData, className}) {
   return (
     <div className={`bg-white p-4 rounded-md ${className}`}>
       <div className=" p-4 rounded-md">
@@ -222,8 +246,20 @@ function Information({clientData, className}) {
   );
 }
 
-function Notes({notes}) {
-  console.log(notes);
+function Notes({notes, fetchClientData, authRouter}) {
+
+
+  const handleDelete = async (e, noteId) => {
+    e.stopPropagation();
+    try {
+      await authRouter.delete(`/dashboard/notes/${noteId}`);
+      await fetchClientData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
   return (
     <div className="bg-gray-100 p-4 rounded-xl space-y-3">
 
@@ -263,11 +299,13 @@ function Notes({notes}) {
             )}
             </div>
             <div>
-              <Button className={'bg-white text-foreground border rounded-lg px-3 py-1 shadow-sm hover:shadow-md transition'} >
-                <Ellipsis className="w-3 h-3 sm:w-4 sm:h-4 color-foreground" />
-              </Button>
+              <DropdownNoteEditDelete
+                note={note}
+                authRouter={authRouter}
+                fetchClientData={fetchClientData}
+                handleDelete={handleDelete}
+              />
             </div>
-
           </div>
       ))}
 
@@ -275,7 +313,7 @@ function Notes({notes}) {
   );
 }
 
-function Timeline({clientId}) {
+function Timeline({clientId, authRouter}) {
   return (
     <div className="bg-grey-100 p-4 rounded-md">
       <p>Timeline for client ID: {clientId}</p>
@@ -283,21 +321,45 @@ function Timeline({clientId}) {
   );
 }
 
-function Resources({referrals}) {
+
+function Resources({referrals, fetchClientData, authRouter}) {
   const [toggleKey, setToggleKey] = useState(null);
 
-  return (
-    <div className="flex flex-col bg-gray-100 p-3 sm:p-4 rounded-xl space-y-3 overflow-y-auto position-relative ">
 
-{referrals?.map((resource) => {
-  const config = RESOURCE_CONFIG[resource.resourceType] || {};
-  const Icon = config.icon;
+  const handleDelete = async (e, id) => {
+    setToggleKey(null);
+    e.stopPropagation();
+
+    try {
+      await authRouter.delete(`/dashboard/referrals/${id}`);
+      await fetchClientData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const updateStatus = async (referralId, newStatus) => {
+    try {
+      await authRouter.patch(`/dashboard/referrals/${referralId}/status`, { status: newStatus });
+      await fetchClientData(); 
+    } catch (error) {
+      console.error("Error updating status:", error);
+    }
+  };
+
+  return (
+    <div className="flex flex-col bg-gray-100 p-3 sm:p-4 rounded-xl space-y-3 overflow-y-auto relative position-relative ">
+
+    {referrals?.map((resource) => {
+      const config = RESOURCE_CONFIG[resource.resourceType] || {};
+      const Icon = config.icon;
+      const now = new Date();
+      const exp = resource?.followUpDate ? new Date(resource.followUpDate) < now : null;
 
     return (
-      <Button
+      <div
         key={resource.id}
         onClick={() => setToggleKey(resource.id === toggleKey ? null : resource.id)}
-        variant="outline"
         className="bg-white text-foreground border rounded-lg p-4 shadow-sm hover:shadow-md transition"
       >
         
@@ -343,9 +405,12 @@ function Resources({referrals}) {
             >
               {resource.status}
             </span>
-            <Button className={'bg-white text-foreground border rounded-lg px-3 py-1 shadow-sm hover:shadow-md transition'} >
-              <Ellipsis className="w-3 h-3 sm:w-4 sm:h-4 color-foreground" />
-            </Button>
+              <DropdownEditDelete
+                resource={resource}
+                authRouter={authRouter}
+                fetchClientData={fetchClientData}
+                handleDelete={handleDelete}
+              />
           </div>
         </div>
 
@@ -354,7 +419,7 @@ function Resources({referrals}) {
             <div className="flex-1 w-full flex justify-between items-center gap-1 text-xs text-muted-foreground">
               <div className="flex flex-col sm:flex-row justify-start items-center gap-1">
                 <span className="font-medium text-gray-700">
-                  Assigned:{" "}
+                  Assigned:{" "} 
                 </span>
                 {resource.createdAt && (
                   <span className="flex items-center gap-1">
@@ -371,21 +436,22 @@ function Resources({referrals}) {
                 </span>
                 {resource?.createdBy?.firstName && (
                   <span className="flex items-center gap-1">
-                    <span className="font-medium text-gray-700 ">
+                    <span className="font-medium text-gray-700">
                       {resource.createdBy.firstName} {resource.createdBy?.lastName}
                     </span>
                   </span>
                 )}
               </div>
             </div>
-            <div className="flex-1 w-full flex justify-start items-center border-2 border-primary bg-blue-100 p-xs rounded-xs gap-1 text-xs text-muted-foreground">
+            <div className="flex-1 w-full flex justify-between items-center border-2 border-primary bg-blue-100 p-xs rounded-xs gap-1 text-xs text-muted-foreground">
               {resource.followUpDate && (
                 <span className="flex border  items-center gap-1">
                 <Calendar1Icon className="w-3 h-3" />
-                  Next Follow-up:{" "}
+                  Next Follow-up:{" "} 
                   <span className="font-medium text-gray-700">
                     {new Date(resource.followUpDate).toLocaleDateString()}
                   </span>
+                {exp && <span className="flex ml-1 items-center text-red-600 font-medium text-xs sm:text-md"><i>Expired</i></span>}
                 </span>
               )}
             </div>
@@ -500,7 +566,7 @@ function Resources({referrals}) {
           </div>
         )}
 
-      </Button>
+      </div>
     );
   })}
     </div>

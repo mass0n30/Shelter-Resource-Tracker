@@ -129,6 +129,10 @@ option {
   color: var(--color-foreground);
 }
 
+p, span {
+  text-align: left;
+}
+
 ::-webkit-scrollbar {
   width: 6px; 
   height: 12px; 

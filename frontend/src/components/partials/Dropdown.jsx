@@ -1,0 +1,129 @@
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+
+import ResourceForm from "../forms/ResourceForm";
+import NoteForm from "../forms/NoteForm";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription} from "@/components/ui/dialog";
+
+import { Ellipsis } from "lucide-react";
+
+export default function DropdownEditDelete({ resource, authRouter, fetchClientData, handleDelete }) {
+
+  return (
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
+    >      
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="bg-white text-foreground border rounded-lg px-3 py-1 shadow-sm hover:shadow-md transition"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Ellipsis className="h-4 w-4" />
+          </button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent
+          align="end"
+          sideOffset={6}
+          className="z-[9999] min-w-32 bg-white text-black border rounded-md shadow-lg"
+        >
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                Edit
+              </DropdownMenuItem>
+            </DialogTrigger>
+
+            <DialogContent className="bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
+              <VisuallyHidden>
+                <DialogTitle></DialogTitle>
+              </VisuallyHidden>
+              <ResourceForm
+                authRouter={authRouter}
+                clientId={resource.clientId}
+                resourceData={resource}
+                fetchClientData={fetchClientData}
+              />
+            </DialogContent>
+          </Dialog>
+
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.stopPropagation();
+              handleDelete(e, resource.id);
+            }}
+            className="text-red-500 focus:text-red-500"
+          >
+            Delete
+          </DropdownMenuItem>
+
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}
+
+export function DropdownNoteEditDelete({ note, authRouter, fetchClientData, handleDelete }) {
+  const id = note.id;
+
+  return (
+    <div onClick={(e) => e.stopPropagation()}>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="bg-white border rounded-lg px-3 py-1 shadow-sm hover:shadow-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Ellipsis className="h-4 w-4" />
+          </button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent
+          align="end"
+          sideOffset={6}
+          className="z-[9999] min-w-32 bg-white text-black border rounded-md shadow-lg"
+        >
+          {/* EDIT */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                Edit
+              </DropdownMenuItem>
+            </DialogTrigger>
+
+            <DialogContent>
+              <DialogTitle>Edit Note</DialogTitle>
+
+              <NoteForm
+                authRouter={authRouter}
+                clientId={note.clientId}
+                noteData={note}
+                fetchClientData={fetchClientData}
+              />
+            </DialogContent>
+          </Dialog>
+
+          {/* DELETE */}
+          <DropdownMenuItem
+            onSelect={(e) => handleDelete(e, id)}
+            className="text-red-500 focus:text-red-500"
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}

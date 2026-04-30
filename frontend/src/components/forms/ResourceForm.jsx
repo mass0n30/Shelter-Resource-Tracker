@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -31,21 +31,20 @@ const schema = z.object({
   summary: z.string().optional(),
 });
 
-export default function ResourceForm({ authRouter, clientId }) {
+export default function ResourceForm({ authRouter, resourceData, fetchClientData }) {
   const [error, setError] = useState(null);
-
   const [date, setDate] = useState(null);
 
+  const isEdit = !!resourceData;
+
   const [formData, setFormData] = useState({
-    clientId,
+    clientId: resourceData ? resourceData.clientId : null,
     organizationName: "",
     resourceType: "",
     purpose: "",
     status: "",
-
     roiSigned: false,
     followUpDate: null,
-
     isPriority: false,
     summary: "",
   });
@@ -56,6 +55,24 @@ export default function ResourceForm({ authRouter, clientId }) {
       [key]: value,
     }));
   };
+
+  useEffect(() => {
+    if (resourceData) {
+      setFormData({
+        clientId: resourceData.clientId,
+        organizationName: resourceData.organizationName || "",
+        resourceType: resourceData.resourceType || "",
+        purpose: resourceData.purpose || "",
+        status: resourceData.status || "",
+        roiSigned: resourceData.roiSigned || false,
+        followUpDate: resourceData.followUpDate || null,
+        isPriority: resourceData.isPriority || false,
+        summary: resourceData.summary || "",
+      });
+
+      setDate(resourceData.followUpDate ? new Date(resourceData.followUpDate) : null);
+    }
+  }, [resourceData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,137 +93,131 @@ export default function ResourceForm({ authRouter, clientId }) {
         followUpDate: date || null,
       };
 
-      const response = await authRouter.post(`/dashboard/referrals/client/${clientId}`, payload);
+      if (isEdit) {
+        await authRouter.patch(`/dashboard/referrals/${resourceData.id}`, payload);
+      } else {
+        await authRouter.post(`/dashboard/referrals/client/${clientId}`, payload);
+      }
 
-      console.log("Resource created:", response.data);
+      await fetchClientData();
+
     } catch (err) {
       console.error(err.response?.data || err.message);
     }
   };
 
   return (
-    <DialogContent className="bg-background rounded-lg shadow-lg w-full max-w-md">
-      <DialogHeader>
-        <DialogTitle>Create Resource</DialogTitle>
-        <DialogDescription>
-          Add a referral/resource for this client.
-        </DialogDescription>
-      </DialogHeader>
+    <div className="bg-background rounded-lg w-full max-w-md">
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold">
+          {isEdit ? "Edit Resource" : "Create Resource"}
+        </h2>
+      </div>
 
       {error && <span className="text-red-500 text-sm">{error}</span>}
 
-      <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-        <FieldGroup>
+      <form onSubmit={handleSubmit} className="grid gap-4">
 
-          <Field>
-            <Input
-              placeholder="Organization Name"
-              value={formData.organizationName}
-              onChange={(e) => updateField("organizationName", e.target.value)}
-            />
-          </Field>
+        <input
+          placeholder="Organization Name"
+          value={formData.organizationName}
+          onChange={(e) => updateField("organizationName", e.target.value)}
+          className="border p-2 rounded"
+        />
 
-          <Field>
-          <select 
-            value={formData.resourceType}
-            onChange={(e) => updateField("resourceType", e.target.value)}
-            className="w-full border px-3 py-2 rounded-lg bg-background"
-          >
-            <option value="" disabled>Select Resource Type</option>
-            <option value="HOUSING">Housing</option>
-            <option value="EMPLOYMENT">Employment</option>
-            <option value="MEDICAL">Medical</option>
-            <option value="SUBSTANCE_USE">Substance Use</option>
-            <option value="FINANCIAL_ASSISTANCE">Financial Assistance</option>
-            <option value="OTHER">Other</option>
-          </select>
-          </Field>
+        <select
+          value={formData.resourceType}
+          onChange={(e) => updateField("resourceType", e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="">Select Resource Type</option>
+          <option value="HOUSING">Housing</option>
+          <option value="EMPLOYMENT">Employment</option>
+          <option value="MEDICAL">Medical</option>
+          <option value="SUBSTANCE_USE">Substance Use</option>
+          <option value="FINANCIAL_ASSISTANCE">Financial Assistance</option>
+          <option value="OTHER">Other</option>
+        </select>
 
-          <Field>
-            <Input
-              placeholder="Purpose"
-              value={formData.purpose}
-              onChange={(e) => updateField("purpose", e.target.value)}
-            />
-          </Field>
+        <input
+          placeholder="Purpose"
+          value={formData.purpose}
+          onChange={(e) => updateField("purpose", e.target.value)}
+          className="border p-2 rounded"
+        />
 
-          {/* Status */}
-          <Field>
-            <select
-              value={formData.status}
-              onChange={(e) => updateField("status", e.target.value)}
-              className="w-full border px-3 py-2 rounded-lg bg-background"
-            >
-              <option value="" disabled>Select Status</option>
-              <option value="INQUIRED">Inquired</option>
-              <option value="REFERRED">Referred</option>
-              <option value="PENDING">Pending</option>
-              <option value="ENROLLED">Enrolled</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="CLOSED">Closed</option>
-            </select>
-          </Field>
+        <select
+          value={formData.status}
+          onChange={(e) => updateField("status", e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="">Select Status</option>
+          <option value="INQUIRED">Inquired</option>
+          <option value="REFERRED">Referred</option>
+          <option value="PENDING">Pending</option>
+          <option value="ENROLLED">Enrolled</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="CLOSED">Closed</option>
+        </select>
 
-          {/* ROI */}
-          <Field>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={formData.roiSigned}
-                onChange={(e) => updateField("roiSigned", e.target.checked)}
-              />
-              ROI Signed
-            </label>
-          </Field>
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={formData.roiSigned}
+            onChange={(e) => updateField("roiSigned", e.target.checked)}
+          />
+          ROI Signed
+        </label>
 
-          {/* Follow-up Date */}
-          <CalendarPopover date={date} setDate={setDate} single={true} />
+        <input
+          type="date"
+          value={date ? date.toISOString().split("T")[0] : ""}
+          onChange={(e) => setDate(new Date(e.target.value))}
+          className="border p-2 rounded"
+        />
 
-          {/* Priority */}
-          <Field>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={formData.isPriority}
-                onChange={(e) => updateField("isPriority", e.target.checked)}
-              />
-              Priority
-            </label>
-          </Field>
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={formData.isPriority}
+            onChange={(e) => updateField("isPriority", e.target.checked)}
+          />
+          Priority
+        </label>
 
-          <Field>
-            <Input
-              placeholder="Summary / Notes"
-              value={formData.summary}
-              onChange={(e) => updateField("summary", e.target.value)}
-            />
-          </Field>
+        <input
+          placeholder="Summary / Notes"
+          value={formData.summary}
+          onChange={(e) => updateField("summary", e.target.value)}
+          className="border p-2 rounded"
+        />
 
-        </FieldGroup>
-
-        <Field orientation="horizontal" className="justify-around">
+        <div className="flex justify-between mt-4">
           <button
             type="button"
             onClick={() =>
               setFormData({
+                clientId,
                 organizationName: "",
                 resourceType: "",
                 purpose: "",
-                status: "INQUIRED",
+                status: "",
                 roiSigned: false,
                 followUpDate: null,
                 isPriority: false,
                 summary: "",
-                clientId,
               })
             }
           >
             Reset
           </button>
 
-          <button type="submit">Create Resource</button>
-        </Field>
+          <button type="submit">
+            {isEdit ? "Update Resource" : "Create Resource"}
+          </button>
+        </div>
+
       </form>
-    </DialogContent>
+    </div>
   );
 }

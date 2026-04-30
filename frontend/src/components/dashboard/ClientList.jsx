@@ -51,7 +51,7 @@ function ClientList({className, viewedClients}) {
 function ClientCard({ client, clientStats }) {
   console.log(clientStats?.upcomingFollowUps);
   return (
-    <div className="flex-1 min-w-0 bg-background border rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition cursor-pointer">
+    <div className="flex-1 min-w-0 sm:min-h-28 bg-background border rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition cursor-pointer">
       
       <div className="flex items-center justify-between">
         
@@ -106,10 +106,10 @@ function ClientCard({ client, clientStats }) {
       <div className="mt-3 sm:mt-4 flex justify-between text-xs sm:text-sm">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-sm">
-            {clientStats?.totalReferrals > 0 && <div className='p-xs text-xs text-white rounded-md bg-muted'>Resources {clientStats.totalReferrals}</div>}
-            {clientStats?.urgentReferrals > 0 && <div className='flex gap-xs p-xs text-xs text-white rounded-md bg-red-600'><ClockAlert /> Urgent  {clientStats.urgentReferrals}</div>}
-            {clientStats?.upcomingFollowUps > 0 && <div className='p-xs text-xs text-white rounded-md bg-blue-600'>Upcoming {clientStats.upcomingFollowUps}</div>}
-            {clientStats?.expiredFollowUps > 0 && <div className='p-xs text-xs text-white rounded-md bg-orange-600'>Expired {clientStats.expiredFollowUps}</div>}
+            {clientStats?.totalReferrals >= 0 && <div className='p-xs text-[10px] sm:text-xs text-foreground rounded-md bg-white'>Resources {clientStats.totalReferrals}</div>}
+            {clientStats?.urgentReferrals > 0 && <div className='flex gap-xs p-xs text-[10px] sm:text-xs text-white rounded-md bg-red-600'><ClockAlert /> Urgent  {clientStats.urgentReferrals}</div>}
+            {clientStats?.upcomingFollowUps > 0 && <div className='p-xs text-[10px] sm:text-xs text-white rounded-md bg-blue-600'>Upcoming {clientStats.upcomingFollowUps}</div>}
+            {clientStats?.expiredFollowUps > 0 && <div className='p-xs text-[10px] sm:text-xs text-white rounded-md bg-orange-600'>Expired {clientStats.expiredFollowUps}</div>}
           </div>
         </div>
       </div>

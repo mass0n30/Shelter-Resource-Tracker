@@ -5,7 +5,7 @@ async function createReferral(req, res, next) {
     const newReferral = await prisma.referral.create({
       data: {
         clientId: parseInt(req.params.clientId),
-        createdById: 1, // req.user.id, 
+        createdById: req.user.id, 
         organizationName: req.body.organizationName,
         resourceType: req.body.resourceType,
         purpose: req.body.purpose,
@@ -27,23 +27,41 @@ async function updateReferral(req, res, next) {
   try {
     const updatedReferral = await prisma.referral.update({
       where: { id: parseInt(req.params.referralId) },
-      data: { 
-        clientId: parseInt(req.params.clientId),
-        createdById: req.user.id,
-        // if resource model, org name and resource type a selection made client side from drop down or resources in db ?
+      data: {
         organizationName: req.body.organizationName,
         resourceType: req.body.resourceType,
-
         purpose: req.body.purpose,
         status: req.body.status,
-        followUpDate: new Date(req.body.followUpDate),
-        priority: req.body.priority,
+        followUpDate: req.body.followUpDate
+          ? new Date(req.body.followUpDate)
+          : null,
+        isPriority: req.body.isPriority,
         summary: req.body.summary,
       },
     });
-    return res.status(200).json(updatedReferral, { message: "Referral Updated Successfully" });
+
+    return res.status(200).json({
+      data: updatedReferral,
+      message: "Referral Updated Successfully",
+    });
+
   } catch (error) {
-    console.log('failed to update referral');
+    console.log("failed to update referral", error);
+    return res.status(400).json({ error });
+  }
+}
+
+async function updateReferralStatus(req, res, next) {
+  try {
+    const updatedReferral = await prisma.referral.update({
+      where: { id: parseInt(req.params.referralId) },
+      data: {
+        status: req.body.status,
+      },
+    });
+    return res.status(200).json(updatedReferral, { message: "Referral Status Updated Successfully" });
+  } catch (error) {
+    console.log('failed to update referral status');
     return res.status(400).json({ errors:error });
   }
 };
@@ -53,6 +71,7 @@ async function deleteReferral(req, res, next) {
     await prisma.referral.delete({
       where: { id: parseInt(req.params.referralId) },
     });
+    console.log('deleted referral with id:', req.params.referralId);
     return res.status(200).json({ message: "Referral Deleted Successfully" });
   } catch (error) {
     console.log('failed to delete referral');
@@ -62,6 +81,6 @@ async function deleteReferral(req, res, next) {
 
 module.exports = { 
   referralController: {
-    createReferral, updateReferral, deleteReferral
+    createReferral, updateReferral, updateReferralStatus, deleteReferral
   }
 }
