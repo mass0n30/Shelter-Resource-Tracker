@@ -32,11 +32,18 @@ dashboardRouter.get('/', async (req, res, next ) => {
 
 dashboardRouter.get('/notifications', async (req, res, next) => {
   try {
-    const notifications = await prisma.notification.findMany({
-      where: { read: false },
+    const unfoundClients = await prisma.notification.findMany({
+      where: { read: false , type: "UNMATCHED_CLIENTS"},
       orderBy: { createdAt: 'desc' },
+      take: 1 // only fetch most recent unread notification for dashboard alert, consider fetching more for notifications center page if implemented in future
     });
-    res.json(notifications);
+
+    const foundClients = await prisma.notification.findMany({
+      where: { read: false , type: "MATCHED_CLIENTS"},
+      orderBy: { createdAt: 'desc' },
+      take: 1 // only fetch most recent unread notification for dashboard alert, consider fetching more for notifications center page if implemented in future
+    });
+    res.json({ unfoundClients, foundClients });
   } catch (error) {
     console.error('Error fetching notifications:', error);
     res.status(500).json({ error: 'Failed to fetch notifications' });

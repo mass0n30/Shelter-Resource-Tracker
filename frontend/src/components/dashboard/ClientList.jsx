@@ -234,7 +234,7 @@ function ClientToggleSection({className, clientData, authRouter, authRouterForm,
               <DialogTrigger asChild>
                 <Button variant="outline">Create Client</Button>
               </DialogTrigger>
-              <ClientForm authRouter={authRouter} authRouterForm={authRouterForm} />
+              <ClientForm authRouter={authRouter} />
             </Dialog>
           </div>
             <Button variant="outline" onClick={() => setCalendarOpen(prev => !prev)}>

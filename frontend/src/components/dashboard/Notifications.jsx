@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@base-ui/react";
 import { set } from "zod";
 // order Notes and timed Resources in this section? Day of or soon timed in Banners ?
-function Notifications({className, data, SetSuccess, SetLoading, SetNewFetch, authRouter, authRouterForm}) {
+// priorityScore: 1 = overdue, 2 = due soon, 3 = priority flag, 4 = future
+function Notifications({className, userNotes, userReferrals, globalNotes, globalReferrals, SetSuccess, SetLoading, SetNewFetch, authRouter, authRouterForm}) {
   const [toggle, setToggle] = useState("reminders");
 
   // add a toggle expansion on desktop and mobile ?
@@ -50,13 +51,18 @@ function Notifications({className, data, SetSuccess, SetLoading, SetNewFetch, au
           </div>
         </div>
 
-        <ul className="mt-2">
-          {data?.length === 0 || data !== undefined ? (
-            <li className="text-gray-500"><i>No {toggle === "reminders" ? "reminders" : "notes"} notifications</i></li>
+        <ul className="mt-2 text-sm text-muted-foreground text-left">
+          {toggle === "reminders" ? (
+            userReferrals?.map((referral) => (
+              <li key={referral.id} className="border-b border-gray-200 py-2">
+               <span>{referral.organizationName}</span>
+               {referral?.followUpDate && ( <span className="text-sm text-muted"> - Follow up on {new Date(referral.followUpDate).toLocaleDateString()}</span>)}
+              </li>
+            ))
           ) : (
-            data.map((notification) => (
-              <li key={notification.id} className="border-b border-gray-200 py-2">
-                {notification.message}
+            userNotes?.map((note) => (
+              <li key={note.id} className="border-b border-gray-200 py-2">
+                {note.content}
               </li>
             ))
           )}

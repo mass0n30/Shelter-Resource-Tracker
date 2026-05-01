@@ -39,7 +39,6 @@ function DashBoardLayout() {
       },
   });
 
-
   useEffect(() => {
     const timer = setTimeout(() => {
       SetLoading(false);
@@ -54,43 +53,40 @@ function DashBoardLayout() {
     };
   } ,[loading, SetSuccess, SetLoading]);
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const res = await authRouter.get('/dashboard/notifications');
-        setNotifications(res.data);
-        
-        // marking notifcations read after loading them???
-        // await authRouter.post('/dashboard/notifications/mark-read');
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchNotifications();
-  }, []);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await authRouter.get('/dashboard');
-        // AXIOS Already Parses JSON, no need for response.json() like fetch !!!! Same on Backend Controllers !
-        const result = response.data;
-        
-        SetUser(result.user); // (only non sensitive user data from backend)
-        SetData(result.globalData); // all clients, notes, referrals for dashboard display, consider separate fetches for each in future if performance issues arise with large data sets
-        // reset boolean fetch after updated posts fetch
-      } catch (error) {
-        SetError(error);
-        return navigate('/login'); // redirect to login if token invalid or expired, consider separate error handling for different status codes in future (e.g. 401 vs 403) for better UX
-      } 
-    };
-    // initiate GET home fetch if there's a token else continue guest mode
-     if (token) {
+  useEffect( () => {
+    if (token) {
       fetchUser();
-     } 
+    }
+  }, [token, loading]);
 
-  }, [token]);  // token dependency?
+  const fetchNotifications = async () => {
+    try {
+      const res = await authRouter.get('/dashboard/notifications');
+      setNotifications(res.data);
+      
+      // marking notifcations read after loading them???
+      // await authRouter.post('/dashboard/notifications/mark-read');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchUser = async () => {
+    try {
+      const response = await authRouter.get('/dashboard');
+      // AXIOS Already Parses JSON, no need for response.json() like fetch !!!! Same on Backend Controllers !
+      const result = response.data;
+      
+      SetUser(result.user); // (only non sensitive user data from backend)
+      SetData(result.globalData); // all clients, notes, referrals for dashboard display, consider separate fetches for each in future if performance issues arise with large data sets
+      fetchNotifications();
+      // reset boolean fetch after updated posts fetch
+    } catch (error) {
+      SetError(error);
+      return navigate('/login'); // redirect to login if token invalid or expired, consider separate error handling for different status codes in future (e.g. 401 vs 403) for better UX
+    } 
+  };
+
   // skeleton loader Navbar/sidebar, ect. 
   if (loading || !data || !user) {
     return (
@@ -112,6 +108,8 @@ function DashBoardLayout() {
         context={{
           user,
           data,
+          fetchUser,
+          fetchNotifications,
           loading,
           success,
           SetLoading,

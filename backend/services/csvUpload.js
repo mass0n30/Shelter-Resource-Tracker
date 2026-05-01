@@ -57,6 +57,7 @@ async function handleCSVUpload(filePath) {
 function handleAutoCSVUpload(stream) {
   return new Promise((resolve, reject) => {
     const tasks = [];
+    const updateDate = new Date();
 
     stream
       .pipe(csv({ headers: false }))
@@ -96,8 +97,10 @@ function handleAutoCSVUpload(stream) {
             firstName: r.firstName,
             lastName: r.lastName
           }));
+        
+          
 
-        resolve({ found, unfound });
+        resolve({ found, unfound, updateDate });
       })
       .on('error', reject);
   });

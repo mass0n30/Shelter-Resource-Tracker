@@ -50,7 +50,7 @@ const schema = z.object({
     .max(5, { message: "Bed label is too long" }),
 });
 
-export default function ClientForm({ authRouter, authRouterForm }) {
+export default function ClientForm({ authRouter, firstName, lastName}) {
 
   const today = new Date();
   const next60 = new Date(today.getTime() + 60 * 24 * 60 * 60 * 1000);
@@ -62,8 +62,8 @@ export default function ClientForm({ authRouter, authRouterForm }) {
   const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    firstName: firstName || "",
+    lastName: lastName || "",
     clientId: "",
     intakeDate: date.from || null,
     outtakeDate: date.to || null,

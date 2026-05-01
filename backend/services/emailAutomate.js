@@ -85,13 +85,23 @@ async function emailAutomate() {
       // calling the csv upload function with the email attachment stream
       const results = await handleAutoCSVUpload(csvStream);
 
-      // adding unmatched client names to get req for a notification on dashboard to add new client
+      // adding unmatched/matched client names to get req for a notification on dashboard to add new client
       if (results.unfound.length > 0) {
         await prisma.notification.create({
           data: {
             type: "UNMATCHED_CLIENTS",
             message: `${results.unfound.length} clients not found`,
             data: results.unfound, // if using JSON column
+          }
+        });
+      }
+
+      if (results.found.length > 0) {
+        await prisma.notification.create({
+          data: {
+            type: "MATCHED_CLIENTS",
+            message: `${results.found.length} clients matched successfully`,
+            data: results.found.map(client => ({ id: client.id, firstName: client.firstName, lastName: client.lastName })), // if using JSON column
           }
         });
       }

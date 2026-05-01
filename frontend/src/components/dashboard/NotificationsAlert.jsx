@@ -1,13 +1,12 @@
 import { Button } from "../ui/button";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import ClientForm from "../forms/ClientForm";
 
-function NotificationsAlert({ data, SetSuccess, SetLoading, SetNewFetch, authRouter }) {
+function NotificationsAlert({ data, SetLoading, authRouter, className }) {
 
   const handleMarkRead = async () => {
     try {
-      await authRouter.post('/dashboard/notes/mark-read');
-      SetSuccess(true);
-      SetLoading(true);
-      SetNewFetch(true);
+      await authRouter.post('/dashboard/notifications/mark-read');
     } catch (err) {
       console.error(err);
     }
@@ -15,7 +14,7 @@ function NotificationsAlert({ data, SetSuccess, SetLoading, SetNewFetch, authRou
   if (!data) return null;
 
   return (
-    <div className="flex flex-col h-full p-4 gap-3">
+    <div className={`flex flex-col p-4 gap-3 ${className}`}>
       
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -32,17 +31,26 @@ function NotificationsAlert({ data, SetSuccess, SetLoading, SetNewFetch, authRou
       </div>
 
       <p className="text-xs text-muted-foreground">
-        {data.message}
+        {data?.message}
       </p>
 
       <div className="flex flex-col gap-2 overflow-y-auto max-h-40">
-        {data.data?.map((client, i) => (
+        {data?.data?.map((client, i) => (
           <div
             key={i}
-            className="text-sm px-2 py-1 rounded-md bg-muted"
+            className="text-sm text-left font-semibold  px-2 py-1 rounded-md bg-backgroundAlt rounded-md border border-border-400"
           >
             {client.firstName} {client.lastName}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="xs" className="ml-2">
+                  Create Client
+                </Button>
+              </DialogTrigger>
+              <ClientForm authRouter={authRouter} firstName={client.firstName} lastName={client.lastName} />
+            </Dialog>
           </div>
+
         ))}
       </div>
 
