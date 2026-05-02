@@ -83,7 +83,7 @@ export function DropdownNoteEditDelete({ note, authRouter, fetchClientData, hand
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="bg-white border rounded-lg px-3 py-1 shadow-sm hover:shadow-md"
+            className="bg-white text-foreground border rounded-lg px-3 py-1 shadow-sm hover:shadow-md transition"
             onClick={(e) => e.stopPropagation()}
           >
             <Ellipsis className="h-4 w-4" />
@@ -125,5 +125,95 @@ export function DropdownNoteEditDelete({ note, authRouter, fetchClientData, hand
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
+  );
+}
+
+export function DropdownNoteFilter({ setViewedNotes, noteMsg, userNotes, globalNotes }) {
+  return (
+    <DropdownMenu className="z-[9999] w-full">
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          className="flex w-full items-center gap-2"
+        >
+          <Funnel className="h-4 w-4" />
+          <span className="text-muted-foreground">Filter</span>
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent
+        align="end"
+        sideOffset={6}
+        className="z-[9999] w-[var(--radix-dropdown-menu-trigger-width)] bg-white text-black border rounded-md shadow-lg"
+      >
+        <DropdownMenuItem onSelect={() => setViewedNotes({notes: globalNotes, filterMsg: "Posted Notes"})}>
+          Posted Notes
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => setViewedNotes({notes: userNotes, filterMsg: "Personal Notes"})}>
+          Personal Notes
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+import { Button } from "@/components/ui/button";
+import {  Funnel } from 'lucide-react';
+
+
+export function ClientDropDownFilter({ filter, setFilter }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <Funnel className="h-4 w-4" />
+          Filter
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent
+        align="end"
+        sideOffset={6}
+        className="min-w-[180px]"
+      >
+        <DropdownMenuItem
+          onSelect={() => setFilter("ALL")}
+          className={filter === "ALL" ? "bg-muted" : ""}
+        >
+          All Clients
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          onSelect={() => setFilter("ENROLLED")}
+          className={filter === "ENROLLED" ? "bg-muted" : ""}
+        >
+          Enrolled
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          onSelect={() => setFilter("STAYED_OVERNIGHT")}
+          className={filter === "STAYED_OVERNIGHT" ? "bg-muted" : ""}
+        >
+          Stayed Overnight
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          onSelect={() => setFilter("WC")}
+          className={filter === "WC" ? "bg-muted" : ""}
+        >
+          W.C.
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          onSelect={() => setFilter("INACTIVE")}
+          className={filter === "INACTIVE" ? "bg-muted" : ""}
+        >
+          Inactive
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

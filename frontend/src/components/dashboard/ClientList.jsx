@@ -49,7 +49,6 @@ function ClientList({className, viewedClients}) {
 }
 
 function ClientCard({ client, clientStats }) {
-  console.log(clientStats?.upcomingFollowUps);
   return (
     <div className="flex-1 min-w-0 sm:min-h-28 bg-background border rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition cursor-pointer">
       
@@ -118,6 +117,7 @@ function ClientCard({ client, clientStats }) {
 }
 
 import { ClientSearch } from '../partials/Search';
+import { ClientDropDownFilter } from '../partials/Dropdown';
 import { useEffect } from 'react';
 import CalendarView from './CalenderView';
 
@@ -173,44 +173,7 @@ function ClientToggleSection({className, clientData, authRouter, authRouterForm,
             </Button>
 
             <div className="relative">
-              <Button
-                onClick={() => setFilterOpen(prev => !prev)}
-                className="min-w-[160px] flex items-center gap-1 px-3"
-                variant={filterOpen ? "outline" : "outline"}
-              >
-                <Funnel />
-                Filter
-                <ChevronDown />
-              </Button>
-
-              {filterOpen && (
-                <div className="absolute top-full left-0 mt-2 w-[160px] bg-white border rounded-md shadow-lg z-50">
-                  <div className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${filter === "ENROLLED" ? "bg-gray-100" : ""}`} onClick={() => {
-                    setFilter("ENROLLED");
-                    setFilterOpen(false);
-                  }}>
-                    Enrolled
-                  </div>
-                  <div className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${filter === "STAYED_OVERNIGHT" ? "bg-gray-100" : ""}`} onClick={() => {
-                    setFilter("STAYED_OVERNIGHT");
-                    setFilterOpen(false);
-                  }}>
-                    Stayed Overnight
-                  </div>
-                  <div className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${filter === "WC" ? "bg-gray-100" : ""}`} onClick={() => {
-                    setFilter("WC");
-                    setFilterOpen(false); 
-                  }}>
-                    W.C.
-                  </div>
-                  <div className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${filter === "INACTIVE" ? "bg-gray-100" : ""}`} onClick={() => {
-                    setFilter("INACTIVE");
-                    setFilterOpen(false);
-                  }}>
-                    Inactive
-                  </div>
-                </div>
-              )}
+              <ClientDropDownFilter filter={filter} setFilter={setFilter} />
             </div>
           </div>
 
@@ -222,7 +185,7 @@ function ClientToggleSection({className, clientData, authRouter, authRouterForm,
         <div className="flex-1 justify-between gap-2 flex">
           <div className="text-sm ml-2 text-muted-foreground align-center flex items-center font-medium italic">
             {filter === "STAYED_OVERNIGHT" ? "Clients Who Stayed Overnight" : filter === "ENROLLED" || (dashStatFilter !== null) ? "Enrolled Clients" : filter === "WC" ? "Winter Contingency Clients" : filter === "INACTIVE" ? "Inactive Clients" : ""}         {dashStatFilter && (
-            <div className="text-sm ml-2 text-muted-foreground align-center flex items-center font-medium italic">
+            <div className="text-sm ml-2 text-mufted-foreground align-center flex items-center font-medium italic">
               {dashStatFilter === "URGENT" ? "Clients with Urgent Referrals" : dashStatFilter === "FOLLOW_UP" ? "Clients with Upcoming Follow-ups" : dashStatFilter === "NEW" ? "New Clients (Last 30 Days)" : ""}
             </div>
           )}

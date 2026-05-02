@@ -6,7 +6,7 @@ export default function Button({ children, variant = "primary", size = "md", cla
 
   const variantClasses = {
     primary: "z-1 bg-white text-foreground border rounded-lg px-3 py-1 shadow-sm hover:shadow-md transition",
-    outline: "z-1 border border-gray-300 text-gray-700 hover:bg-gray-100 focus:ring-gray-300",
+    outline: "z-1 bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 focus:ring-gray-300",
     ghost: "text-gray-700 hover:bg-gray-100 focus:ring-gray-300",
   };
 

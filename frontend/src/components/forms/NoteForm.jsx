@@ -9,7 +9,7 @@ const schema = z.object({
   reminderAt: z.date().nullable().optional(),
 });
 
-export default function NoteForm({ authRouter, clientId, noteData, fetchClientData }) {
+export default function NoteForm({ authRouter, clientId, noteData, fetchClientData, SetSuccess, SetLoading }) {
   const [error, setError] = useState(null);
   const [date, setDate] = useState(null);
 
@@ -64,7 +64,9 @@ export default function NoteForm({ authRouter, clientId, noteData, fetchClientDa
         await authRouter.post("/dashboard/notes", payload);
       }
 
-      await fetchClientData();
+      if (fetchClientData) {
+        await fetchClientData();
+      }
 
     } catch (err) {
       console.error(err.response?.data || err.message);

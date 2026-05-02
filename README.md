@@ -35,9 +35,6 @@ Note 4/28:
 
 ToDo:
   Frontend
-  - Edit and delete option and confirmation + backend controllers
-  - Make edit and confirm delete forms
-  - Normalize Forms (congruent design acrossed all modal forms)
   - Notification Reminders sidebar design (go off figma, checking schema design for filter options, be deliberate here!)
     * Filter and order by prioritys and dates
     * overdue → followUpDate < today / due today → followUpDate === today / upcoming soon → within next 3 days (asc by followUp and reminder dates w/ priority at top)
@@ -74,6 +71,8 @@ Done:
   * normalize forms?
 - Create hook for Resource and Note post req
 - Get dash card stats  - Toggal displayed clients from  Dash Card selection
+- Edit and delete option and confirmation + backend controllers
+- Make edit and confirm delete forms
 
 
 

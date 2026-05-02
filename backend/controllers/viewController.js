@@ -6,8 +6,16 @@ async function getAllUserData(req, res, next) {
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
       include: {
-        notes: true,
-        referrals: true,
+        notes: {
+          include: {
+            client: true
+          } 
+        },
+        referrals: {
+          include: {
+            client: true
+          } 
+        },
         // profile: true
       },
     })
@@ -43,7 +51,11 @@ async function getAllReferrals(req, res, next) {
 
 async function getAllNotes(req, res, next) {
   try {
-    const notes = await prisma.note.findMany();
+    const notes = await prisma.note.findMany({
+      include: {
+        client: true,
+      }
+    });
     return notes;
   } catch (error) {
     console.log('failed to get user notes');
