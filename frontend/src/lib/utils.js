@@ -45,6 +45,29 @@ export const RESOURCE_CONFIG = {
   },
 };
 
+export const getDisplayTime = (date) => {
+  const itemDate = new Date(date);
+  itemDate.setHours(0, 0, 0, 0);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const diffDays = Math.floor(
+    (itemDate - today) / (1000 * 60 * 60 * 24)
+  );
+
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "In 1 day";
+  if (diffDays === 2) return "In 2 days";
+  if (diffDays === 3) return "In 3 days";
+
+  if (diffDays === -1) return "1 day overdue";
+  if (diffDays === -2) return "2 days overdue";
+  if (diffDays >= -7 && diffDays < 0) return "Overdue";
+
+  return itemDate.toLocaleDateString();
+};
+
 export async function setLoadDelay(setLoading, delay = 2000) {
   const start = Date.now();
   setLoading(true);

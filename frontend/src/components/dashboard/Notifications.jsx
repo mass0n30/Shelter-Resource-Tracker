@@ -1,50 +1,242 @@
-import { Bell, Notebook } from "lucide-react";
+import { Bell, ChevronDown, ChevronUp, Notebook } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import { DropdownNoteFilter } from "../partials/Dropdown";
 import NoteForm from "../forms/NoteForm";
-import { set } from "zod";
+import { useAsyncStatus } from "../partials/Loading";
+import { getDisplayTime } from "@/lib/utils";
 import {
   Dialog,
   DialogTrigger,
   DialogContent
 } from "@/components/ui/dialog";
+import { Chevron } from "react-day-picker";
 
-function Notifications({className, userNotes, userReferrals, globalNotes, globalReferrals, SetSuccess, SetLoading, SetNewFetch, authRouter, authRouterForm}) {
+const groupLabels = {
+  overdueToday: "Overdue (Yesterday)",
+  overdueRecent: "Overdue (Last 3 Days)",
+  overdueWeek: "Overdue (This Week)",
+  today: "Today",
+  soon: "Next Few Days",
+  week: "This Week",
+  future: "Upcoming",
+};
+
+
+function ActionButton({ children, tooltip, className, onClick, isLoading }) {
+  return (
+    <button
+      disabled={isLoading}
+      className={`relative group px-2 py-1 rounded-md disabled:opacity-50 ${className}`}
+      onClick={onClick}
+    >
+      {isLoading ? "..." : children}
+
+      <span className="absolute left-1/2 -translate-x-1/2 -top-7 whitespace-nowrap 
+        bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 
+        group-hover:opacity-100 transition pointer-events-none z-50">
+        {tooltip}
+      </span>
+    </button>
+  );
+}
+
+function ActionButtons({ item, navigate, setLoading, handleAction, loadingId }) {
+  const isLoading = loadingId === item.id;
+
+  return (
+    <div className="flex gap-2 flex-wrap">
+      {item.client && (
+        <ActionButton
+          className="bg-green-100 text-black"
+          tooltip="Go to Profile"
+          isLoading={false}
+          onClick={(e) => {
+            e.stopPropagation();
+            setLoading(true);
+            navigate(`/dashboard/clients/${item.client.id}`);
+          }}
+        >
+          {item.client.firstName}
+        </ActionButton>
+      )}
+
+      <ActionButton
+        className="bg-blue-500 text-white"
+        tooltip="Mark Complete"
+        isLoading={isLoading}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleAction(item.type, item, "complete");
+        }}
+      >
+        Complete
+      </ActionButton>
+
+      {item.type === "resource" && (
+        <ActionButton
+          className="bg-red-500 text-white"
+          tooltip="Mark Closed"
+          isLoading={isLoading}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAction(item.type, item, "closed");
+          }}
+        >
+          Closed
+        </ActionButton>
+      )}
+
+      <ActionButton
+        className="bg-gray-500 text-white"
+        tooltip="Delete"
+        isLoading={isLoading}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleAction(item.type, item, "delete");
+        }}
+      >
+        Delete
+      </ActionButton>
+    </div>
+  );
+}
+
+function TimelineItem({
+  item,
+  isExpanded,
+  toggleItem,
+  navigate,
+  setLoading,
+  handleAction,
+  loadingId,
+  noteToggle,
+}) {
+  return (
+    <li
+      onClick={() => toggleItem(item.id)}
+      className="py-md border-b border-gray-200 py-2 cursor-pointer hover:bg-gray-50 transition"
+    >
+      <div className="flex justify-between items-start gap-2">
+        <div className="flex items-start">
+          <span className="font-medium">
+            {item.type === "resource" ? "🏠 " : "📝 "}
+            {item.type === "note" && item.client
+              ? `Note for ${item.client.firstName} ${item.client.lastName}`
+              : item.label}
+            {item.type === "note" && !item.client && item.title ? `: ${item.title}` : ""}
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+
+          <span className="text-sm text-muted text-right ml-1">
+            {!noteToggle ? getDisplayTime(item.date, true) : item.date.toLocaleDateString([], {
+              month: "short",
+              day: "numeric",
+              year: "2-digit",
+            })}
+          </span>
+          <span className="text-xs text-muted ">
+            {isExpanded ? (
+              <ChevronDown className="w-3 h-3" />
+            ) : (
+              <ChevronUp className="w-3 h-3 text-muted font-bold" />
+            )}
+          </span>
+        </div>
+      </div>
+
+      {isExpanded && (
+        <div className="mt-2 text-xs text-muted-foreground space-y-2">
+          <div className="wrap p-sm bg-yellow-100 rounded-md text-sm text-left italic">
+            {item.type === "note" ? item.content : item.purpose}
+          </div>
+          {item.noteReminder && (
+            <span className="text-xs text-muted italic text-right block text-red-500">
+              Reminder: {item.noteReminder.toLocaleDateString([], {
+                month: "short",
+                day: "numeric",
+                year: "2-digit",
+              })}
+            </span>
+          )}
+          {item.reminderAt && (
+            <span className="text-xs text-muted italic text-right block text-red-500">
+              Follow-up: {new Date(item.reminderAt).toLocaleDateString([], {
+                month: "short",
+                day: "numeric",
+                year: "2-digit",
+              })}
+            </span>
+          )}
+          <ActionButtons
+            item={item}
+            navigate={navigate}
+            setLoading={setLoading}
+            handleAction={handleAction}
+          />
+        </div>
+      )}
+    </li>
+  );
+}
+
+function Notifications({
+  className,
+  userNotes,
+  userReferrals,
+  globalNotes,
+  globalReferrals,
+  fetchUpdatedData,
+  authRouter,
+}) {
   const [toggle, setToggle] = useState("reminders");
-  const [showNoteForm, setShowNoteForm] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
-  const [viewedNotes, setViewedNotes] = useState({notes: userNotes, filterMsg: "Personal Notes"});
+  const [loadingId, setLoadingId] = useState(null);
+  const [viewedNotes, setViewedNotes] = useState({
+    notes: userNotes,
+    filterMsg: "Personal Notes",
+  });
+
+  const { success, setSuccess, loading, setLoading, error, setError } = useAsyncStatus({loadingDuration: 2000, successDuration: 3000});
+
   const navigate = useNavigate();
 
   const toggleItem = (id) => {
-    setExpandedId(prev => (prev === id ? null : id));
+    setExpandedId((prev) => (prev === id ? null : id));
   };
 
-  const handleNoteToggle = async () => {
-    setToggle("notes");
-    if (toggle === "notes") {
-      await authRouter.post('/dashboard/notes/mark-read');
-    }
-  };
-
-  const handleComplete = async (item) => {
+  const handleAction = async (type, item, action) => {
     try {
-      if (item.type === "note") {
-        await authRouter.post(`/dashboard/notes/${item.rawId}/complete`);
-      } else {
-        await authRouter.post(`/dashboard/referrals/${item.rawId}/complete`);
-      }
-      SetSuccess(true);
-      SetLoading(true);
-      SetNewFetch(true);
-    } catch (error) {
-      console.error('Error marking complete:', error);
+      // id for loader on specific item from action trigger
+      setLoadingId(item.id);
+
+      const base =
+        type === "note"
+          ? `/dashboard/notes/${item.rawId}`
+          : `/dashboard/referrals/${item.rawId}`;
+
+      const endpoint =
+        action === "complete"
+          ? `${base}/complete`
+          : action === "delete"
+          ? `${base}/delete`
+          : `${base}/closed`;
+
+      await authRouter.post(endpoint);
+      setSuccess(true);
+      setExpandedId(null);
+      setSuccess(true);
+      // trigger refetch in parent to update ALL data after action
+      fetchUpdatedData(true);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingId(null);
     }
   };
 
-  const now = new Date();
   const timeline = [];
 
   userReferrals?.forEach((ref) => {
@@ -69,25 +261,31 @@ function Notifications({className, userNotes, userReferrals, globalNotes, global
       id: `note-${note.id}`,
       rawId: note.id,
       type: "note",
-      label: note.content,
+      content: note.content,
+      label: note?.title || null,
       date: new Date(note.reminderAt),
       isPriority: false,
       client: note.client,
     });
   });
 
+  // putting priority referrals/notes at top of timeline, then sorting by date within priority vs non-priority groups
+  timeline.sort((a, b) => {
+    if (a.isPriority && !b.isPriority) return -1;
+    if (!a.isPriority && b.isPriority) return 1;
+    return a.date - b.date;
+  });
+
   const groups = {
     overdueToday: [],
-    overdueRecent: [], // 1–3 days ago
-    overdueWeek: [],   // this week
+    overdueRecent: [],
+    overdueWeek: [],
     today: [],
-    soon: [],          // 1–3 days
+    soon: [],
     week: [],
     future: [],
-    priority: [],
   };
 
-  // mapping to group items based on date and priority
   timeline.forEach((item) => {
     const itemDate = new Date(item.date);
     itemDate.setHours(0, 0, 0, 0);
@@ -95,280 +293,153 @@ function Notifications({className, userNotes, userReferrals, globalNotes, global
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const diffDays = Math.floor((itemDate - today) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.floor(
+      (itemDate - today) / (1000 * 60 * 60 * 24)
+    );
 
-    if (item.isPriority) {
-      groups.priority.push(item);
-      return;
-    }
-
-    // OVERDUE
     if (diffDays < 0) {
       if (diffDays === -1) groups.overdueToday.push(item);
       else if (diffDays >= -3) groups.overdueRecent.push(item);
-      else if (diffDays >= -7) groups.overdueWeek.push(item);
       else groups.overdueWeek.push(item);
       return;
     }
 
-    // TODAY
     if (diffDays === 0) {
       groups.today.push(item);
       return;
     }
 
-    // SOON
     if (diffDays <= 3) {
       groups.soon.push(item);
       return;
     }
 
-    // THIS WEEK
     if (diffDays <= 7) {
       groups.week.push(item);
       return;
     }
 
-    // FUTURE
     groups.future.push(item);
   });
 
-  const renderItem = (item) => {
-    const isExpanded = expandedId === item.id;
-
-    return (
-      <li
-        key={item.id}
-        onClick={() => toggleItem(item.id)}
-        className="border-b border-gray-200 py-2 cursor-pointer hover:bg-gray-50 transition"
-      >
-        <div className="flex justify-between items-center">
-          <span className="font-medium">
-            {item.type === "resource" ? "🏠 " : "📝 "}
-            {item.type === "note" && item.client
-              ? `Note for ${item.client.firstName} ${item.client.lastName}`
-              : item.label}
-          </span>
-
-          <div>
-            <span className="text-sm text-muted">
-              {item.date.toLocaleDateString()}
-            </span>
-            <span className="text-muted text-xs ml-2">
-              {isExpanded ? "▲" : "▼"}
-            </span>
-          </div>
-        </div>
-
-        {isExpanded && (
-          <div className="mt-2 text-xs text-muted-foreground space-y-2">
-            <div>
-              {item.type === "note" ? item.label : item.purpose}
-            </div>
-
-            <div className="flex gap-2">
-              {item.client && (
-                <button
-                  className="relative group px-2 py-1 bg-green-100 text-black rounded-md"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    SetLoading(true);
-                    navigate(`/dashboard/clients/${item.client.id}`);
-                  }}
-                >
-                  {item.client.firstName}
-                  <span className="absolute left-1/2 -translate-x-1/2 -top-6 whitespace-nowrap 
-                    bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 
-                    group-hover:opacity-100 transition pointer-events-none">
-                    Go to Profile
-                  </span>
-                </button>
-              )}
-
-              <button
-                className="px-2 py-1 bg-blue-500 text-white rounded-md"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleComplete(item);
-                }}
-              >
-                Complete
-              </button>
-            </div>
-          </div>
-        )}
-      </li>
-    );
-  };
-
   return (
-    <div className={className}>
-      <div className="flex-1 p-4">
-
+    <div className={`${className} h-full flex flex-col`}>
+      <div className="flex-1 flex flex-col p-4 overflow-hidden">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-md font-semibold mb-2">
+          {success && (
+            <div className="text-green-600 font-medium">
+              Action completed successfully!
+            </div>
+          )}
+          <h3 className="text-md font-semibold">
             {toggle === "reminders" ? "Reminders" : "Notes"}
           </h3>
-          { toggle === "notes" && (
+
+          {toggle === "notes" && (
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline">
-                  Create Note
-                </Button>
+                <Button variant="outline">Create Note</Button>
               </DialogTrigger>
-
               <DialogContent>
                 <NoteForm
                   authRouter={authRouter}
-                  SetSuccess={SetSuccess}
-                  SetLoading={SetLoading}
+                  setSuccess={setSuccess}
                 />
               </DialogContent>
             </Dialog>
           )}
         </div>
 
-        <div className="flex items-center gap-2 mb-4">
-          <div className="flex flex-1 justify-center">
-            <Button onClick={() => setToggle("reminders")} variant="outline"
-              className={`flex flex-1 border-2 border-border ${toggle === "reminders" ? "border-primary" : ""}`}>
-              <Bell className={`mr-1 w-4 h-4 ${toggle === "reminders" ? "fill-yellow-400" : "text-muted opacity-60"}`} />
-              Reminders
-            </Button>
-          </div>
+        <div className="flex gap-2 mb-4">
+          <Button
+            onClick={() => setToggle("reminders")}
+            variant="outline"
+            className={`flex-1 ${toggle === "reminders" ? "border-primary" : ""}`}
+          >
+            <Bell className="mr-1 w-4 h-4" />
+            Reminders
+          </Button>
 
-          <div className="flex flex-1 justify-center">
-            <Button onClick={handleNoteToggle} variant="outline"
-              className={`flex flex-1 border-2 border-border ${toggle === "notes" ? "border-primary" : ""}`}>
-              <Notebook className={`mr-1 w-4 h-4 ${toggle === "notes" ? "fill-primary" : "text-muted opacity-60"}`} />
-              Notes
-            </Button>
-          </div>
+          <Button
+            onClick={() => setToggle("notes")}
+            variant="outline"
+            className={`flex-1 ${toggle === "notes" ? "border-primary" : ""}`}
+          >
+            <Notebook className="mr-1 w-4 h-4" />
+            Notes
+          </Button>
         </div>
-        { toggle === "notes" && (
-          <div className="text-sm text-muted-foreground italic mb-2">
-            <DropdownNoteFilter  setViewedNotes={setViewedNotes} noteMsg={viewedNotes.filterMsg} userNotes={userNotes} globalNotes={globalNotes} />
-          </div>
 
+        {toggle === "notes" && (
+          <>
+            <DropdownNoteFilter
+              setViewedNotes={setViewedNotes}
+              noteMsg={viewedNotes.filterMsg}
+              userNotes={userNotes}
+              globalNotes={globalNotes}
+            />
+
+            <div className="mt-2 text-sm font-medium text-left italic">
+              {viewedNotes.filterMsg}
+            </div>
+          </>
         )}
-        { toggle === "notes" && (
-          <div className="text-sm font-medium text-left text-foreground italic mb-2">
-            {viewedNotes.filterMsg}
-          </div>
-        )}
-        <ul className="mt-2 text-sm text-muted-foreground text-left">
+      <div className="flex-1 overflow-y-auto">
+        <ul className="mt-2 text-sm">
           {toggle === "reminders" ? (
-            <>
-              {groups.overdueToday.length > 0 && (
-                <>
-                  <p className="text-red-500 font-medium mt-2">Overdue (Yesterday)</p>
-                  {groups.overdueToday.map(renderItem)}
-                </>
-              )}
+            Object.entries(groups).map(([key, items]) =>
+              items.length > 0 ? (
+                <div key={key} className="mb-2">
 
-              {groups.overdueRecent.length > 0 && (
-                <>
-                  <p className="text-red-500 font-medium mt-2">Overdue (Last 3 Days)</p>
-                  {groups.overdueRecent.map(renderItem)}
-                </>
-              )}
+                  <p className="text-xs font-semibold text-muted mb-1">
+                    {groupLabels[key]}
+                  </p>
 
-              {groups.today.length > 0 && (
-                <>
-                  <p className="text-yellow-500 font-medium mt-2">Due Today</p>
-                  {groups.today.map(renderItem)}
-                </>
-              )}
-
-              {groups.soon.length > 0 && (
-                <>
-                  <p className="text-yellow-500 font-medium mt-2">Due Soon</p>
-                  {groups.soon.map(renderItem)}
-                </>
-              )}
-
-              {groups.week.length > 0 && (
-                <>
-                  <p className="text-blue-500 font-medium mt-2">This Week</p>
-                  {groups.week.map(renderItem)}
-                </>
-              )}
-
-              {groups.future.length > 0 && (
-                <>
-                  <p className="text-gray-500 font-medium mt-2">Upcoming</p>
-                  {groups.future.map(renderItem)}
-                </>
-              )}
-            </>
+                  {items.map((item) => (
+                    <TimelineItem
+                      key={item.id}
+                      item={item}
+                      isExpanded={expandedId === item.id}
+                      toggleItem={toggleItem}
+                      navigate={navigate}
+                      handleAction={handleAction}
+                      loadingId={loadingId}
+                      setLoading={setLoading}
+                      noteReminder={item.noteReminder}
+                    />
+                  ))}
+                </div>
+              ) : null
+            )
           ) : (
             viewedNotes?.notes.map((note) => {
               const id = `note-${note.id}`;
-              const isExpanded = expandedId === id;
-
               return (
-                <li
-                  key={note.id}
-                  onClick={() =>
-                    setExpandedId(prev => prev === id ? null : id)
-                  }
-                  className="border-b border-gray-200 py-2 cursor-pointer hover:bg-gray-50 transition"
-                >
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">
-                      {note.client
-                        ? `📝 Note for ${note.client.firstName} ${note.client.lastName}`
-                        : "📝 General Note"}
-                    </span>
-
-                    <span className="text-xs text-muted">
-                      {isExpanded ? "▲" : "▼"}
-                    </span>
-                  </div>
-
-                  {isExpanded && (
-                    <div className="mt-2 text-xs text-muted-foreground space-y-2">
-                      <div>{note.content}</div>
-
-                      <div className="flex gap-2">
-                        {note.client && (
-                          <button
-                            className="relative group px-2 py-1 bg-green-100 text-black rounded-md"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              SetLoading(true);
-                              navigate(`/dashboard/clients/${note.client.id}`);
-                            }}
-                          >
-                            {note.client.firstName}
-                            <span className="absolute left-1/2 -translate-x-1/2 -top-6 whitespace-nowrap 
-                              bg-black text-white text-[10px] px-2 py-1 rounded opacity-0 
-                              group-hover:opacity-100 transition pointer-events-none">
-                              Go to Profile
-                            </span>
-                          </button>
-                        )}
-
-                        <button
-                          className="px-2 py-1 bg-blue-500 text-white rounded-md"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleComplete({
-                              type: "note",
-                              rawId: note.id
-                            });
-                          }}
-                        >
-                          Complete
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </li>
+                <TimelineItem
+                  key={id}
+                  item={{
+                    id,
+                    rawId: note.id,
+                    type: "note",
+                    content: note.content,
+                    label: note?.title || null,
+                    date: new Date(note.createdAt),
+                    client: note.client,
+                    noteToggle: true,
+                    noteReminder: note.reminderAt ? new Date(note.reminderAt) : null,
+                  }}
+                  isExpanded={expandedId === id}
+                  toggleItem={toggleItem}
+                  navigate={navigate}
+                  handleAction={handleAction}
+                  loadingId={loadingId}
+                  noteToggle={true}
+                />
               );
             })
           )}
         </ul>
+        </div>
       </div>
     </div>
   );

@@ -10,7 +10,9 @@ import { useOutletContext } from "react-router-dom";
 import { getClientStats } from '@/lib/utils';
 
 function ClientList({className, viewedClients}) {
-    const { user, data, success, SetSuccess, SetLoading, loading, SetNewFetch, authRouter, authRouterForm } = useOutletContext();
+    const { user, data, SetNewFetch, authRouter, authRouterForm } = useOutletContext();
+
+    const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -35,7 +37,6 @@ function ClientList({className, viewedClients}) {
               variant="ghost"
               className="w-full h-auto p-0 justify-start rounded-xl bg-transparent hover:bg-transparent"
               onClick={() => {
-              SetLoading(true);
               navigate(`/dashboard/clients/${client.id}`);
             }}
           >
@@ -105,10 +106,10 @@ function ClientCard({ client, clientStats }) {
       <div className="mt-3 sm:mt-4 flex justify-between text-xs sm:text-sm">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-sm">
-            {clientStats?.totalReferrals >= 0 && <div className='p-xs text-[10px] sm:text-xs text-foreground rounded-md bg-white'>Resources {clientStats.totalReferrals}</div>}
+            {clientStats?.totalReferrals >= 0 && <div className='p-xs text-[12px] sm:text-xs text-foreground rounded-md bg-white'>Resources {clientStats.totalReferrals}</div>}
             {clientStats?.urgentReferrals > 0 && <div className='flex gap-xs p-xs text-[10px] sm:text-xs text-white rounded-md bg-red-600'><ClockAlert /> Urgent  {clientStats.urgentReferrals}</div>}
-            {clientStats?.upcomingFollowUps > 0 && <div className='p-xs text-[10px] sm:text-xs text-white rounded-md bg-blue-600'>Upcoming {clientStats.upcomingFollowUps}</div>}
-            {clientStats?.expiredFollowUps > 0 && <div className='p-xs text-[10px] sm:text-xs text-white rounded-md bg-orange-600'>Expired {clientStats.expiredFollowUps}</div>}
+            {clientStats?.upcomingFollowUps > 0 && <div className='p-xs text-[12px] sm:text-xs text-white rounded-md bg-blue-600'>Upcoming {clientStats.upcomingFollowUps}</div>}
+            {clientStats?.expiredFollowUps > 0 && <div className='p-xs text-[12px] sm:text-xs text-white rounded-md bg-orange-600'>Expired {clientStats.expiredFollowUps}</div>}
           </div>
         </div>
       </div>
@@ -213,7 +214,7 @@ function ClientToggleSection({className, clientData, authRouter, authRouterForm,
           </ComboboxContent>
         </Combobox>
       </div>
-      <div className="flex items-center justify-center gap-2 p-0  lg:p-lg px-md">
+      <div className={`${calendarOpen ? 'flex' : 'hidden'} items-center justify-center gap-2 p-0  lg:p-lg px-md`}>
       {calendarOpen && <CalendarView />}
       </div>
       <ClientList className="flex-col" viewedClients={viewedClients}/>

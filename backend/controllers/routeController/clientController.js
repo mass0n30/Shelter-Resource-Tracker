@@ -76,7 +76,7 @@ async function getClients(req, res, next) {
       // else get by filter 
       clients = await prisma.client.findMany({
         where: {
-          status: filter ? filter : undefined,
+          status: filter && filter !== "ALL" ? filter : undefined,
         },
         include: clientInclude,
       });

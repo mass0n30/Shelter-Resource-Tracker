@@ -78,19 +78,5 @@ dashboardRouter.post('/notes/mark-read', async (req, res) => {
   res.json({ success: true });
 });
 
-dashboardRouter.post('/notes/:noteId/complete', async (req, res) => {
-  const noteId = parseInt(req.params.noteId);
-
-  try {
-    await prisma.note.update({
-      where: { id: noteId },
-      data: { completed: true },
-    });
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Error marking note as complete:', error);
-    res.status(500).json({ error: 'Failed to mark note as complete' });
-  }
-});
 
 module.exports = {dashboardRouter}

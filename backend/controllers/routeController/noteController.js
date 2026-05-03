@@ -4,6 +4,7 @@ async function getClientNotes(req, res, next) {
   try {
     const notes = await prisma.note.findMany({
       where: { clientId: parseInt(req.params.clientId) },
+      orderBy: { createdAt: 'desc' },
     });
     return res.status(200).json(notes);
   } catch (error) {
@@ -58,8 +59,23 @@ async function deleteNote(req, res, next) {
   }
 };
 
+async function completeNote(req, res, next) {
+  try {
+    await prisma.note.update({
+      where: { id: parseInt(req.params.noteId) },
+      data: {
+        completed: true
+      }
+   });
+  return res.status(200).json({ message: "Note Marked Complete" });
+  } catch (error) {
+    console.log('failed to mark note complete');
+    return res.status(400).json({ errors:error });
+  }
+};
+
 module.exports = { 
   noteController: {
-    getClientNotes, createNote, deleteNote, updateNote
+    getClientNotes, createNote, deleteNote, updateNote, completeNote
   }
 };

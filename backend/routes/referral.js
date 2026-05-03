@@ -11,7 +11,8 @@ referralRouter.patch("/:referralId", controller.referralController.updateReferra
 // not sure I even need these, keeping just in case
 // update specific fields for referral?
 referralRouter.patch("/:referralId/status", controller.referralController.updateReferralStatus);
-referralRouter.delete("/:referralId", controller.referralController.deleteReferral);
+referralRouter.post("/:referralId/delete", controller.referralController.deleteReferral);
+referralRouter.post("/:referralId/closed", controller.referralController.closeReferral);
 //referralRouter.patch("/:referralId/priority", controller.referralController.setPriorityReferral);
 //referralRouter.patch("/:referralId/close", controller.referralController.closeReferral);
 

@@ -66,6 +66,21 @@ async function updateReferralStatus(req, res, next) {
   }
 };
 
+async function closeReferral(req, res, next) {
+  try {
+    const updatedReferral = await prisma.referral.update({
+      where: { id: parseInt(req.params.referralId) },
+      data: {
+        status: "CLOSED",
+      },
+    });
+    return res.status(200).json(updatedReferral, { message: "Referral Closed Successfully" });
+  } catch (error) {
+    console.log('failed to close referral');
+    return res.status(400).json({ errors:error });
+  }
+};
+
 async function deleteReferral(req, res, next) {
   try {
     await prisma.referral.delete({
@@ -81,6 +96,6 @@ async function deleteReferral(req, res, next) {
 
 module.exports = { 
   referralController: {
-    createReferral, updateReferral, updateReferralStatus, deleteReferral
+    createReferral, updateReferral, updateReferralStatus, deleteReferral, closeReferral
   }
 }

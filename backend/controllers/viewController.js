@@ -9,12 +9,14 @@ async function getAllUserData(req, res, next) {
         notes: {
           include: {
             client: true
-          } 
+          },
+          orderBy: { createdAt: 'desc' },
         },
         referrals: {
           include: {
             client: true
-          } 
+          },
+          orderBy: { createdAt: 'desc' },
         },
         // profile: true
       },
@@ -54,7 +56,8 @@ async function getAllNotes(req, res, next) {
     const notes = await prisma.note.findMany({
       include: {
         client: true,
-      }
+      }, 
+      orderBy: { createdAt: 'desc' },
     });
     return notes;
   } catch (error) {

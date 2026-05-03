@@ -33,6 +33,7 @@ export default function NoteForm({ authRouter, clientId, noteData, fetchClientDa
     if (noteData) {
       setFormData({
         clientId,
+        title: noteData.title || "",
         content: noteData.content || "",
         setReminder: noteData.setReminder || false,
         reminderAt: noteData.reminderAt || null,
@@ -93,6 +94,7 @@ export default function NoteForm({ authRouter, clientId, noteData, fetchClientDa
       <form onSubmit={handleSubmit} className="grid gap-4 py-4">
 
         {/* Note Content */}
+        <input type="text" placeholder="Note Title(optional)" value={formData.title} onChange={(e) => updateField("title", e.target.value)} className="w-full border px-3 py-2 rounded-md bg-white text-black" />
         <textarea
           placeholder="Write your note..."
           value={formData.content}

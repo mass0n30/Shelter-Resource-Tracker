@@ -4,16 +4,14 @@ import { useEffect, useState } from 'react';
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import axios from 'axios';
+import { useAsyncStatus } from "@/components/partials/Loading";
+import { tr } from "date-fns/locale";
 
 function DashBoardLayout() {
 
   const [user, SetUser] = useState(null);
   const [data, SetData] = useState(null);
   const [notifications, setNotifications] = useState([]);
-  // loading state settings
-  const [loading, SetLoading] = useState(true);
-  const [success, SetSuccess] = useState(false);
-  const [error, SetError] = useState(null);
 
   // useful for navigation 
   const [mount, SetMount] = useState(false);
@@ -39,25 +37,21 @@ function DashBoardLayout() {
       },
   });
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      SetLoading(false);
-    }, 2000);
-
-    const successTimer = setTimeout(() => {
-      SetSuccess(false);
-    }, 5000);
-    return () => {
-      clearTimeout(timer);
-      clearTimeout(successTimer);
-    };
-  } ,[loading, SetSuccess, SetLoading]);
+  const { success, setSuccess, loading, setLoading, error, setError } = useAsyncStatus({loadingDuration: 2000, successDuration: 3000});
 
   useEffect( () => {
     if (token) {
-      fetchUser();
+      // gets all data 
+      try {
+        setLoading(true);
+        fetchUpdatedData();
+      } catch (error) {
+        setError(error);
+      } 
+    } else {
+      navigate('/login');
     }
-  }, [token, loading]);
+  }, [token]);
 
   const fetchNotifications = async () => {
     try {
@@ -71,7 +65,7 @@ function DashBoardLayout() {
     }
   };
 
-  const fetchUser = async () => {
+  const fetchUpdatedData = async () => {
     try {
       const response = await authRouter.get('/dashboard');
       // AXIOS Already Parses JSON, no need for response.json() like fetch !!!! Same on Backend Controllers !
@@ -82,10 +76,25 @@ function DashBoardLayout() {
       fetchNotifications();
       // reset boolean fetch after updated posts fetch
     } catch (error) {
-      SetError(error);
+      setError(error);
       return navigate('/login'); // redirect to login if token invalid or expired, consider separate error handling for different status codes in future (e.g. 401 vs 403) for better UX
     } 
   };
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h1 className="text-2xl font-bold mb-4">An error occurred</h1>
+        <p className="text-gray-600 mb-8">{error.message}</p>
+        <button
+          onClick={() => navigate('/login')}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+        >
+          Go to Login
+        </button>
+      </div>
+    );
+  }
 
   // skeleton loader Navbar/sidebar, ect. 
   if (loading || !data || !user) {
@@ -99,7 +108,7 @@ function DashBoardLayout() {
       </>
     );
   }
-
+  
   // show Sonner badge upon creating new client, note, referral, ect.
  if (data ) {
   return (
@@ -108,12 +117,9 @@ function DashBoardLayout() {
         context={{
           user,
           data,
-          fetchUser,
+          error,
+          fetchUpdatedData,
           fetchNotifications,
-          loading,
-          success,
-          SetLoading,
-          SetSuccess,
           SetMount,
           mount,
           notifications,

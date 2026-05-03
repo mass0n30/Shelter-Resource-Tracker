@@ -9,6 +9,8 @@ noteRouter.get("/client/:clientId", controller.noteController.getClientNotes);
 
 
 noteRouter.put("/:noteId", controller.noteController.updateNote);
-noteRouter.delete("/:noteId", controller.noteController.deleteNote);
+noteRouter.post("/:noteId/complete", controller.noteController.completeNote);
+noteRouter.post("/:noteId/delete", controller.noteController.deleteNote);
+
 
 module.exports = { noteRouter };

@@ -138,9 +138,11 @@ model Referral {
 model Note {
   id         Int       @id @default(autoincrement())
   clientId   Int?      //if no clientId is provided, it's a dashboard note, not associated with any specific client
-  authorId   Int       
-  content    String
+  authorId   Int     
+  title      String?     @default("")
+  content    String    @default("")
   setReminder Boolean   @default(false)
+  completed   Boolean   @default(false)
   reminderAt DateTime?
   visibility String?   @default("private") // "private" or "public"
 

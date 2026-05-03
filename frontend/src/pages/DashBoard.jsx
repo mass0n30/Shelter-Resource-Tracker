@@ -10,7 +10,7 @@ import { getAllDashboardStats } from '@/lib/utils';
 
 
 function DashBoard() {
-  const { user, data, fetchUser, fetchNotifications, success, SetSuccess, SetLoading, SetNewFetch, notifications, authRouter, authRouterForm } = useOutletContext();
+  const { user, data, fetchUpdatedData, fetchNotifications, notifications, authRouter, authRouterForm } = useOutletContext();
 
   const [viewedClients, setViewedClients] = useState(data.clients);
   const [dashStatFilter, setDashStatFilter] = useState(null);
@@ -134,8 +134,7 @@ function DashBoard() {
                     <NotificationsAlert
                       data={unfound}
                       fetchNotifications={fetchNotifications}
-                      SetSuccess={SetSuccess}
-                      SetLoading={SetLoading}
+
                       authRouter={authRouter}
                     />
                   </div>
@@ -154,20 +153,17 @@ function DashBoard() {
               authRouter={authRouter}
               authRouterForm={authRouterForm}
             />
-
-            <Notifications
-              className="border-border-400 shadow-md border-2 rounded-md col-span-1 lg:col-span-1 row-span-10"
-              userNotes={user.notes}
-              userReferrals={user.referrals}
-              globalNotes={data.notes}
-              globalReferrals={data.referrals}
-              SetSuccess={SetSuccess}
-              SetLoading={SetLoading}
-              SetNewFetch={SetNewFetch}
-              authRouter={authRouter}
-              authRouterForm={authRouterForm}
-            />
-
+            <div className="col-span-1 lg:col-span-1 row-span-10 max-h-[calc(100vh-250px)] min-h-0 overflow-hidden flex flex-col">
+              <Notifications
+                className="border-border-400 shadow-md border-2 rounded-md h-full min-h-0 flex flex-col"
+                userNotes={user.notes}
+                userReferrals={user.referrals}
+                globalNotes={data.notes}
+                fetchUpdatedData={fetchUpdatedData}
+                authRouter={authRouter}
+                authRouterForm={authRouterForm}
+              />
+            </div>
           </div>
         </div>
       </main>

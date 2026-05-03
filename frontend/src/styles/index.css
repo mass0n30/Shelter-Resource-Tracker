@@ -35,10 +35,12 @@
 
     /* FONT */
     --font-sans: Inter, system-ui, sans-serif;
+    --font-plus-jakarta-sans: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+}
   }
 
   body {
-    font-family: var(--font-sans);
+    font-family: var(--font-plus-jakarta-sans);
     background-color: var(--color-background);
     color: var(--color-foreground);
     min-width: 320px;
@@ -69,7 +71,7 @@
     }
   }
 
-}
+
 
 /* apply base styles to components */
 @layer components {
