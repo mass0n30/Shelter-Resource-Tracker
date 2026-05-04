@@ -6,7 +6,7 @@ import ClientToggleSection from '../components/dashboard/ClientList';
 import Notifications from '../components/dashboard/Notifications';
 import NotificationsAlert from '../components/dashboard/NotificationsAlert';
 import Navbar from '../components/Navbar';
-import { getAllDashboardStats } from '@/lib/utils';
+import { getAllDashboardStats, getDisplayTime } from '@/lib/utils';
 
 
 function DashBoard() {
@@ -33,6 +33,8 @@ function DashBoard() {
 
   const notificationsCreatedAt =
     unfound?.createdAt || found?.createdAt;
+
+  const displayTime = getDisplayTime(notificationsCreatedAt, "notificationAlert");
 
   useEffect(() => {
     if (!clients) return;
@@ -90,16 +92,12 @@ function DashBoard() {
                 <div
                   className="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded-md px-4 py-2"
                 >
+                  <div className="flex flex-col items-start text-gray-700 gap-2">
                   <span className="text-sm font-medium">
                     Updated{" "}
                     <span className="font-semibold">
-                      {notificationsCreatedAt &&
-                        new Date(notificationsCreatedAt).toLocaleString([], {
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                      {displayTime &&
+                        ` ${displayTime}`}
                     </span>
                   </span>
 
@@ -108,6 +106,7 @@ function DashBoard() {
                       ? `${foundCount} clients here passed 24 hours.`
                       : ""}
                   </span>
+                  </div>
                   <div className="flex gap-2">
                     {hasUnfound && (
                       <button

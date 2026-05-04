@@ -1,8 +1,11 @@
 import { Button } from "../ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import ClientForm from "../forms/ClientForm";
+import { getDisplayTime } from "@/lib/utils";
 
 function NotificationsAlert({ data, SetLoading, authRouter, className }) {
+
+  const displayTime = getDisplayTime(data?.createdAt, "notificationAlert");
 
   const handleMarkRead = async () => {
     try {

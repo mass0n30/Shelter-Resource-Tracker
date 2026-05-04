@@ -34,15 +34,24 @@ Note 4/28:
   Avoid global notifications by default
 
 ToDo:
+  DashboardLayout.jsx
+    - Fix Dash stat follow-ups showing only exp Referrals
+
+    - Correctly map reverse notes upon toggle
+    - Consider further filtering Notes section (Client Notes/ Personal /Posted / Completed) *confirm Personal only shows Private.
+        (Log into other account to confirm data is displaying right)
+    - Limit 50 or 100 Notes fetched from any filter
+    - Consider putting more data in Dash stat cards?
+    - Calendar logic (mapping Icons for either Client Initials/Note reminders / Referral Followups?) --> clicking calendar cell shows limited info.. Not sure what to exactly do here, as Calendar should function different from Reminders sidebar for the value it provides.
+
+  ClientProfile.jsx
+    - Client profile can paginate all notes or referrals if needed (to see even oldest notes and referrals beyond Dashboards limits)
+    - Client Profiles need CRUD for client info
+    - Consider more client info to populate in information
+
   Frontend
-  - Notification Reminders sidebar design (go off figma, checking schema design for filter options, be deliberate here!)
-    * Filter and order by prioritys and dates
-    * overdue → followUpDate < today / due today → followUpDate === today / upcoming soon → within next 3 days (asc by followUp and reminder dates w/ priority at top)
     * Make notifications container slide up/pop up on mobile view?
-    * Notifications container shows alerts (Upcoming, Marked, Important Distinction?)
-    * Notes section (filter Public, Personal, Priority?)
     * Edit and convert to Reminder option to notes (Notify Team option (makes global))
-  - Add last updated from cron update showing in UI
   - Add loading skeletons
   - Add timeline modules and logic (shadUI?)
 
@@ -73,6 +82,9 @@ Done:
 - Get dash card stats  - Toggal displayed clients from  Dash Card selection
 - Edit and delete option and confirmation + backend controllers
 - Make edit and confirm delete forms
+- Notification Reminders sidebar design (go off figma, checking schema design for filter options, be deliberate here!)
+      * Filter and order by prioritys and dates
+
 
 
 

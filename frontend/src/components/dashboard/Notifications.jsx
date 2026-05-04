@@ -122,20 +122,15 @@ function TimelineItem({
         <div className="flex items-start">
           <span className="font-medium">
             {item.type === "resource" ? "🏠 " : "📝 "}
-            {item.type === "note" && item.client
-              ? `Note for ${item.client.firstName} ${item.client.lastName}`
-              : item.label}
-            {item.type === "note" && !item.client && item.title ? `: ${item.title}` : ""}
+            {item.type === "note" 
+              ? item.title ? item.title : item.client?.firstName ? `Note for ${item.client?.firstName}` : "General Note"
+              : item.label || "Referral"}
           </span>
         </div>
         <div className="flex items-center gap-1">
 
           <span className="text-sm text-muted text-right ml-1">
-            {!noteToggle ? getDisplayTime(item.date, true) : item.date.toLocaleDateString([], {
-              month: "short",
-              day: "numeric",
-              year: "2-digit",
-            })}
+            {!noteToggle ? getDisplayTime(item.date, "referral") : getDisplayTime( item.date, "note")}
           </span>
           <span className="text-xs text-muted ">
             {isExpanded ? (
@@ -153,17 +148,8 @@ function TimelineItem({
             {item.type === "note" ? item.content : item.purpose}
           </div>
           {item.noteReminder && (
-            <span className="text-xs text-muted italic text-right block text-red-500">
-              Reminder: {item.noteReminder.toLocaleDateString([], {
-                month: "short",
-                day: "numeric",
-                year: "2-digit",
-              })}
-            </span>
-          )}
-          {item.reminderAt && (
-            <span className="text-xs text-muted italic text-right block text-red-500">
-              Follow-up: {new Date(item.reminderAt).toLocaleDateString([], {
+            <span className="text-xs italic text-right block text-red-500">
+              Follow-up: {new Date(item.noteReminder).toLocaleDateString([], {
                 month: "short",
                 day: "numeric",
                 year: "2-digit",
@@ -192,6 +178,7 @@ function Notifications({
   authRouter,
 }) {
   const [toggle, setToggle] = useState("reminders");
+  const [view, setView] = useState("latest");
   const [expandedId, setExpandedId] = useState(null);
   const [loadingId, setLoadingId] = useState(null);
   const [viewedNotes, setViewedNotes] = useState({
@@ -206,6 +193,11 @@ function Notifications({
   const toggleItem = (id) => {
     setExpandedId((prev) => (prev === id ? null : id));
   };
+
+  const toggleView = () => {
+    viewedNotes.notes ? setViewedNotes((prev) => ({...prev, notes: viewedNotes.notes.slice().reverse()})) : null;
+    setView((prev) => prev === "latest" ? "oldest" : "latest");
+  }
 
   const handleAction = async (type, item, action) => {
     try {
@@ -240,7 +232,7 @@ function Notifications({
   const timeline = [];
 
   userReferrals?.forEach((ref) => {
-    if (!ref.followUpDate) return;
+    if (!ref.followUpDate || ref.status === "COMPLETED" || ref.status === "CLOSED") return;
 
     timeline.push({
       id: `ref-${ref.id}`,
@@ -255,12 +247,13 @@ function Notifications({
   });
 
   userNotes?.forEach((note) => {
-    if (!note.setReminder || !note.reminderAt) return;
+    if (!note.setReminder || !note.reminderAt || note.completed) return;
 
     timeline.push({
       id: `note-${note.id}`,
       rawId: note.id,
       type: "note",
+      title: note.title,
       content: note.content,
       label: note?.title || null,
       date: new Date(note.reminderAt),
@@ -382,6 +375,14 @@ function Notifications({
             <div className="mt-2 text-sm font-medium text-left italic">
               {viewedNotes.filterMsg}
             </div>
+              <div className="text-xs text-muted-foreground mb-2 text-right" onClick={() => toggleView()}>
+                {view === "latest"
+                  ? " Latest"
+                  : " Older"}
+                  <ChevronUp
+                    className={`w-3 h-3 inline-block ml-1 ${view === "latest" ? "rotate-180" : ""}`}
+                  />
+              </div>
           </>
         )}
       <div className="flex-1 overflow-y-auto">
@@ -421,6 +422,7 @@ function Notifications({
                     id,
                     rawId: note.id,
                     type: "note",
+                    title: note.title,
                     content: note.content,
                     label: note?.title || null,
                     date: new Date(note.createdAt),

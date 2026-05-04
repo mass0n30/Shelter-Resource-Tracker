@@ -45,7 +45,7 @@ export const RESOURCE_CONFIG = {
   },
 };
 
-export const getDisplayTime = (date) => {
+export const getDisplayTime = (date, type) => {
   const itemDate = new Date(date);
   itemDate.setHours(0, 0, 0, 0);
 
@@ -56,15 +56,24 @@ export const getDisplayTime = (date) => {
     (itemDate - today) / (1000 * 60 * 60 * 24)
   );
 
+  if (type === "referral") {
   if (diffDays === 0) return "Today";
   if (diffDays === 1) return "In 1 day";
   if (diffDays === 2) return "In 2 days";
   if (diffDays === 3) return "In 3 days";
 
-  if (diffDays === -1) return "1 day overdue";
-  if (diffDays === -2) return "2 days overdue";
-  if (diffDays >= -7 && diffDays < 0) return "Overdue";
-
+  if (diffDays < 0) return "Overdue";
+  } else if (type === "notificationAlert") {
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Tomorrow";
+    if (diffDays === -1) return "Yesterday";
+    if (diffDays > 1) return `In ${diffDays} days`;
+    if (diffDays < -1) return `${Math.abs(diffDays)} days ago`;
+  } else if (type === "note") {
+    if (diffDays === 0) return "Today";
+    if (diffDays === -1) return "Yesterday";
+    if (diffDays <= -7 && diffDays >= -30) return `${Math.abs(diffDays)} days ago`;
+  }
   return itemDate.toLocaleDateString();
 };
 
@@ -85,10 +94,12 @@ export async function setLoadDelay(setLoading, delay = 2000) {
 export function getAllDashboardStats(clients, referrals) {
   const totalClients = clients.length;
   const urgentCases = clients.filter(client => client.referrals.some(referral => referral.isPriority)).length;
-  const followUps = referrals.filter(referral => {
-    const followUpDate = new Date(referral.followUpDate);
-    const today = new Date();
-    return followUpDate > today;
+  const followUps = clients.filter(client => { 
+    return client.referrals.some(referral => {
+      const followUpDate = new Date(referral.followUpDate);
+      const today = new Date();
+      return followUpDate > today;
+    });
   }).length;
   const newClients = clients.filter(client => {
     const createdAt = new Date(client.createdAt);

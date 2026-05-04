@@ -152,6 +152,9 @@ export function DropdownNoteFilter({ setViewedNotes, noteMsg, userNotes, globalN
         <DropdownMenuItem onSelect={() => setViewedNotes({notes: userNotes, filterMsg: "Personal Notes"})}>
           Personal Notes
         </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => setViewedNotes({notes: userNotes.filter(note => note.completed === true), filterMsg: "Completed Notes"})}>
+          Completed Notes
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

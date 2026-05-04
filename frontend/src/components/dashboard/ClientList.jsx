@@ -159,6 +159,7 @@ function ClientToggleSection({className, clientData, authRouter, authRouterForm,
         <div className="flex flex-1 flex-col gap-2">
 
           <div className="w-full">
+            <div className="text-sm text-left italic text-muted-foreground mb-1 ml-1">Today: <span className="font-medium">{new Date().toLocaleDateString()}</span></div>
             <ClientSearch currentClients={viewedClients} setViewedClients={setViewedClients} setClientId={setClientId} filter={filter} setFilter={setFilter} />
           </div>
 
