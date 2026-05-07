@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Notebook } from "lucide-react";
 import CalendarPopover from "../partials/Calender"; 
 import { z } from "zod";
 
 const schema = z.object({
   content: z.string().min(1, "Note content is required"),
+  title: z.string().max(20, "Title too long").optional(),
   setReminder: z.boolean().optional(),
   reminderAt: z.date().nullable().optional(),
 });
@@ -18,8 +20,10 @@ export default function NoteForm({ authRouter, clientId, noteData, fetchClientDa
   const [formData, setFormData] = useState({
     clientId,
     content: "",
+    title: "",
     setReminder: false,
-    reminderAt: null,
+    reminderAt: date,
+    visibility: "private",
   });
 
   const updateField = (key, value) => {
@@ -37,6 +41,7 @@ export default function NoteForm({ authRouter, clientId, noteData, fetchClientDa
         content: noteData.content || "",
         setReminder: noteData.setReminder || false,
         reminderAt: noteData.reminderAt || null,
+        visibility: noteData.visibility || "private",
       });
 
       setDate(noteData.reminderAt ? new Date(noteData.reminderAt) : null);
@@ -82,7 +87,8 @@ export default function NoteForm({ authRouter, clientId, noteData, fetchClientDa
           {isEdit ? "Edit Note" : "Create Note"}
         </DialogTitle>
 
-        <DialogDescription>
+        <DialogDescription className="mt-2 flex items-center gap-2 text-sm text-muted">
+          <Notebook className="w-4 h-4" />
           {isEdit
             ? "Update this note."
             : `Add a note ${clientId ? "for this client" : "to the dashboard"}.`}
@@ -103,13 +109,19 @@ export default function NoteForm({ authRouter, clientId, noteData, fetchClientDa
         />
 
         {/* Reminder Toggle */}
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={formData.setReminder}
-            onChange={(e) => updateField("setReminder", e.target.checked)}
-          />
-          <span>Set Reminder</span>
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <input
+              type="checkbox"
+              checked={formData.setReminder}
+              onChange={(e) => updateField("setReminder", e.target.checked)}
+            />
+            <span className="ml-1">Set Reminder</span>
+          </div>
+          <div>
+            <input type="checkbox" checked={formData.visibility === "public"} onChange={(e) => updateField("visibility", e.target.checked ? "public" : "private")} />
+            <span className="ml-1">Publish Note (Public)</span>
+          </div>
         </div>
 
         {/* Date Picker */}

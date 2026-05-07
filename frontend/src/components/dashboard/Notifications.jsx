@@ -1,7 +1,7 @@
-import { Bell, ChevronDown, ChevronUp, Notebook } from "lucide-react";
+import { Bell, ChevronDown, ChevronUp, Notebook, House, NotebookText } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "../partials/Button";
 import { DropdownNoteFilter } from "../partials/Dropdown";
 import NoteForm from "../forms/NoteForm";
 import { useAsyncStatus } from "../partials/Loading";
@@ -46,7 +46,7 @@ function ActionButtons({ item, navigate, setLoading, handleAction, loadingId }) 
   const isLoading = loadingId === item.id;
 
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div className="flex gap-sm flex-wrap">
       {item.client && (
         <ActionButton
           className="bg-green-100 text-black"
@@ -118,18 +118,22 @@ function TimelineItem({
       onClick={() => toggleItem(item.id)}
       className="py-md border-b border-gray-200 py-2 cursor-pointer hover:bg-gray-50 transition"
     >
-      <div className="flex justify-between items-start gap-2">
-        <div className="flex items-start">
-          <span className="font-medium">
-            {item.type === "resource" ? "🏠 " : "📝 "}
+      <div className="flex justify-between gap-sm">
+        <div className="flex items-center gap-xs">
+          <span className="font-medium flex items-center gap-1">
+            {item.type === "resource" ? (
+              <House className="mr-1 inline h-4 w-4 text-primary" />
+            ) : (
+              <NotebookText className="mr-1 inline h-4 w-4 text-primary" />
+            )}
             {item.type === "note" 
               ? item.title ? item.title : item.client?.firstName ? `Note for ${item.client?.firstName}` : "General Note"
               : item.label || "Referral"}
           </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-xs">
 
-          <span className="text-sm text-muted text-right ml-1">
+          <span className="text-sm text-muted text-right ml-xs">
             {!noteToggle ? getDisplayTime(item.date, "referral") : getDisplayTime( item.date, "note")}
           </span>
           <span className="text-xs text-muted ">
@@ -318,22 +322,25 @@ function Notifications({
   return (
     <div className={`${className} h-full flex flex-col`}>
       <div className="flex-1 flex flex-col p-4 overflow-hidden">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-sm gap-sm">
           {success && (
             <div className="text-green-600 font-medium">
               Action completed successfully!
             </div>
           )}
-          <h3 className="text-md font-semibold">
-            {toggle === "reminders" ? "Reminders" : "Notes"}
-          </h3>
+          <div className="flex-1 items-start text-left gap-sm">
+            <h3 className="text-md font-semibold">
+              {toggle === "reminders" ? "Reminders" : "Notes"}
+            </h3>
+          </div>
 
+          <div className="flex-1 items-center gap-sm">
           {toggle === "notes" && (
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline">Create Note</Button>
+                <Button className="w-full">Create Note</Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="bg-background w-full max-w-lg">
                 <NoteForm
                   authRouter={authRouter}
                   setSuccess={setSuccess}
@@ -341,13 +348,13 @@ function Notifications({
               </DialogContent>
             </Dialog>
           )}
+          </div>
         </div>
 
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-sm mb-sm">
           <Button
             onClick={() => setToggle("reminders")}
-            variant="outline"
-            className={`flex-1 ${toggle === "reminders" ? "border-primary" : ""}`}
+            className={`flex-1 ${toggle === "reminders" ? " bg-primary" : "bg-white text-foreground"}`}
           >
             <Bell className="mr-1 w-4 h-4" />
             Reminders
@@ -355,8 +362,7 @@ function Notifications({
 
           <Button
             onClick={() => setToggle("notes")}
-            variant="outline"
-            className={`flex-1 ${toggle === "notes" ? "border-primary" : ""}`}
+            className={`flex-1 ${toggle === "notes" ? "bg-primary" : "bg-white text-foreground"}`}
           >
             <Notebook className="mr-1 w-4 h-4" />
             Notes

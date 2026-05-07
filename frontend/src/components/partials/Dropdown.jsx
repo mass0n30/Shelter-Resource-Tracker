@@ -133,8 +133,7 @@ export function DropdownNoteFilter({ setViewedNotes, noteMsg, userNotes, globalN
     <DropdownMenu className="z-[9999] w-full">
       <DropdownMenuTrigger asChild>
         <Button
-          variant="outline"
-          className="flex w-full items-center gap-2"
+          className="flex w-full items-center gap-2 bg-white text-foreground border px-3 py-1 shadow-sm hover:shadow-md transition"
         >
           <Funnel className="h-4 w-4" />
           <span className="text-muted-foreground">Filter</span>
@@ -144,7 +143,7 @@ export function DropdownNoteFilter({ setViewedNotes, noteMsg, userNotes, globalN
       <DropdownMenuContent
         align="end"
         sideOffset={6}
-        className="z-[9999] w-[var(--radix-dropdown-menu-trigger-width)] bg-white text-black border rounded-md shadow-lg"
+        className="z-[9999] w-[var(--radix-dropdown-menu-trigger-width)] bg-red-500 text-black border rounded-md shadow-lg"
       >
         <DropdownMenuItem onSelect={() => setViewedNotes({notes: globalNotes, filterMsg: "Posted Notes"})}>
           Posted Notes
@@ -160,7 +159,7 @@ export function DropdownNoteFilter({ setViewedNotes, noteMsg, userNotes, globalN
   );
 }
 
-import { Button } from "@/components/ui/button";
+import { Button } from "../partials/Button";
 import {  Funnel } from 'lucide-react';
 
 
@@ -169,7 +168,6 @@ export function ClientDropDownFilter({ filter, setFilter }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="outline"
           className="flex items-center gap-2"
         >
           <Funnel className="h-4 w-4" />

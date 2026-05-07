@@ -11,9 +11,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { use } from "react"
 
 export default function CalendarPopover({ date, setDate, single }) {
+
+  useEffect(() => {
+    if (date) {
+      console.log("Selected date:", date);
+    }
+  }, [date]);
 
   return (
     <Popover>
@@ -39,7 +46,7 @@ export default function CalendarPopover({ date, setDate, single }) {
           <Calendar
             mode={single ? "single" : "range"}
             selected={date}
-            onSelect={setDate}
+            setSelected={setDate}
             captionLayout="dropdown"
           />        
       </PopoverContent>
@@ -47,17 +54,3 @@ export default function CalendarPopover({ date, setDate, single }) {
   )
 }
 
-
-export function CalendarEmbedded({ date, setDate, className }) {
-  return (
-    <div className={cn("bg-white rounded-lg border p-3 shadow-md", className)}>
-      <Calendar
-        mode="single"
-        selected={date}
-        onSelect={setDate}
-        captionLayout="dropdown"
-        className="w-full border-0 bg-color-white p-0 text-color-foreground shadow-none"
-      />
-    </div>
-  )
-}

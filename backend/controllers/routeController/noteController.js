@@ -22,6 +22,7 @@ async function createNote(req, res, next) {
         setReminder: req.body.setReminder,
         reminderAt: req.body.reminderAt ? new Date(req.body.reminderAt) : null,
         content: req.body.content,
+        title: req.body.title,
         createdAt: new Date(),
       }
    });

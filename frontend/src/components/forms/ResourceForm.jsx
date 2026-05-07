@@ -31,7 +31,7 @@ const schema = z.object({
   summary: z.string().optional(),
 });
 
-export default function ResourceForm({ authRouter, resourceData, fetchClientData }) {
+export default function ResourceForm({ authRouter, clientId, resourceData, fetchClientData }) {
   const [error, setError] = useState(null);
   const [date, setDate] = useState(null);
 

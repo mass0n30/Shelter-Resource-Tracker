@@ -10,12 +10,24 @@ function Navbar({className, authRouter, authRouterForm, user }) {
 
   return (
     <nav className={className}>
-      <div className="flex w-full items-center justify-between gap-sm max-w-7xl mx-auto">
-        <div className="flex flex-col justify-start p-sm pl-lg">
-          <h1 className="text-lg text-start font-bold">Shelter Resource Tracker</h1>
-          <i>Bringing a <span className="text-muted">supportive community</span> together</i>
+    <header className="border-b border-border bg-backgroundAlt">
+      <div className="mx-auto max-w-7xl px-6 py-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              Shelter Resource Tracker
+            </h1>
+            <p className="mt-1 text-sm italic text-muted">
+              Bringing a supportive community together
+            </p>
+          </div>
+
+          <div className="hidden md:flex rounded-full bg-secondary px-4 py-2 text-sm text-primary font-medium gap-2">
+            <span><i className="icon-user">{user ? `Welcome, ${user.firstName}!` : "Guest"}</i></span>
+          </div>
         </div>
       </div>
+    </header>
     </nav>
   );
 }

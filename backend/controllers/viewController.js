@@ -11,6 +11,7 @@ async function getAllUserData(req, res, next) {
             client: true
           },
           orderBy: { createdAt: 'desc' },
+          take: 50,
         },
         referrals: {
           include: {
@@ -58,13 +59,14 @@ async function getAllNotes(req, res, next) {
         client: true,
       }, 
       orderBy: { createdAt: 'desc' },
+      take: 50,
     });
     return notes;
   } catch (error) {
     console.log('failed to get user notes');
     throw error;
   }
-}
+};
 
 async function handleGetClientReferrals(req, res, next) {
   try {

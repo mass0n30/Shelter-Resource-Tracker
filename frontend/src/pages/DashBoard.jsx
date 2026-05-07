@@ -6,6 +6,7 @@ import ClientToggleSection from '../components/dashboard/ClientList';
 import Notifications from '../components/dashboard/Notifications';
 import NotificationsAlert from '../components/dashboard/NotificationsAlert';
 import Navbar from '../components/Navbar';
+import { Button } from '@/components/ui/button';
 import { getAllDashboardStats, getDisplayTime } from '@/lib/utils';
 
 
@@ -52,7 +53,7 @@ function DashBoard() {
         filtered = clients.filter(client =>
           client.referrals?.some(ref =>
             ref.followUpDate &&
-            new Date(ref.followUpDate) < new Date()
+            new Date(ref.followUpDate) >= new Date() 
           )
         );
         break;
@@ -70,6 +71,17 @@ function DashBoard() {
 
     setViewedClients(filtered);
   }, [dashStatFilter]);
+
+  const handleMarkRead = async () => {
+    try {
+      await authRouter.post('/dashboard/notifications/mark-read');
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setShowAlerts(false);
+      fetchNotifications();
+    }
+  };
 
   return (
     <>
@@ -116,15 +128,14 @@ function DashBoard() {
                         {showAlerts ? "Hide" : "View"}
                       </button>
                     )}
-
-                    {hasFound && (
-                      <button
-                        className="text-xs bg-blue-600 text-white hover:bg-blue-700 px-3 py-1 rounded-md font-medium"
-                        onClick={() => fetchNotifications?.()}
-                      >
-                        Mark Read
-                      </button>
-                    )}
+                    <Button
+                      onClick={handleMarkRead}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Mark Read
+                    </Button>
+                    
                   </div>
                 </div>
 
@@ -149,6 +160,8 @@ function DashBoard() {
               viewedClients={viewedClients}
               setViewedClients={setViewedClients}
               clientData={data.clients}
+              userNotes={user.notes}
+              userReferrals={user.referrals}
               authRouter={authRouter}
               authRouterForm={authRouterForm}
             />

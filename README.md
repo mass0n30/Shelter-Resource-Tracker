@@ -35,12 +35,6 @@ Note 4/28:
 
 ToDo:
   DashboardLayout.jsx
-    - Fix Dash stat follow-ups showing only exp Referrals
-
-    - Correctly map reverse notes upon toggle
-    - Consider further filtering Notes section (Client Notes/ Personal /Posted / Completed) *confirm Personal only shows Private.
-        (Log into other account to confirm data is displaying right)
-    - Limit 50 or 100 Notes fetched from any filter
     - Consider putting more data in Dash stat cards?
     - Calendar logic (mapping Icons for either Client Initials/Note reminders / Referral Followups?) --> clicking calendar cell shows limited info.. Not sure what to exactly do here, as Calendar should function different from Reminders sidebar for the value it provides.
 

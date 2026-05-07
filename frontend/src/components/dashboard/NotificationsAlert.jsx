@@ -7,13 +7,7 @@ function NotificationsAlert({ data, SetLoading, authRouter, className }) {
 
   const displayTime = getDisplayTime(data?.createdAt, "notificationAlert");
 
-  const handleMarkRead = async () => {
-    try {
-      await authRouter.post('/dashboard/notifications/mark-read');
-    } catch (err) {
-      console.error(err);
-    }
-  };
+
   if (!data) return null;
 
   return (
@@ -24,13 +18,7 @@ function NotificationsAlert({ data, SetLoading, authRouter, className }) {
         <h3 className="text-sm font-semibold">
           Unmatched Clients
         </h3>
-        <Button
-          onClick={handleMarkRead}
-          variant="outline"
-          size="sm"
-        >
-          Mark Read
-        </Button>
+
       </div>
 
       <p className="text-xs text-muted-foreground">

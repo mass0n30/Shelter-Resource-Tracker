@@ -19,6 +19,7 @@ export default {
     },
       colors: {
         primary: "var(--color-primary)",
+        primaryDark: "var(--color-primary-dark)",
         secondary: "var(--color-secondary)",
         destructive: "var(--color-destructive)",
         success: "var(--color-success)",

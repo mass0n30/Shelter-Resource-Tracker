@@ -1,5 +1,5 @@
 
-import { Button } from '@/components/ui/button';
+import { Button } from '../partials/Button';
 import { ClockAlert, List, CalendarDays, Funnel, ChevronDown, BedDouble } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -34,8 +34,7 @@ function ClientList({className, viewedClients}) {
           return (
             <Button
               key={client.id}
-              variant="ghost"
-              className="w-full h-auto p-0 justify-start rounded-xl bg-transparent hover:bg-transparent"
+              className="bg-white text-color-foreground w-full h-auto p-0 justify-start rounded-xl"
               onClick={() => {
               navigate(`/dashboard/clients/${client.id}`);
             }}
@@ -74,11 +73,11 @@ function ClientCard({ client, clientStats }) {
 
           {/* Name + Bed */}
           <div className="flex flex-col">
-            <h2 className="font-semibold text-sm sm:text-base md:text-lg">
+            <h2 className="text-foreground font-semibold text-sm sm:text-base md:text-lg">
               {client.firstName} {client.lastName}
             </h2>
 
-            <div className="text-[10px] align-start flex sm:text-xs text-muted-foreground">
+            <div className="text-[10px] align-start flex sm:text-xs text-foreground">
               {client.bedLabel}
             </div>
           </div>
@@ -106,10 +105,10 @@ function ClientCard({ client, clientStats }) {
       <div className="mt-3 sm:mt-4 flex justify-between text-xs sm:text-sm">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-sm">
-            {clientStats?.totalReferrals >= 0 && <div className='p-xs text-[12px] sm:text-xs text-foreground rounded-md bg-white'>Resources {clientStats.totalReferrals}</div>}
-            {clientStats?.urgentReferrals > 0 && <div className='flex gap-xs p-xs text-[10px] sm:text-xs text-white rounded-md bg-red-600'><ClockAlert /> Urgent  {clientStats.urgentReferrals}</div>}
-            {clientStats?.upcomingFollowUps > 0 && <div className='p-xs text-[12px] sm:text-xs text-white rounded-md bg-blue-600'>Upcoming {clientStats.upcomingFollowUps}</div>}
-            {clientStats?.expiredFollowUps > 0 && <div className='p-xs text-[12px] sm:text-xs text-white rounded-md bg-orange-600'>Expired {clientStats.expiredFollowUps}</div>}
+            {clientStats?.totalReferrals >= 0 && <div className='p-xs gap-xs text-[12px] sm:text-xs text-foreground rounded-md bg-white'><span className='mr-1'>Resources</span><span>{clientStats.totalReferrals}</span></div>}
+            {clientStats?.urgentReferrals > 0 && <div className='flex gap-xs p-xs text-[10px] sm:text-xs text-white rounded-md bg-red-600'><ClockAlert /><span className='mr-1'>Urgent</span><span>{clientStats.urgentReferrals}</span></div>}
+            {clientStats?.upcomingFollowUps > 0 && <div className='p-xs gap-xs text-[12px] sm:text-xs text-white rounded-md bg-blue-600'><span className='mr-1'>Upcoming</span><span>{clientStats.upcomingFollowUps}</span></div>}
+            {clientStats?.expiredFollowUps > 0 && <div className='p-xs gap-xs text-[12px] sm:text-xs text-white rounded-md bg-orange-600'><span className='mr-1'>Expired</span><span>{clientStats.expiredFollowUps}</span></div>}
           </div>
         </div>
       </div>
@@ -120,12 +119,13 @@ function ClientCard({ client, clientStats }) {
 import { ClientSearch } from '../partials/Search';
 import { ClientDropDownFilter } from '../partials/Dropdown';
 import { useEffect } from 'react';
-import CalendarView from './CalenderView';
+import { CalendarEmbedded } from './CalenderView';
 
-function ClientToggleSection({className, clientData, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter}) {
+function ClientToggleSection({className, clientData, userNotes, userReferrals, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter}) {
   // for searching by name
   const [clientId, setClientId] = useState(null);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [date, setDate] = useState(null);
   const [filter, setFilter] = useState("ENROLLED");
   const [calendarOpen, setCalendarOpen] = useState(false);
 
@@ -164,7 +164,7 @@ function ClientToggleSection({className, clientData, authRouter, authRouterForm,
           </div>
 
           <div className="flex justify-start gap-2 md:justify-start">
-            <Button variant="outline" onClick={() => {
+            <Button onClick={() => {
               if (clientId) {
                 setViewedClients(clientData.filter(client => client.id === clientId));
               } else {
@@ -197,13 +197,13 @@ function ClientToggleSection({className, clientData, authRouter, authRouterForm,
           <div>
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline">Create Client</Button>
+                <Button>Create Client</Button>
               </DialogTrigger>
               <ClientForm authRouter={authRouter} />
             </Dialog>
           </div>
-            <Button variant="outline" onClick={() => setCalendarOpen(prev => !prev)}>
-              <CalendarDays color="#000000" />
+            <Button onClick={() => setCalendarOpen(prev => !prev)}>
+              <CalendarDays color="background" />
             </Button>
           </div>
         </div>
@@ -215,8 +215,15 @@ function ClientToggleSection({className, clientData, authRouter, authRouterForm,
           </ComboboxContent>
         </Combobox>
       </div>
-      <div className={`${calendarOpen ? 'flex' : 'hidden'} items-center justify-center gap-2 p-0  lg:p-lg px-md`}>
-      {calendarOpen && <CalendarView />}
+      <div className={`${calendarOpen ? 'flex' : 'hidden'} items-center justify-center gap-2 p-0  lg:px-md lg:pb-md`}>
+      {calendarOpen && 
+        <CalendarEmbedded
+          date={date}
+          setDate={setDate}
+          referrals={userReferrals}
+          notes={userNotes}
+        />
+      }
       </div>
       <ClientList className="flex-col" viewedClients={viewedClients}/>
     </div>  

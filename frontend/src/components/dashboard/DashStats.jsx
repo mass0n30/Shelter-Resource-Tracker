@@ -54,20 +54,20 @@ function DashStatCard({ data, label, subLabel, onClick, active }) {
   return (
     <div
       onClick={onClick}
-      className={`flex-1 bg-backgroundAlt rounded-md shadow-md p-4 flex lg:flex-col items-center justify-around gap-sm
+      className={`flex-1 bg-backgroundAlt rounded-md shadow-md p-4 flex lg:flex-col items-center justify-between gap-sm
         cursor-pointer select-none transition-all duration-150
         ${active 
           ? "ring-2 ring-blue-500 shadow-lg" 
           : "hover:shadow-lg hover:bg-gray-100"}
       `}
     >
-      <div>
-        <h3 className="text-xs font-semibold md:text-sm">{label}</h3>
-        <p className="text-xs font-normal text-muted md:text-sm">{subLabel}</p>
+      <div className="flex flex-col items-center gap-1">
+        <h3 className="text-xs text-primaryDark font-semibold md:text-base">{label}</h3>
       </div>
 
-      <div>
-        <p className="text-2xl font-bold">{data}</p>
+      <div className="flex md:flex-col items-center gap-sm md:gap-xs">
+        <p className="text-xs font-normal text-muted md:text-sm">{subLabel}</p>
+        <p className="text-md ms:text-lg font-bold">{data}</p>
       </div>
     </div>
   );
