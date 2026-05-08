@@ -2,9 +2,15 @@
 
 import { useState, useEffect } from "react";
 
+export function loaderTimer(ms = 1000) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 export function useAsyncStatus({
   successDuration = 3000,
-  loadingDuration = null, // optional
+  loadingDuration = 2000, // optional
 } = {}) {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);

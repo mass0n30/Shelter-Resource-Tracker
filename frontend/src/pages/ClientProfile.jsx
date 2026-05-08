@@ -6,8 +6,7 @@ import ResourceForm from "../components/forms/ResourceForm";
 import DropdownEditDelete from "../components/partials/Dropdown";
 import { DropdownNoteEditDelete } from "../components/partials/Dropdown";
 import ClientProfileSkeleton from "@/components/partials/loaderSkeleton/ClientProfileLoader";
-
-import { useAsyncStatus } from "@/components/partials/Loading";
+import { useAsyncStatus, loaderTimer } from "@/components/partials/Loading";
 import {
   Dialog,
   DialogTrigger,
@@ -32,18 +31,24 @@ import { RESOURCE_CONFIG } from "../lib/utils";
 export default function ClientProfile() {
   const { clientId } = useParams();
   const [clientData, setClientData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   const { authRouter } = useOutletContext();
 
-  const fetchClientData = async () => {
+  const { error, setError, success, setSuccess, loading, setLoading } = useAsyncStatus();
+
+  const fetchClientData = async (success) => {
     try {
-      await setLoadDelay(setLoading);
+      setLoading(true);
       const response = await authRouter.get(`/dashboard/clients/${clientId}`);
       setClientData(response.data);
+
+      if (success) {
+        setSuccess(true);
+      }
     } catch (error) {
       console.error("Error fetching client data:", error);
     } finally {
+      await loaderTimer(1000); 
       setLoading(false);
     }
   };

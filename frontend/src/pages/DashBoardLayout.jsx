@@ -3,20 +3,19 @@ import { useParams, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import DashboardPageSkeleton from "@/components/partials/loaderSkeleton/DashboardLoader";
 import axios from "axios";
-import { useAsyncStatus } from "@/components/partials/Loading";
+import { useAsyncStatus, loaderTimer } from "@/components/partials/Loading";
 
 function DashBoardLayout() {
   const [user, SetUser] = useState(null);
   const [data, SetData] = useState(null);
   const [notifications, setNotifications] = useState([]);
-  const [error, setError] = useState(null);
-  const [loader, setLoader] = useState(true);
-
   // useful for navigation 
   const [mount, SetMount] = useState(false);
 
-  // timer-based loader
-  const [timerDone, setTimerDone] = useState(false);
+  const { error, setError, success, setSuccess, loading, setLoading } = useAsyncStatus({
+    successDuration: 3000, // show success for 3 seconds
+    loadingDuration: 3000, // no auto timeout for loading, we will control it manually based on actual data fetch status
+  });
 
   const token = localStorage.getItem("usertoken");
   const navigate = useNavigate();
@@ -39,7 +38,6 @@ function DashBoardLayout() {
     },
   });
 
-
   useEffect(() => {
     if (token) {
       // gets all data 
@@ -61,8 +59,9 @@ function DashBoardLayout() {
     }
   };
 
-  const fetchUpdatedData = async () => {
+  const fetchUpdatedData = async (success) => {
     try {
+      setLoading(true);
       const response = await authRouter.get("/dashboard");
 
       // AXIOS Already Parses JSON, no need for response.json() like fetch !!!! Same on Backend Controllers !
@@ -73,10 +72,15 @@ function DashBoardLayout() {
       
       await fetchNotifications();
 
-      // reset boolean fetch after updated posts fetch
+      if (success) {
+        setSuccess(true);
+      }
     } catch (error) {
       setError(error);
       return navigate("/login"); // redirect to login if token invalid or expired, consider separate error handling for different status codes in future (e.g. 401 vs 403) for better UX
+    } finally {
+      await loaderTimer(1000);
+      setLoading(false);
     }
   };
 
@@ -97,7 +101,7 @@ function DashBoardLayout() {
 
   // skeleton loader Navbar/sidebar, ect.
   // waits for BOTH: timer finished + actual data exists
-  if (!timerDone || !data || !user) {
+  if (loading || !data || !user) {
     return <DashboardPageSkeleton />;
   }
 
