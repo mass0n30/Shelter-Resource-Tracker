@@ -34,19 +34,18 @@ Note 4/28:
   Avoid global notifications by default
 
 ToDo:
+  -- Figure out Loader logic (using setLoading and setSuccess module from partials/Loading.jsx ??)
+  (Update UI instant, fetch updated Obj in background ?)
+  
   DashboardLayout.jsx
     - Consider putting more data in Dash stat cards?
-    - Calendar logic (mapping Icons for either Client Initials/Note reminders / Referral Followups?) --> clicking calendar cell shows limited info.. Not sure what to exactly do here, as Calendar should function different from Reminders sidebar for the value it provides.
 
   ClientProfile.jsx
     - Client profile can paginate all notes or referrals if needed (to see even oldest notes and referrals beyond Dashboards limits)
     - Client Profiles need CRUD for client info
-    - Consider more client info to populate in information
+    - Add Re-enrollment and extension options on client profile (this updating/adding row to timelineDates table for timeline component!!)
 
   Frontend
-    * Make notifications container slide up/pop up on mobile view?
-    * Edit and convert to Reminder option to notes (Notify Team option (makes global))
-  - Add loading skeletons
   - Add timeline modules and logic (shadUI?)
 
   Backend
@@ -68,16 +67,17 @@ Done:
  - Start designing inner containers *figuring data placements
  - Start install commands and setting up shadUI, zod, calender libraries and components
  - Make modals, toggles, forms
-- Apply Filter dependency
-- Update Clients non-active if past exit date
-- Add Resource and Note create Forms for client
-  * normalize forms?
-- Create hook for Resource and Note post req
-- Get dash card stats  - Toggal displayed clients from  Dash Card selection
-- Edit and delete option and confirmation + backend controllers
-- Make edit and confirm delete forms
-- Notification Reminders sidebar design (go off figma, checking schema design for filter options, be deliberate here!)
-      * Filter and order by prioritys and dates
+  - Apply Filter dependency
+  - Update Clients non-active if past exit date
+  - Add Resource and Note create Forms for client
+    * normalize forms?
+  - Create hook for Resource and Note post req
+  - Get dash card stats  - Toggal displayed clients from  Dash Card selection
+  - Edit and delete option and confirmation + backend controllers
+  - Make edit and confirm delete forms
+  - Notification Reminders sidebar design (go off figma, checking schema design for filter options, be deliberate here!)
+        * Filter and order by prioritys and dates
+  - Calendar logic (mapping Icons for either Client Initials/Note reminders / Referral Followups?) --> clicking calendar cell shows limited info.. Not sure what to exactly do here, as Calendar should function different from Reminders sidebar for the value it provides.
 
 
 

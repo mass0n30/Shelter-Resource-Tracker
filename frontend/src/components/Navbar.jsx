@@ -1,16 +1,11 @@
-
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import ClientForm from "./forms/ClientForm";
+import { Heart } from "lucide-react";
 
 // asChild injects ref, defined with React.forwardRef in ui/dialog DialogTrigger, into the button component, allowing it to function as the trigger for the dialog.
 function Navbar({className, authRouter, authRouterForm, user }) {
 
   return (
     <nav className={className}>
-    <header className="border-b border-border bg-backgroundAlt">
+    <header className="h-full border-b border-border bg-backgroundAlt">
       <div className="mx-auto max-w-7xl px-6 py-5">
         <div className="flex items-center justify-between">
           <div>

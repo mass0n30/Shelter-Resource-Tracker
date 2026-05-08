@@ -1,3 +1,4 @@
+
 function DashStats({
   data,
   className,
@@ -54,7 +55,7 @@ function DashStatCard({ data, label, subLabel, onClick, active }) {
   return (
     <div
       onClick={onClick}
-      className={`flex-1 bg-backgroundAlt rounded-md shadow-md p-4 flex lg:flex-col items-center justify-between gap-sm
+      className={`flex-1 bg-backgroundAlt rounded-md shadow-md p-md flex md:flex-col items-center justify-between gap-sm
         cursor-pointer select-none transition-all duration-150
         ${active 
           ? "ring-2 ring-blue-500 shadow-lg" 

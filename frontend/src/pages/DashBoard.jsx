@@ -85,9 +85,9 @@ function DashBoard() {
 
   return (
     <>
-      <Navbar className="bg-white shadow" authRouter={authRouter} authRouterForm={authRouterForm} user={user} />
+      <Navbar className="bg-white shadow h-24em" authRouter={authRouter} authRouterForm={authRouterForm} user={user} />
 
-      <main className="flex justify-center px-4 py-6">
+      <main className="flex justify-center p-sm md:p-md">
         <div className="w-full max-w-7xl flex">
 
           <div className="flex-1 w-full h-screen grid grid-cols-1 auto-rows-min lg:grid-cols-4 gap-4 md:p-4">
@@ -165,7 +165,7 @@ function DashBoard() {
               authRouter={authRouter}
               authRouterForm={authRouterForm}
             />
-            <div className="col-span-1 lg:col-span-1 row-span-10 max-h-[calc(100vh-250px)] min-h-0 overflow-hidden flex flex-col">
+            <div className="col-span-1 lg:col-span-1 row-span-10 min-h-0 overflow-hidden flex flex-col">
               <Notifications
                 className="border-border-400 shadow-md border-2 rounded-md h-full min-h-0 flex flex-col"
                 userNotes={user.notes}

@@ -4,13 +4,14 @@ const { prisma } = require('../db/prismaClient');
 const {handleAutoCSVUpload} = require('../services/csvUpload');
 const { Readable } = require('stream');
 
+
 // converting bytes to be able to stream reading for csv parsing
 function bufferToStream(buffer) {
   return Readable.from(buffer);
 }
 
 async function emailAutomate() {
-  console.log('Running email automation task at 6:00 AM every day');
+ // 'Running email automation task at 6:00 AM every day'
 
   const client = new ImapFlow({
     host: 'imap.gmail.com',
@@ -40,8 +41,6 @@ async function emailAutomate() {
       return;
     }
 
-    console.log(`Found ${messages.length} matching email(s)`);
-
     const latestUid = messages[messages.length - 1];
 
     try {
@@ -56,13 +55,13 @@ async function emailAutomate() {
         return;
       }
 
-      console.log('Subject:', message.envelope.subject);
+     // console.log('Subject:', message.envelope.subject);
 
       // turning email into readable format from email buffer property provided by imapflow, using mailparser simpleParser
       const parsed = await simpleParser(message.source);
 
       if (!parsed.attachments || parsed.attachments.length === 0) {
-        console.log('No attachments found');
+       // console.log('No attachments found');
         return;
       }
 
@@ -72,12 +71,12 @@ async function emailAutomate() {
       );
 
       if (!csvFile || !csvFile.content) {
-        console.log('No CSV attachment or content found');
+        //console.log('No CSV attachment or content found');
         return;
       };
 
       const csvBuffer = csvFile.content;
-      console.log(csvFile.content.toString().slice(0, 200));
+     // console.log(csvFile.content.toString().slice(0, 200));
 
       // converting buffer to stream for csv parsing
       const csvStream = bufferToStream(csvBuffer);
@@ -105,7 +104,6 @@ async function emailAutomate() {
           }
         });
       }
-      console.log('CSV processing results:', results);
 
     } finally {
       lock.release();
@@ -120,7 +118,7 @@ async function emailAutomate() {
   }
 }
 
-emailAutomate(); // for command line call
+// emailAutomate(); // for command line call
 
 
 module.exports = { emailAutomate };

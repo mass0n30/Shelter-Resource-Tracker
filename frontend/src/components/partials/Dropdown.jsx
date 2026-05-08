@@ -13,7 +13,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription} f
 
 import { Ellipsis } from "lucide-react";
 
-export default function DropdownEditDelete({ resource, authRouter, fetchClientData, handleDelete }) {
+export default function DropdownEditDelete({ resource, authRouter, fetchClientData, handleDelete, setToggle }) {
 
   return (
     <div
@@ -35,7 +35,7 @@ export default function DropdownEditDelete({ resource, authRouter, fetchClientDa
         <DropdownMenuContent
           align="end"
           sideOffset={6}
-          className="z-[9999] min-w-32 bg-white text-black border rounded-md shadow-lg"
+          className="min-w-32 bg-white text-black border rounded-md shadow-lg"
         >
 
           <Dialog>
@@ -45,7 +45,7 @@ export default function DropdownEditDelete({ resource, authRouter, fetchClientDa
               </DropdownMenuItem>
             </DialogTrigger>
 
-            <DialogContent className="bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
+            <DialogContent className="z-[9999] bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
               <VisuallyHidden>
                 <DialogTitle></DialogTitle>
               </VisuallyHidden>
@@ -93,7 +93,7 @@ export function DropdownNoteEditDelete({ note, authRouter, fetchClientData, hand
         <DropdownMenuContent
           align="end"
           sideOffset={6}
-          className="z-[9999] min-w-32 bg-white text-black border rounded-md shadow-lg"
+          className="min-w-32 bg-white text-black border rounded-md shadow-lg"
         >
           {/* EDIT */}
           <Dialog>
@@ -104,7 +104,7 @@ export function DropdownNoteEditDelete({ note, authRouter, fetchClientData, hand
             </DialogTrigger>
 
             <DialogContent>
-              <DialogTitle>Edit Note</DialogTitle>
+              <DialogTitle></DialogTitle>
 
               <NoteForm
                 authRouter={authRouter}

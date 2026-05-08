@@ -12,7 +12,8 @@
   :root {
     /* COLORS */
     --color-primary: #1d4ed8;
-    --color-primary-dark: #001b72;
+    --color-primary-dark: #071a5f;
+    --color-primary-light: #eff6ff;
     --color-secondary: #dbeafe;
     --color-destructive: #dc2626;
     --color-success: #16a34a;

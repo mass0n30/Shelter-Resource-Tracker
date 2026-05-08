@@ -3,13 +3,30 @@ import { useOutletContext, useParams } from "react-router-dom";
 import { Button } from "@base-ui/react";
 import NoteForm from "../components/forms/NoteForm";
 import ResourceForm from "../components/forms/ResourceForm";
-import  DropdownEditDelete from "../components/partials/Dropdown";
-import  { DropdownNoteEditDelete } from "../components/partials/Dropdown";
+import DropdownEditDelete from "../components/partials/Dropdown";
+import { DropdownNoteEditDelete } from "../components/partials/Dropdown";
+import ClientProfileSkeleton from "@/components/partials/loaderSkeleton/ClientProfileLoader";
 
-import { setLoadDelay } from "../lib/utils";
-import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useAsyncStatus } from "@/components/partials/Loading";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { Ellipsis, TriangleAlert, ArrowLeft, LucideBedDouble, Plus, FilePlus, HashIcon, EditIcon, Calendar, Calendar1Icon } from "lucide-react";
+import {
+  Ellipsis,
+  TriangleAlert,
+  ArrowLeft,
+  LucideBedDouble,
+  Plus,
+  FilePlus,
+  HashIcon,
+  EditIcon,
+  Calendar,
+  Calendar1Icon,
+} from "lucide-react";
 import { RESOURCE_CONFIG } from "../lib/utils";
 
 export default function ClientProfile() {
@@ -17,10 +34,7 @@ export default function ClientProfile() {
   const [clientData, setClientData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  
-  const {
-    authRouter,
-  } = useOutletContext();
+  const { authRouter } = useOutletContext();
 
   const fetchClientData = async () => {
     try {
@@ -40,45 +54,52 @@ export default function ClientProfile() {
   }, [clientId]);
 
   if (!clientData || loading) {
-    return <p>Loading client data...</p>;
+    return <ClientProfileSkeleton />;
   }
 
   return (
-    <div className="flex flex-1 flex-col w-full min-h-screen bg-gray-200">
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-gray-200">
       <Banner
         clientData={clientData}
         authRouter={authRouter}
         fetchClientData={fetchClientData}
-        className="w-full bg-gray-100 min-h-[200px]"
+        className="shrink-0 w-full bg-gray-100 min-h-[200px]"
       />
 
-      <div className="flex-1 max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-4 gap-4 p-4">
+      <div className="mx-auto grid min-h-0 w-full max-w-7xl flex-1 grid-cols-1 gap-4 overflow-hidden p-4 md:grid-cols-4">
         <ClientInfoSectionToggle
           clientData={clientData}
           authRouter={authRouter}
           fetchClientData={fetchClientData}
           className="md:col-span-3"
         />
+
         <Information
           clientData={clientData}
           fetchClientData={fetchClientData}
-          className="md:col-span-1"
+          className="min-h-0 overflow-y-auto md:col-span-1"
         />
       </div>
     </div>
   );
 }
 
-function ClientInfoSectionToggle({ clientData, authRouter, fetchClientData, className }) {
+function ClientInfoSectionToggle({
+  clientData,
+  authRouter,
+  fetchClientData,
+  className,
+}) {
   const [activeSection, setActiveSection] = useState("resources");
 
   return (
-    <div className={`flex flex-col max-w-7xl bg-white p-4 rounded-md ${className}`}>
-      <div className="flex gap-2 mb-4 md:gap-4">
+    <div
+      className={`flex min-h-0 flex-col overflow-hidden rounded-md bg-white p-4 ${className}`}
+    >
+      <div className="mb-4 flex shrink-0 gap-2 md:gap-4">
         <Button
           className={`flex-1 text-xs md:text-sm ${
-            activeSection !== "resources"
-              && "bg-gray-200 text-gray-700"
+            activeSection !== "resources" && "bg-gray-200 text-gray-700"
           }`}
           onClick={() => setActiveSection("resources")}
         >
@@ -87,8 +108,7 @@ function ClientInfoSectionToggle({ clientData, authRouter, fetchClientData, clas
 
         <Button
           className={`flex-1 text-xs md:text-sm ${
-            activeSection !== "notes"
-              && "bg-gray-200 text-gray-700"
+            activeSection !== "notes" && "bg-gray-200 text-gray-700"
           }`}
           onClick={() => setActiveSection("notes")}
         >
@@ -97,8 +117,7 @@ function ClientInfoSectionToggle({ clientData, authRouter, fetchClientData, clas
 
         <Button
           className={`flex-1 text-xs md:text-sm ${
-            activeSection !== "timeline"
-              && "bg-gray-200 text-gray-700"
+            activeSection !== "timeline" && "bg-gray-200 text-gray-700"
           }`}
           onClick={() => setActiveSection("timeline")}
         >
@@ -106,15 +125,34 @@ function ClientInfoSectionToggle({ clientData, authRouter, fetchClientData, clas
         </Button>
       </div>
 
-      <div className="flex-1 h-full">
-        {activeSection === "resources" && <Resources fetchClientData={fetchClientData} referrals={clientData.referrals} authRouter={authRouter} />}
-        {activeSection === "notes" && <Notes fetchClientData={fetchClientData} notes={clientData.notes} authRouter={authRouter} />}
-        {activeSection === "timeline" && <Timeline fetchClientData={fetchClientData} clientId={clientData.id} authRouter={authRouter} />}
+      <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+        {activeSection === "resources" && (
+          <Resources
+            fetchClientData={fetchClientData}
+            referrals={clientData.referrals}
+            authRouter={authRouter}
+          />
+        )}
+
+        {activeSection === "notes" && (
+          <Notes
+            fetchClientData={fetchClientData}
+            notes={clientData.notes}
+            authRouter={authRouter}
+          />
+        )}
+
+        {activeSection === "timeline" && (
+          <Timeline
+            fetchClientData={fetchClientData}
+            clientId={clientData.id}
+            authRouter={authRouter}
+          />
+        )}
       </div>
     </div>
   );
 }
-
 
 function Banner({ clientData, className, authRouter, fetchClientData }) {
   return (
@@ -238,9 +276,175 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
 
 function Information({clientData, fetchClientData, className}) {
   return (
-    <div className={`bg-white p-4 rounded-md ${className}`}>
-      <div className=" p-4 rounded-md">
-        <h2>Client Information</h2>
+    <div className={`bg-white rounded-xl border shadow-sm ${className}`}>
+      <div className="border-b p-4">
+        <h2 className="text-lg font-semibold text-foreground">
+          Client Information
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Basic client details and shelter activity
+        </p>
+      </div>
+
+      <div className="space-y-5 p-4 text-sm">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Status
+            </p>
+            <p className="mt-1 font-medium text-foreground">
+              {clientData?.status || "N/A"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Bed Label
+            </p>
+            <p className="mt-1 font-medium text-foreground">
+              {clientData?.bedLabel || "N/A"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Stayed Last Night
+            </p>
+            <p className="mt-1 font-medium text-foreground">
+              {clientData?.hereLastNight ? "Yes" : "No"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Extension Status
+            </p>
+            <p className="mt-1 font-medium text-foreground">
+              {clientData?.extensionStatus ? "Active" : "None"}
+            </p>
+          </div>
+        </div>
+
+        {clientData?.priorityNeed && (
+          <div className="rounded-lg border bg-muted/30 p-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Priority Need
+            </p>
+            <p className="mt-1 font-medium text-foreground">
+              {clientData.priorityNeed}
+            </p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Intake Date
+            </p>
+            <p className="mt-1 font-medium text-foreground">
+              {clientData?.intakeDate
+                ? new Date(clientData.intakeDate).toLocaleDateString()
+                : "N/A"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Outtake Date
+            </p>
+            <p className="mt-1 font-medium text-foreground">
+              {clientData?.outtakeDate
+                ? new Date(clientData.outtakeDate).toLocaleDateString()
+                : "N/A"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Last Updated Stay
+            </p>
+            <p className="mt-1 font-medium text-foreground">
+              {clientData?.lastStayDate
+                ? new Date(clientData.lastStayDate).toLocaleDateString()
+                : "N/A"}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Client Created
+            </p>
+            <p className="mt-1 font-medium text-foreground">
+              {clientData?.createdAt
+                ? new Date(clientData.createdAt).toLocaleDateString()
+                : "N/A"}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-lg border bg-muted/30 p-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Referrals
+            </p>
+            <p className="mt-1 text-xl font-semibold text-foreground">
+              {clientData?.referrals?.length || 0}
+            </p>
+          </div>
+
+          <div className="rounded-lg border bg-muted/30 p-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Notes
+            </p>
+            <p className="mt-1 text-xl font-semibold text-foreground">
+              {clientData?.notes?.length || 0}
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-dashed p-3">
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Additional Client Info
+          </p>
+
+          <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                DOB
+              </p>
+              <p className="mt-1 font-medium text-foreground">
+                {clientData?.dob || "Not added"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Age
+              </p>
+              <p className="mt-1 font-medium text-foreground">
+                {clientData?.age || "Not added"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Phone #
+              </p>
+              <p className="mt-1 font-medium text-foreground">
+                {clientData?.phone || "Not added"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Emergency #
+              </p>
+              <p className="mt-1 font-medium text-foreground">
+                {clientData?.emergencyContact || "Not added"}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -274,7 +478,9 @@ function Notes({notes, fetchClientData, authRouter}) {
             </span>
 
             <div className="flex flex-col items-start gap-1">
-      
+              <h3 className="text-sm font-semibold text-foreground">
+                {note?.title}
+              </h3>
               <p className="text-xs sm:text-sm text-gray-900">
                 {note.content}
               </p>

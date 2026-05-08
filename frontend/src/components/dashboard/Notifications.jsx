@@ -120,11 +120,15 @@ function TimelineItem({
     >
       <div className="flex justify-between gap-sm">
         <div className="flex items-center gap-xs">
-          <span className="font-medium flex items-center gap-1">
+          <span className="font-medium  flex items-center gap-1">
             {item.type === "resource" ? (
-              <House className="mr-1 inline h-4 w-4 text-primary" />
+              <div className="flex p-sm bg-primaryLight rounded-full items-center justify-center gap-1">
+                <House className=" inline h-4 w-4 text-primary" />
+              </div>
             ) : (
-              <NotebookText className="mr-1 inline h-4 w-4 text-primary" />
+              <div className="flex p-sm bg-primaryLight rounded-full items-center justify-center gap-1">
+                <NotebookText className="inline h-4 w-4 text-primary" />
+              </div>
             )}
             {item.type === "note" 
               ? item.title ? item.title : item.client?.firstName ? `Note for ${item.client?.firstName}` : "General Note"

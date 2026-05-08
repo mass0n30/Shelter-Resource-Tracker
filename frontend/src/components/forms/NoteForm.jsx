@@ -80,7 +80,7 @@ export default function NoteForm({ authRouter, clientId, noteData, fetchClientDa
   };
 
   return (
-    <div className="bg-background rounded-lg w-full max-w-md">
+    <div className="z-[9999] bg-background rounded-lg w-full max-w-md">
 
       <DialogHeader>
         <DialogTitle>

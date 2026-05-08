@@ -32,19 +32,69 @@ async function getClients(req, res, next) {
     let clients = null;
     const now = new Date();
     const filter = req.query?.filter;
-
-    // use Scheduled Cron instead of get Request ??
+    
+    console.log('YOOOOOOOOO');
+    
+      // use Scheduled Cron instead of get Request ??
     // upating clients that are passed outtakeData to INACTIVE, so they are not included in the stayed overnight query return, and to maintain accurate client status in the system
-    await prisma.client.updateMany({
+    clients = await prisma.client.findMany({
       where: {
         outtakeDate: {
-          lte: now, 
+          lte: now,
+        },
+        status: {
+          equals: "ENROLLED",
+        },
+      },
+    });
+    await Promise.all(
+      clients.map((client) => {
+
+        return prisma.enrollmentDates.upsert({
+          where: {
+            clientId_date_type: {
+              clientId: client.id,
+              date: client.outtakeDate,
+              type: "exit",
+            },
+          },
+          update: {
+            type: "exit",
+          },
+          create: {
+            clientId: client.id,
+            date: client.outtakeDate,
+            type: "exit",
+          },
+        });
+      })
+    );
+
+    // updating enrollmentDates creating rows for exit dates for timeline components
+    await prisma.client.updateMany({
+      where: {
+        id: {
+          in: clients.map((client) => client.id),
         },
       },
       data: {
         status: "INACTIVE",
       },
     });
+
+    // updating clients stayed last night to false if outside of window
+    await prisma.client.updateMany({
+      where: {
+        lastStayDate: {
+          lte: new Date(now.getTime() - 24 * 60 * 60 * 1000), // past 24 hours
+        },
+        hereLastNight: true,
+      },
+      data: {
+        hereLastNight: false,
+      },
+    });
+
 
     // for Stayed over night clients, updated by CSV pipeline and db query everyday
     if (filter === "STAYED_OVERNIGHT") {
@@ -122,10 +172,19 @@ async function createClient(req, res, next) {
         gender: req.body.gender,
         bedLabel: req.body.bedLabel,
         status: req.body.status,
+        // BELOW AS OPTIONAL FIELDS ?
         // phone: req.body.phone,
         // address: req.body.address,
         // city: req.body.city,
         // dob: new Date(req.body.dob), // "1998-05-21" pass in that format from client side
+      },
+    });
+
+    await prisma.enrollmentDates.create({
+      data: {
+        clientId: newClient.id,
+        date: newClient.intakeDate,
+        type: "enroll",
       },
     });
     return res.status(201).json(newClient);
