@@ -279,14 +279,14 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
   );
 }
 
-function Information({clientData, fetchClientData, className}) {
+function Information({ clientData, fetchClientData, className }) {
   return (
-    <div className={`bg-white rounded-xl border shadow-sm ${className}`}>
+    <div className={`bg-white rounded-md border shadow-sm ${className}`}>
       <div className="border-b p-4">
         <h2 className="text-lg font-semibold text-foreground">
           Client Information
         </h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-gray-700">
           Basic client details and shelter activity
         </p>
       </div>
@@ -294,7 +294,7 @@ function Information({clientData, fetchClientData, className}) {
       <div className="space-y-5 p-4 text-sm">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
               Status
             </p>
             <p className="mt-1 font-medium text-foreground">
@@ -303,7 +303,7 @@ function Information({clientData, fetchClientData, className}) {
           </div>
 
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
               Bed Label
             </p>
             <p className="mt-1 font-medium text-foreground">
@@ -312,7 +312,7 @@ function Information({clientData, fetchClientData, className}) {
           </div>
 
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
               Stayed Last Night
             </p>
             <p className="mt-1 font-medium text-foreground">
@@ -321,7 +321,7 @@ function Information({clientData, fetchClientData, className}) {
           </div>
 
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
               Extension Status
             </p>
             <p className="mt-1 font-medium text-foreground">
@@ -332,7 +332,7 @@ function Information({clientData, fetchClientData, className}) {
 
         {clientData?.priorityNeed && (
           <div className="rounded-lg border bg-muted/30 p-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
               Priority Need
             </p>
             <p className="mt-1 font-medium text-foreground">
@@ -343,7 +343,7 @@ function Information({clientData, fetchClientData, className}) {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
               Intake Date
             </p>
             <p className="mt-1 font-medium text-foreground">
@@ -354,7 +354,7 @@ function Information({clientData, fetchClientData, className}) {
           </div>
 
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
               Outtake Date
             </p>
             <p className="mt-1 font-medium text-foreground">
@@ -365,7 +365,7 @@ function Information({clientData, fetchClientData, className}) {
           </div>
 
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
               Last Updated Stay
             </p>
             <p className="mt-1 font-medium text-foreground">
@@ -376,7 +376,7 @@ function Information({clientData, fetchClientData, className}) {
           </div>
 
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
               Client Created
             </p>
             <p className="mt-1 font-medium text-foreground">
@@ -389,7 +389,7 @@ function Information({clientData, fetchClientData, className}) {
 
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-lg border bg-muted/30 p-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
               Referrals
             </p>
             <p className="mt-1 text-xl font-semibold text-foreground">
@@ -398,7 +398,7 @@ function Information({clientData, fetchClientData, className}) {
           </div>
 
           <div className="rounded-lg border bg-muted/30 p-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
               Notes
             </p>
             <p className="mt-1 text-xl font-semibold text-foreground">
@@ -408,13 +408,13 @@ function Information({clientData, fetchClientData, className}) {
         </div>
 
         <div className="rounded-lg border border-dashed p-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
             Additional Client Info
           </p>
 
           <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
                 DOB
               </p>
               <p className="mt-1 font-medium text-foreground">
@@ -423,7 +423,7 @@ function Information({clientData, fetchClientData, className}) {
             </div>
 
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
                 Age
               </p>
               <p className="mt-1 font-medium text-foreground">
@@ -432,7 +432,7 @@ function Information({clientData, fetchClientData, className}) {
             </div>
 
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
                 Phone #
               </p>
               <p className="mt-1 font-medium text-foreground">
@@ -441,7 +441,7 @@ function Information({clientData, fetchClientData, className}) {
             </div>
 
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
                 Emergency #
               </p>
               <p className="mt-1 font-medium text-foreground">

@@ -1,5 +1,6 @@
 
 https://github.com/postalsys/imapflow IMAP library (for email synch)
+https://resend.com/onboarding (for automated email notifications for Note and Referral followup dates)
 https://nodemailer.com/extras/mailparser/ Parsing tool 
 https://www.npmjs.com/package/node-cron Scheduling tool for node tasks
 https://crontab.guru/ Schedule time syntax
@@ -36,7 +37,7 @@ Note 4/28:
 ToDo:
   -- Figure out Loader logic (using setLoading and setSuccess module from partials/Loading.jsx ??)
   (Update UI instant, fetch updated Obj in background ?)
-  
+
   DashboardLayout.jsx
     - Consider putting more data in Dash stat cards?
 

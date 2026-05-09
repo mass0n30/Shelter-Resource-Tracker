@@ -324,7 +324,7 @@ function Notifications({
   });
 
   return (
-    <div className={`${className} h-full flex flex-col`}>
+    <div className={`${className} bg-backgroundAlt h-full flex flex-col`}>
       <div className="flex-1 flex flex-col p-4 overflow-hidden">
         <div className="flex items-center justify-between mb-sm gap-sm">
           {success && (

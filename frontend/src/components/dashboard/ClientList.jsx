@@ -34,7 +34,7 @@ function ClientList({className, viewedClients}) {
           return (
             <Button
               key={client.id}
-              className="bg-white text-color-foreground w-full h-auto p-0 justify-start rounded-xl"
+              className={`bg-white text-color-foreground w-full h-auto p-0 justify-start rounded-xl`}
               onClick={() => {
               navigate(`/dashboard/clients/${client.id}`);
             }}
@@ -50,7 +50,7 @@ function ClientList({className, viewedClients}) {
 
 function ClientCard({ client, clientStats }) {
   return (
-    <div className="flex-1 min-w-0 sm:min-h-28 bg-background border rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition cursor-pointer">
+    <div className="flex-1 min-w-0 min-h-full bg-white border rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition cursor-pointer">
       
       <div className="flex items-center justify-between">
         
@@ -105,10 +105,10 @@ function ClientCard({ client, clientStats }) {
       <div className="mt-3 sm:mt-4 flex justify-between text-xs sm:text-sm">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-sm">
-            {clientStats?.totalReferrals >= 0 && <div className='p-xs gap-xs text-[12px] sm:text-xs text-foreground rounded-md bg-white'><span className='mr-1'>Resources</span><span>{clientStats.totalReferrals}</span></div>}
-            {clientStats?.urgentReferrals > 0 && <div className='flex gap-xs p-xs text-[10px] sm:text-xs text-white rounded-md bg-red-600'><ClockAlert /><span className='mr-1'>Urgent</span><span>{clientStats.urgentReferrals}</span></div>}
-            {clientStats?.upcomingFollowUps > 0 && <div className='p-xs gap-xs text-[12px] sm:text-xs text-white rounded-md bg-blue-600'><span className='mr-1'>Upcoming</span><span>{clientStats.upcomingFollowUps}</span></div>}
-            {clientStats?.expiredFollowUps > 0 && <div className='p-xs gap-xs text-[12px] sm:text-xs text-white rounded-md bg-orange-600'><span className='mr-1'>Expired</span><span>{clientStats.expiredFollowUps}</span></div>}
+            {clientStats?.totalReferrals >= 0 && <div className='p-xs gap-xs text-[12px] sm:text-xs text-foreground rounded-md bg-backgroundAlt'><span className='mr-1'>Resources</span><span>{clientStats.totalReferrals}</span></div>}
+            {clientStats?.urgentReferrals > 0 && <div className='flex gap-xs p-xs text-[10px] sm:text-xs text-white rounded-md bg-red-500'><ClockAlert className='h-4 w-4' /><span className='mr-1'>Urgent</span><span>{clientStats.urgentReferrals}</span></div>}
+            {clientStats?.upcomingFollowUps > 0 && <div className='p-xs gap-xs text-[12px] sm:text-xs text-white rounded-md bg-blue-500'><span className='mr-1'>Upcoming</span><span>{clientStats.upcomingFollowUps}</span></div>}
+            {clientStats?.expiredFollowUps > 0 && <div className='p-xs gap-xs text-[12px] sm:text-xs text-white rounded-md bg-orange-500'><span className='mr-1'>Expired</span><span>{clientStats.expiredFollowUps}</span></div>}
           </div>
         </div>
       </div>

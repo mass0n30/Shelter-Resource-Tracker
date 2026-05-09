@@ -87,7 +87,7 @@ function DashBoard() {
     <>
       <Navbar className="bg-white shadow h-24em" authRouter={authRouter} authRouterForm={authRouterForm} user={user} />
 
-      <main className="flex justify-center p-sm md:p-md">
+      <main className="bg-primaryLight flex justify-center p-sm md:p-md">
         <div className="w-full max-w-7xl flex">
 
           <div className="flex-1 w-full h-screen grid grid-cols-1 auto-rows-min lg:grid-cols-4 gap-4 md:p-4">
@@ -154,7 +154,7 @@ function DashBoard() {
             )}
 
             <ClientToggleSection
-              className="border-border-400 bg-background-alt border-2 rounded-md col-span-1 lg:col-span-3 row-span-10 max-h-[calc(100vh-250px)] overflow-y-auto"
+              className="border-border-400 bg-background border-2 rounded-md col-span-1 lg:col-span-3 row-span-10 max-h-[calc(100vh-250px)] overflow-y-auto"
               dashStatFilter={dashStatFilter}
               setDashStatFilter={setDashStatFilter}
               viewedClients={viewedClients}

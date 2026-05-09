@@ -175,3 +175,13 @@ model Notification {
   createdAt DateTime @default(now())
   read      Boolean  @default(false)
 }
+
+model EmailNotificationLog {
+  id          Int      @id @default(autoincrement())
+  type        String
+  targetId    Int
+  recipient   String
+  sentAt      DateTime @default(now())
+
+  @@unique([type, targetId, recipient])
+}

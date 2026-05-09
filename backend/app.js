@@ -66,9 +66,12 @@ const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 const { handleCSVUpload }  = require('./services/csvUpload');
 const { emailAutomate } = require('./services/emailAutomate');
+const { startReminderEmailJob } =  require("./services/emailAutomate.js");
 
-// automatic email processing for client sheets
+// reminder email job that processes at 8:00 AM every day 
+startReminderEmailJob();
 
+// automatic email processing for client sheets process at 6:00 AM every day 
 cron.schedule('0 6 * * *', async () => {
   console.log('Running email csv automation task at 6:00 AM every day');
 
