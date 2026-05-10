@@ -47,6 +47,9 @@ function DashBoardLayout() {
     }
   }, [token]);
 
+
+
+
   const fetchNotifications = async () => {
     try {
       const res = await authRouter.get("/dashboard/notifications");
@@ -69,6 +72,10 @@ function DashBoardLayout() {
 
       SetUser(result.user); // (only non sensitive user data from backend)
       SetData(result.globalData); // all clients, notes, referrals for dashboard display, consider separate fetches for each in future if performance issues arise with large data sets
+
+      if (result.user?.mustChangePassword) {
+      return navigate("/change-password");
+}
       
       await fetchNotifications();
 
@@ -84,9 +91,11 @@ function DashBoardLayout() {
     }
   };
 
+
+
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="flex flex-col items-start justify-center min-h-screen">
         <h1 className="text-2xl font-bold mb-4">An error occurred</h1>
         <p className="text-gray-600 mb-8">{error.message}</p>
         <button

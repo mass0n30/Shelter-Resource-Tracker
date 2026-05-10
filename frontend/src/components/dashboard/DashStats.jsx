@@ -6,9 +6,9 @@ function DashStats({
   setDashStatFilter,
 }) {
   return (
-    <div className={`flex flex-col gap-md ${className} md:flex-row`}>
+    <div className={`flex flex-col gap-sm md:gap-md ${className} md:flex-row`}>
 
-      <div className="flex-1 flex gap-md">
+      <div className="flex-1 flex gap-sm md:gap-md">
 
         <DashStatCard
           data={data.urgentCases}
@@ -28,7 +28,7 @@ function DashStats({
 
       </div>
 
-      <div className="flex-1 flex gap-md">
+      <div className="flex-1 flex gap-sm md:gap-md">
 
         <DashStatCard
           data={data.totalClients}

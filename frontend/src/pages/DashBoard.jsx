@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import { Navigate, useLocation } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 import DashStats from '../components/dashboard/DashStats';
 import ClientToggleSection from '../components/dashboard/ClientList';
@@ -83,14 +84,18 @@ function DashBoard() {
     }
   };
 
+  if (user?.mustChangePassword && location.pathname !== "/change-password") {
+  return <Navigate to="/change-password" replace />;
+}
+
   return (
     <>
       <Navbar className="bg-white shadow h-24em" authRouter={authRouter} authRouterForm={authRouterForm} user={user} />
 
-      <main className="bg-primaryLight flex justify-center p-sm md:p-md">
-        <div className="w-full max-w-7xl flex">
+      <main className="bg-primaryLight flex px-sm md:px-md">
+        <div className="flex-1 w-full max-w-7xl flex">
 
-          <div className="flex-1 w-full h-screen grid grid-cols-1 auto-rows-min lg:grid-cols-4 gap-4 md:p-4">
+          <div className="flex-1 w-full h-full grid grid-cols-1 auto-rows-min lg:grid-cols-4 gap-sm md:gap-md p-sm md:p-md">
             <DashStats
               className="col-span-1 row-span-3 lg:row-span-2 lg:col-span-4"
               data={dashboardStats}
@@ -154,7 +159,7 @@ function DashBoard() {
             )}
 
             <ClientToggleSection
-              className="border-border-400 bg-background border-2 rounded-md col-span-1 lg:col-span-3 row-span-10 max-h-[calc(100vh-250px)] overflow-y-auto"
+              className="border-border-400 bg-background border-2 rounded-md col-span-1 lg:col-span-3 row-span-10 max-h-[calc(120vh-250px)] overflow-y-auto"
               dashStatFilter={dashStatFilter}
               setDashStatFilter={setDashStatFilter}
               viewedClients={viewedClients}
@@ -165,9 +170,9 @@ function DashBoard() {
               authRouter={authRouter}
               authRouterForm={authRouterForm}
             />
-            <div className="col-span-1 lg:col-span-1 row-span-10 min-h-0 overflow-hidden flex flex-col">
+            <div className="col-span-1 lg:col-span-1 row-span-10 min-h-0 max-h-[calc(120vh-250px)] overflow-hidden flex flex-col">
               <Notifications
-                className="border-border-400 shadow-md border-2 rounded-md h-full min-h-0 flex flex-col"
+                className="border-border-400 shadow-md border-2 rounded-md min-h-0 flex flex-col"
                 userNotes={user.notes}
                 userReferrals={user.referrals}
                 globalNotes={data.notes}

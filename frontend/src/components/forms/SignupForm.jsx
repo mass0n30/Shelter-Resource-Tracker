@@ -82,100 +82,169 @@ function SignUp() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
+<div className="min-h-screen w-full flex items-start justify-center bg-background px-4 py-12">
+  <Card className="w-full max-w-5xl overflow-hidden rounded-2xl border border-border/70 bg-white shadow-xl md:grid md:grid-cols-2">
 
-        <CardHeader>
-          <CardTitle>Sign Up</CardTitle>
-          <CardDescription>
-            Create your account to get started.
-          </CardDescription>
-        </CardHeader>
+    {/* LEFT IMAGE / BRAND PANEL */}
+    <div className="relative hidden min-h-[720px] overflow-hidden bg-blue-50 md:block">
+      <img
+        src="/HouseDesign.png"
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover object-center"
+      />
 
-        <CardContent className="space-y-4">
+      <div className="absolute inset-0 bg-white/10" />
 
-          {error && (
-            <span className="text-red-500 text-sm">
-              Error was encountered: {error}
-            </span>
-          )}
+      <div className="relative z-10 p-10">
+        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border-2 border-primary text-primary">
+          <span className="text-xl font-bold">⌂</span>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <h1 className="text-xl font-bold text-slate-950">
+          Shelter Resource Tracker
+        </h1>
 
+        <p className="mt-1 text-sm text-slate-600 mt-1 text-sm text-slate-500 w-full flex-1 align-center text-center">
+          Bringing a supportive community together.
+        </p>
+      </div>
+
+      <div className="absolute bottom-10 left-10 right-10 z-10 rounded-lg border border-white/70 bg-white/80 p-4 shadow-sm backdrop-blur">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-primary">
+            <span className="text-sm">◇</span>
+          </div>
+
+        <p className="mt-1 text-sm text-slate-500 w-full flex-1 align-center text-center">
+            Secure. Private. Built for shelters and service providers.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* RIGHT SIGNUP PANEL */}
+    <div className="relative flex min-h-[720px] flex-col justify-center bg-white px-6 py-10 sm:px-10 md:px-16">
+
+      {/* MOBILE HEADER */}
+      <div className="mb-8 flex flex-col items-center text-center md:hidden">
+        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border-2 border-primary text-primary">
+          <span className="text-xl font-bold">⌂</span>
+        </div>
+
+        <h1 className="text-lg font-bold leading-tight text-slate-950">
+          Shelter Resource Tracker
+        </h1>
+
+        <p className="mt-1 text-sm text-slate-500 w-full flex-1 align-center text-center">
+          Bringing a supportive community together.
+        </p>
+      </div>
+
+      <CardHeader className="px-0 pb-6 pt-0">
+        <CardTitle className="text-2xl font-bold tracking-tight text-slate-950">
+          Create account
+        </CardTitle>
+
+        <CardDescription className="text-sm text-slate-500">
+          Create your account to get started.
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent className="px-0">
+        {error && (
+          <span className="mb-4 block text-sm text-red-500 w-full text-center">
+            Error was encountered: {error}
+          </span>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="firstname">First Name</Label>
+              <Label htmlFor="firstname" className="text-xs font-semibold text-slate-700">
+                First name
+              </Label>
+
               <Input
                 id="firstname"
-                placeholder="First Name"
+                placeholder="First name"
                 onChange={(e) => updateInfo(e.target.value, "fname")}
+                className="h-11 rounded-md border-slate-200 bg-white text-sm shadow-none placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/30"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="lastname">Last Name</Label>
+              <Label htmlFor="lastname" className="text-xs font-semibold text-slate-700">
+                Last name
+              </Label>
+
               <Input
                 id="lastname"
-                placeholder="Last Name"
+                placeholder="Last name"
                 onChange={(e) => updateInfo(e.target.value, "lname")}
+                className="h-11 rounded-md border-slate-200 bg-white text-sm shadow-none placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/30"
               />
             </div>
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Email"
-                onChange={(e) => updateInfo(e.target.value, "email")}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-xs font-semibold text-slate-700">
+              Email address
+            </Label>
 
-            <div className="space-y-2">
-              <Label htmlFor="alias">Username</Label>
-              <Input
-                id="alias"
-                placeholder="Username"
-                onChange={(e) => updateInfo(e.target.value, "alias")}
-              />
-            </div>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              onChange={(e) => updateInfo(e.target.value, "email")}
+              className="h-11 rounded-md border-slate-200 bg-white text-sm shadow-none placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/30"
+            />
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Password"
-                onChange={(e) => updateInfo(e.target.value, "password")}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-xs font-semibold text-slate-700">
+              Password
+            </Label>
 
-            <div className="space-y-2">
-              <Label htmlFor="passwordconfirm">Repeat Password</Label>
-              <Input
-                id="passwordconfirm"
-                type="password"
-                placeholder="Repeat Password"
-                onChange={(e) => updateInfo(e.target.value, "passwordconfirm")}
-              />
-            </div>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Create a password"
+              onChange={(e) => updateInfo(e.target.value, "password")}
+              className="h-11 rounded-md border-slate-200 bg-white text-sm shadow-none placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/30"
+            />
+          </div>
 
-            <div className="flex gap-2 pt-2 justify-center">
-              <Button type="submit">
-                Sign Up
-              </Button>
+          <div className="space-y-2">
+            <Label htmlFor="passwordconfirm" className="text-xs font-semibold text-slate-700">
+              Repeat password
+            </Label>
 
-              <Link to="/">
-                <Button type="button" variant="secondary">
-                  Login
-                </Button>
-              </Link>
-            </div>
+            <Input
+              id="passwordconfirm"
+              type="password"
+              placeholder="Repeat your password"
+              onChange={(e) => updateInfo(e.target.value, "passwordconfirm")}
+              className="h-11 rounded-md border-slate-200 bg-white text-sm shadow-none placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/30"
+            />
+          </div>
 
-          </form>
+          <Button type="submit" className="h-11 text-white w-full rounded-md">
+            Create account
+          </Button>
+        </form>
 
-        </CardContent>
-      </Card>
+        <div className="mt-6 flex items-center justify-center gap-1 text-sm text-slate-500">
+          <span>Already have an account?</span>
+
+          <Link to="/" className="font-semibold text-primary hover:underline">
+            Login
+          </Link>
+        </div>
+      </CardContent>
     </div>
+  </Card>
+</div>
   );
 }
 

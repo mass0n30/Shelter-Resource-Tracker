@@ -136,7 +136,7 @@ async function sendEmail({ to, subject, html }) {
 
 function startReminderEmailJob() {
   // runs every day at 8:00 AM
-  cron.schedule("* * * * *", async () => {
+  cron.schedule("0 8 * * *", async () => {
     console.log("Running reminder email job...");
 
     const now = new Date();

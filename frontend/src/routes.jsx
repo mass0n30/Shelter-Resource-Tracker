@@ -5,7 +5,7 @@ import ErrorPage from "./pages/ErrorPage";
 import Login from "./components/forms/LoginForm";
 import Signup from "./components/forms/SignupForm";
 import ClientProfile from "./pages/ClientProfile";
-
+import ChangePassword from "./components/forms/PasswordReset";
 const routes = [
   {
     path: "/", 
@@ -23,6 +23,10 @@ const routes = [
       {
         path: "sign-up",
         element: <Signup />,
+      },
+      {
+        path: "change-password",
+        element: <ChangePassword />,
       },
       {
         path: "dashboard",

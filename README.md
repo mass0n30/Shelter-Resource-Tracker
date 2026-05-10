@@ -35,7 +35,6 @@ Note 4/28:
   Avoid global notifications by default
 
 ToDo:
-  -- Figure out Loader logic (using setLoading and setSuccess module from partials/Loading.jsx ??)
   (Update UI instant, fetch updated Obj in background ?)
 
   DashboardLayout.jsx
@@ -79,6 +78,7 @@ Done:
   - Notification Reminders sidebar design (go off figma, checking schema design for filter options, be deliberate here!)
         * Filter and order by prioritys and dates
   - Calendar logic (mapping Icons for either Client Initials/Note reminders / Referral Followups?) --> clicking calendar cell shows limited info.. Not sure what to exactly do here, as Calendar should function different from Reminders sidebar for the value it provides.
+  -- Figure out Loader logic (using setLoading and setSuccess module from partials/Loading.jsx ??)
 
 
 

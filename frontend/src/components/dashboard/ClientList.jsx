@@ -1,6 +1,6 @@
 
 import { Button } from '../partials/Button';
-import { ClockAlert, List, CalendarDays, Funnel, ChevronDown, BedDouble } from 'lucide-react';
+import { ClockAlert, Plus, CalendarDays, UserSearch, ChevronDown, BedDouble } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Combobox,ComboboxValue, ComboboxContent } from "@/components/ui/combobox";
@@ -150,54 +150,43 @@ function ClientToggleSection({className, clientData, userNotes, userReferrals, a
   }, [filter]);
 
   return (
-    <div className={`px-4 py-2 flex flex-col shadow-md ${className}`}>
+    <div className={`px-md py-xs md:py-md flex flex-col shadow-md ${className}`}>
 
       {/* Search + Filter Row */}
-      <div className="w-full flex items-center gap-md p-md pb-sm">
+      <div className="w-full flex items-center gap-sm p-md pb-sm">
 
         {/* Search Input + Button */}
-        <div className="flex flex-1 flex-col gap-2">
+        <div className="flex flex-1 flex-col gap-sm">
 
           <div className="w-full">
-            <div className="text-sm text-left italic text-muted-foreground mb-1 ml-1">Today: <span className="font-medium">{new Date().toLocaleDateString()}</span></div>
             <ClientSearch currentClients={viewedClients} setViewedClients={setViewedClients} setClientId={setClientId} filter={filter} setFilter={setFilter} />
-          </div>
-
-          <div className="flex justify-start gap-2 md:justify-start">
-            <Button onClick={() => {
-              if (clientId) {
-                setViewedClients(clientData.filter(client => client.id === clientId));
-              } else {
-                setViewedClients(clientData);
-              }
-            }}>
-              Search
-            </Button>
-
-            <div className="relative">
-              <ClientDropDownFilter filter={filter} setFilter={setFilter} />
             </div>
-          </div>
 
+      <div className="w-full flex items-center justify-between gap-sm">
+        <div className="flex justify-start gap-2 md:justify-start">
+          <Button className="flex items-center gap-1" onClick={() => {
+            if (clientId) {
+              setViewedClients(clientData.filter(client => client.id === clientId));
+            } else {
+              setViewedClients(clientData);
+            }
+          }}>
+            <UserSearch color="background" />
+           <span>Search</span>
+          </Button>
+
+          <div className="relative">
+            <ClientDropDownFilter filter={filter} setFilter={setFilter} />
+          </div>
         </div>
-      </div>
-
-      {/* Calendar, enrolled toggle, layout toggle buttons*/}
-      <div className="w-full flex items-center pl-md pr-md pb-lg gap-md">
-        <div className="flex-1 justify-between gap-2 flex">
-          <div className="text-sm ml-2 text-muted-foreground align-center flex items-center font-medium italic">
-            {filter === "STAYED_OVERNIGHT" ? "Clients Who Stayed Overnight" : filter === "ENROLLED" || (dashStatFilter !== null) ? "Enrolled Clients" : filter === "WC" ? "Winter Contingency Clients" : filter === "INACTIVE" ? "Inactive Clients" : ""}         {dashStatFilter && (
-            <div className="text-sm ml-2 text-mufted-foreground align-center flex items-center font-medium italic">
-              {dashStatFilter === "URGENT" ? "Clients with Urgent Referrals" : dashStatFilter === "FOLLOW_UP" ? "Clients with Upcoming Follow-ups" : dashStatFilter === "NEW" ? "New Clients (Last 30 Days)" : ""}
-            </div>
-          )}
-          </div>
-          
         <div className="flex items-center gap-2">
           <div>
             <Dialog>
               <DialogTrigger asChild>
-                <Button>Create Client</Button>
+                <Button className="flex items-center gap-1">
+                  <Plus color="background" />
+                  <span>Add Client</span>
+                </Button>
               </DialogTrigger>
               <ClientForm authRouter={authRouter} />
             </Dialog>
@@ -206,6 +195,21 @@ function ClientToggleSection({className, clientData, userNotes, userReferrals, a
               <CalendarDays color="background" />
             </Button>
           </div>
+        </div>
+      </div>
+      </div>
+
+      {/* Calendar, enrolled toggle, layout toggle buttons*/}
+      <div className="w-full flex items-center p-md gap-md">
+        <div className="flex-1 justify-between gap-2 flex">
+          <div className="text-sm ml-2 text-muted-foreground align-center flex items-center font-medium italic">
+            {filter === "STAYED_OVERNIGHT" ? "Clients Who Stayed Overnight" : filter === "ENROLLED" || (dashStatFilter !== null) ? "Enrolled Clients" : filter === "WC" ? "Winter Contingency Clients" : filter === "INACTIVE" ? "Inactive Clients" : filter === "ALL" ? "All Clients" : ""}         {dashStatFilter && (
+            <div className="text-sm ml-2 text-mufted-foreground align-center flex items-center font-medium italic">
+              {dashStatFilter === "URGENT" ? "Clients with Urgent Referrals" : dashStatFilter === "FOLLOW_UP" ? "Clients with Upcoming Follow-ups" : dashStatFilter === "NEW" ? "New Clients (Last 30 Days)" : ""}
+            </div>
+          )}
+          </div>
+          <div className="text-sm text-left italic text-muted-foreground mb-1 ml-1">Today: <span className="font-medium">{new Date().toLocaleDateString()}</span></div>
         </div>
       </div>
       <div>

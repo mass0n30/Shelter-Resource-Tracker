@@ -72,6 +72,8 @@ model User {
   notes     Note[]
   referrals Referral[] @relation("ReferralCreatedBy")
 
+  mustChangePassword Boolean   @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
