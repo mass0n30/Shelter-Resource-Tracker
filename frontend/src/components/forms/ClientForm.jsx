@@ -33,21 +33,29 @@ const schema = z.object({
     .max(100, { message: "Last name is too long" }),
 
   clientId: z
-    .string({ required_error: "Client ID is required" })
+    .string()
     .regex(/^\d+$/, "Client ID must be a number")
-    .min(1, { message: "Client ID is required" })
-    .max(10, { message: "Client ID too long" }),
+    .max(10, { message: "Client ID too long" })
+    .optional()
+    .or(z.literal("")),
+
+  gender: z
+    .string()
+    .optional()
+    .or(z.literal("")),
 
   priorityNeed: z
-    .string({ required_error: "Priority need is required" })
-    .min(1, { message: "Priority need is required" })
-    .max(255, { message: "Priority need is too long" }),
+    .string()
+    .max(255, { message: "Priority need is too long" })
+    .optional()
+    .or(z.literal("")),
 
   bedLabel: z
-    .string({ required_error: "Bed label is required" })
+    .string()
     .trim()
-    .min(1, { message: "Bed label is required" })
-    .max(5, { message: "Bed label is too long" }),
+    .max(5, { message: "Bed label is too long" })
+    .optional()
+    .or(z.literal("")),
 });
 
 export default function ClientForm({ authRouter, firstName, lastName}) {

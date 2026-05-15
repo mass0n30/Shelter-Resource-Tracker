@@ -17,6 +17,8 @@ function DashBoard() {
   const [viewedClients, setViewedClients] = useState(data.clients);
   const [dashStatFilter, setDashStatFilter] = useState(null);
   const [showAlerts, setShowAlerts] = useState(false);
+  const [toggle, setToggle] = useState("reminders");
+  const [openForm, setOpenForm] = useState(null);
 
   const clients = data.clients;
 
@@ -169,16 +171,23 @@ function DashBoard() {
               userReferrals={user.referrals}
               authRouter={authRouter}
               authRouterForm={authRouterForm}
+              openForm={openForm}
+              setOpenForm={setOpenForm}
             />
             <div className="col-span-1 lg:col-span-1 row-span-10 min-h-0 max-h-[calc(120vh-250px)] overflow-hidden flex flex-col">
               <Notifications
                 className="border-border-400 shadow-md border-2 rounded-md min-h-0 flex flex-col"
                 userNotes={user.notes}
+                currentUser={user}
                 userReferrals={user.referrals}
                 globalNotes={data.notes}
                 fetchUpdatedData={fetchUpdatedData}
                 authRouter={authRouter}
                 authRouterForm={authRouterForm}
+                toggle={toggle}
+                setToggle={setToggle}
+                openForm={openForm}
+                setOpenForm={setOpenForm}
               />
             </div>
           </div>

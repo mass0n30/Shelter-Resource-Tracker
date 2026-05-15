@@ -5,6 +5,11 @@ https://nodemailer.com/extras/mailparser/ Parsing tool
 https://www.npmjs.com/package/node-cron Scheduling tool for node tasks
 https://crontab.guru/ Schedule time syntax
 
+Loader To:
+  - Start with dashboard, correct controller route paths
+  - Figure out instant UI change logic
+  - success logic with hooks to exit forms 
+
 
 MVP Features: (initially develop for Manager accounts)
   - Manager can CRUD client accounts, set time notifs, see client case management info. Staff can only view add notes.
@@ -38,6 +43,7 @@ ToDo:
   (Update UI instant, fetch updated Obj in background ?)
   - Fix calendar setDate bug (setting one day behind?)
   - Fix all loader logic inside Loader.jsx
+  - Sonar badges upon create/delete/update ?
   - If user hits Search (Search's name in entire DB instead of inside filtered)
 
   DashboardLayout.jsx

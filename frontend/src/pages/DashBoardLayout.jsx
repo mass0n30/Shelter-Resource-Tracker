@@ -12,9 +12,8 @@ function DashBoardLayout() {
   // useful for navigation 
   const [mount, SetMount] = useState(false);
 
-  const { error, setError, success, setSuccess, loading, setLoading } = useAsyncStatus({
+  const { error, setError, success, setSuccess, loading, setLoading, loadingDuration, setLoadingDuration } = useAsyncStatus({
     successDuration: 3000, // show success for 3 seconds
-    loadingDuration: 0, // no auto timeout for loading, we will control it manually based on actual data fetch status
   });
 
   const token = localStorage.getItem("usertoken");
@@ -42,13 +41,12 @@ function DashBoardLayout() {
     if (token) {
       // gets all data 
       try {
+        setLoadingDuration(3000); 
         setLoading(true);
         fetchUpdatedData();
       } catch (err) {
         console.error("Error fetching updated data:", err);
-      } finally {
-        setLoading(false);
-      }
+      } 
     } else {
       navigate("/login");
     }
@@ -71,7 +69,6 @@ function DashBoardLayout() {
 
   const fetchUpdatedData = async (success) => {
     try {
-      setLoading(true);
       const response = await authRouter.get("/dashboard");
 
       // AXIOS Already Parses JSON, no need for response.json() like fetch !!!! Same on Backend Controllers !
@@ -92,13 +89,8 @@ function DashBoardLayout() {
     } catch (error) {
       setError(error);
       return navigate("/login"); // redirect to login if token invalid or expired, consider separate error handling for different status codes in future (e.g. 401 vs 403) for better UX
-    } finally {
-      await loaderTimer(1000);
-      setLoading(false);
-    }
+    } 
   };
-
-
 
   if (error) {
     return (
@@ -115,8 +107,6 @@ function DashBoardLayout() {
     );
   }
 
-  // skeleton loader Navbar/sidebar, ect.
-  // waits for BOTH: timer finished + actual data exists
   if (loading || !data || !user) {
     return <DashboardPageSkeleton />;
   }

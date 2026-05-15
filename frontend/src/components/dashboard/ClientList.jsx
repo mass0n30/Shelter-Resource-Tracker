@@ -137,10 +137,9 @@ import { ClientDropDownFilter } from '../partials/Dropdown';
 import { useEffect } from 'react';
 import { CalendarEmbedded } from './CalenderView';
 
-function ClientToggleSection({className, clientData, userNotes, userReferrals, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter}) {
+function ClientToggleSection({className, clientData, userNotes, userReferrals, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter, openForm, setOpenForm}) {
   // for searching by name
   const [clientId, setClientId] = useState(null);
-  const [filterOpen, setFilterOpen] = useState(false);
   const [date, setDate] = useState(null);
   const [filter, setFilter] = useState("ENROLLED");
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -197,7 +196,10 @@ function ClientToggleSection({className, clientData, userNotes, userReferrals, a
         </div>
         <div className="flex items-center gap-2">
           <div>
-            <Dialog>
+            <Dialog 
+              open={openForm === "client"}
+              onOpenChange={(isOpen) => setOpenForm(isOpen ? "client" : null)}
+            >
               <DialogTrigger asChild>
                 <Button className="flex items-center gap-1">
                   <Plus className="color-black hover:color-white" />

@@ -8,7 +8,8 @@ async function getAllUserData(req, res, next) {
       include: {
         notes: {
           include: {
-            client: true
+            client: true,
+            author: true,
           },
           orderBy: { createdAt: 'desc' },
           take: 50,
@@ -57,7 +58,8 @@ async function getAllNotes(req, res, next) {
     const notes = await prisma.note.findMany({
       include: {
         client: true,
-      }, 
+        author: true,
+      },
       orderBy: { createdAt: 'desc' },
       take: 50,
     });

@@ -64,14 +64,14 @@ function ActionButtons({ item, navigate, setLoading, handleAction, loadingId }) 
 
       <ActionButton
         className="bg-blue-500 text-white"
-        tooltip="Mark Complete"
+        tooltip="Update Status"
         isLoading={isLoading}
         onClick={(e) => {
           e.stopPropagation();
           handleAction(item.type, item, "complete");
         }}
       >
-        Complete
+        {item.completed ? "Mark Incomplete" : "Mark Complete"}
       </ActionButton>
 
       {item.type === "resource" && (
@@ -112,28 +112,45 @@ function TimelineItem({
   handleAction,
   loadingId,
   noteToggle,
+  viewedNotes,
+  currentUser,
 }) {
+  const canEdit =
+    item.author?.id === currentUser?.id;
   return (
     <li
       onClick={() => toggleItem(item.id)}
       className="py-md border-b border-gray-200 py-2 cursor-pointer hover:bg-gray-50 transition"
     >
       <div className="flex justify-between gap-sm">
-        <div className="flex items-center gap-xs">
-          <span className="font-medium  flex items-center gap-1">
+        <div className="flex flex-col items-start gap-1 min-w-0">
+          <span className="font-medium flex items-center gap-1 min-w-0">
             {item.type === "resource" ? (
-              <div className="flex p-sm bg-primaryLight rounded-full items-center justify-center gap-1">
-                <House className=" inline h-4 w-4 text-primary" />
+              <div className="flex p-sm bg-primaryLight rounded-full items-center justify-center gap-1 shrink-0">
+                <House className="inline h-4 w-4 text-primary" />
               </div>
             ) : (
-              <div className="flex p-sm bg-primaryLight rounded-full items-center justify-center gap-1">
+              <div className="flex p-sm bg-primaryLight rounded-full items-center justify-center gap-1 shrink-0">
                 <NotebookText className="inline h-4 w-4 text-primary" />
               </div>
             )}
-            {item.type === "note" 
-              ? item.title ? item.title : item.client?.firstName ? `Note for ${item.client?.firstName}` : "General Note"
-              : item.label || "Referral"}
+
+            <span className="truncate">
+              {item.type === "note"
+                ? item.title
+                  ? item.title
+                  : item.client?.firstName
+                  ? `Note for ${item.client?.firstName}`
+                  : "General Note"
+                : item.label || "Referral"}
+            </span>
           </span>
+
+          {noteToggle && viewedNotes?.filterMsg === "Posted Notes" && item.author && (
+            <div className="text-xs text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-full">
+              Posted by {item.author.firstName} {item.author.lastName.charAt(0)}.
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-xs">
 
@@ -164,12 +181,15 @@ function TimelineItem({
               })}
             </span>
           )}
+        {canEdit && (
           <ActionButtons
             item={item}
             navigate={navigate}
             setLoading={setLoading}
             handleAction={handleAction}
           />
+        
+        )}
         </div>
       )}
     </li>
@@ -178,14 +198,18 @@ function TimelineItem({
 
 function Notifications({
   className,
+  currentUser,
   userNotes,
   userReferrals,
   globalNotes,
   globalReferrals,
   fetchUpdatedData,
   authRouter,
+  toggle,
+  setToggle,
+  openForm,
+  setOpenForm,
 }) {
-  const [toggle, setToggle] = useState("reminders");
   const [view, setView] = useState("latest");
   const [expandedId, setExpandedId] = useState(null);
   const [loadingId, setLoadingId] = useState(null);
@@ -193,6 +217,14 @@ function Notifications({
     notes: userNotes,
     filterMsg: "Personal Notes",
   });
+
+  // updating viewed notes from parent response after complete/delete actions on notes
+  useEffect(() => {
+    setViewedNotes({
+      notes: userNotes?.filter((note) => !note.completed) || [],
+      filterMsg: "Personal Notes",
+    });
+  }, [userNotes]);
 
   const { success, setSuccess, loading, setLoading, error, setError } = useAsyncStatus({loadingDuration: 2000, successDuration: 3000});
 
@@ -225,9 +257,7 @@ function Notifications({
           : `${base}/closed`;
 
       await authRouter.post(endpoint);
-      setSuccess(true);
       setExpandedId(null);
-      setSuccess(true);
       // trigger refetch in parent to update ALL data after action
       fetchUpdatedData(true);
     } catch (err) {
@@ -266,6 +296,7 @@ function Notifications({
       label: note?.title || null,
       date: new Date(note.reminderAt),
       isPriority: false,
+      completed: note?.completed,
       client: note.client,
     });
   });
@@ -340,7 +371,10 @@ function Notifications({
 
           <div className="flex-1 items-center gap-sm">
           {toggle === "notes" && (
-            <Dialog>
+            <Dialog
+              open={openForm === "note"}
+              onOpenChange={(isOpen) => setOpenForm(isOpen ? "note" : null)}
+            >
               <DialogTrigger asChild>
                 <Button className="w-full">Create Note</Button>
               </DialogTrigger>
@@ -348,6 +382,8 @@ function Notifications({
                 <NoteForm
                   authRouter={authRouter}
                   setSuccess={setSuccess}
+                  fetchUpdatedData={fetchUpdatedData}
+                  setOpenForm={setOpenForm}
                 />
               </DialogContent>
             </Dialog>
@@ -417,6 +453,8 @@ function Notifications({
                       loadingId={loadingId}
                       setLoading={setLoading}
                       noteReminder={item.noteReminder}
+                      viewedNotes={viewedNotes}
+                      currentUser={currentUser}
                     />
                   ))}
                 </div>
@@ -438,8 +476,10 @@ function Notifications({
                     label: note?.title || null,
                     date: new Date(note.createdAt),
                     client: note.client,
+                    author: note.author,
                     noteToggle: true,
                     noteReminder: note.reminderAt ? new Date(note.reminderAt) : null,
+                    completed: note?.completed,
                   }}
                   isExpanded={expandedId === id}
                   toggleItem={toggleItem}
@@ -447,6 +487,8 @@ function Notifications({
                   handleAction={handleAction}
                   loadingId={loadingId}
                   noteToggle={true}
+                  viewedNotes={viewedNotes}
+                  currentUser={currentUser}
                 />
               );
             })
@@ -454,6 +496,11 @@ function Notifications({
           {toggle === "notes" && viewedNotes?.notes.length === 0 && (
             <div className="text-center text-muted-foreground py-10">
               No {viewedNotes?.filterMsg} notes found.
+            </div>
+          )}
+          {toggle === "reminders" && timeline.length === 0 && (
+            <div className="text-center text-muted-foreground py-10">
+              No upcoming reminders found.
             </div>
           )}
         </ul>

@@ -4,6 +4,7 @@ import { Notebook } from "lucide-react";
 import CalendarPopover from "../partials/Calender"; 
 import { z } from "zod";
 
+
 const schema = z.object({
   content: z.string().min(1, "Note content is required"),
   title: z.string().max(20, "Title too long").optional(),
@@ -11,7 +12,7 @@ const schema = z.object({
   reminderAt: z.date().nullable().optional(),
 });
 
-export default function NoteForm({ authRouter, clientId, noteData, fetchClientData, SetSuccess, SetLoading }) {
+export default function NoteForm({ authRouter, clientId, noteData, fetchUpdatedData, setOpenForm }) {
   const [error, setError] = useState(null);
   const [date, setDate] = useState(null);
 
@@ -70,9 +71,10 @@ export default function NoteForm({ authRouter, clientId, noteData, fetchClientDa
         await authRouter.post("/dashboard/notes", payload);
       }
 
-      if (fetchClientData) {
-        await fetchClientData();
+      if (fetchUpdatedData) {
+        await fetchUpdatedData();
       }
+      setOpenForm(null);
 
     } catch (err) {
       console.error(err.response?.data || err.message);

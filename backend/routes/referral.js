@@ -13,7 +13,7 @@ referralRouter.patch("/:referralId", controller.referralController.updateReferra
 referralRouter.patch("/:referralId/status", controller.referralController.updateReferralStatus);
 referralRouter.post("/:referralId/delete", controller.referralController.deleteReferral);
 referralRouter.post("/:referralId/closed", controller.referralController.closeReferral);
-//referralRouter.patch("/:referralId/priority", controller.referralController.setPriorityReferral);
-//referralRouter.patch("/:referralId/close", controller.referralController.closeReferral);
+referralRouter.post("/:referralId/complete", controller.referralController.completeReferral);
+
 
 module.exports = { referralRouter };

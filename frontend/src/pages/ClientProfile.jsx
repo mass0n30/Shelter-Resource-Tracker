@@ -35,7 +35,7 @@ export default function ClientProfile() {
 
   const { authRouter } = useOutletContext();
 
-  const { error, setError, success, setSuccess, loading, setLoading } = useAsyncStatus();
+  const { error, setError, success, setSuccess, loading, setLoadingDuration, setLoading } = useAsyncStatus();
 
   const fetchClientData = async (success) => {
     try {
@@ -57,10 +57,7 @@ export default function ClientProfile() {
       fetchClientData();
     } catch (err) {
       console.error("Error fetching client data:", err);
-    } finally {
-      
-      setLoading(false);
-    }
+    } 
   }, [clientId]);
 
   if (!clientData || loading) {
@@ -275,7 +272,7 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
               <NoteForm
                 authRouter={authRouter}
                 clientId={clientData.id}
-                fetchClientData={fetchClientData}
+                fetchUpdatedData={fetchClientData}
               />
             </DialogContent>
           </Dialog>

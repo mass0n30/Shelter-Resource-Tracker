@@ -35,9 +35,7 @@ async function getClients(req, res, next) {
     let clients = null;
     const now = new Date();
     const filter = req.query?.filter;
-    
-    console.log('YOOOOOOOOO');
-    
+        
       // use Scheduled Cron instead of get Request ??
     // upating clients that are passed outtakeData to INACTIVE, so they are not included in the stayed overnight query return, and to maintain accurate client status in the system
     clients = await prisma.client.findMany({
@@ -162,19 +160,20 @@ async function getClientById(req, res, next) {
   }
 }
 
-async function createClient(req, res, next) {   
+async function createClient(req, res, next) {
+  const { firstName, lastName, clientId } = req.body; 
   try {
     const newClient = await prisma.client.create({
       data: {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        clientId: parseInt(req.body.clientId),
+        firstName: firstName,
+        lastName: lastName,
+        clientId: parseInt(clientId) || undefined, // optional clientId, if not provided, it will auto-increment
         intakeDate: req.body?.intakeDate || new Date(), // "2023-05-21" pass in that format from client side
         outtakeDate: req.body?.outtakeDate || null,
-        priorityNeed: req.body.priorityNeed,
-        gender: req.body.gender,
-        bedLabel: req.body.bedLabel,
-        status: req.body.status,
+        priorityNeed: req.body?.priorityNeed || null,
+        gender: req.body?.gender || null,
+        bedLabel: req.body?.bedLabel || null,
+        status: req.body?.status || "ENROLLED",
         // BELOW AS OPTIONAL FIELDS ?
         // phone: req.body.phone,
         // address: req.body.address,
