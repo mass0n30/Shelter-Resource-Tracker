@@ -36,17 +36,28 @@ Note 4/28:
 
 ToDo:
   (Update UI instant, fetch updated Obj in background ?)
+  - Fix calendar setDate bug (setting one day behind?)
+  - Fix all loader logic inside Loader.jsx
+  - If user hits Search (Search's name in entire DB instead of inside filtered)
 
   DashboardLayout.jsx
     - Consider putting more data in Dash stat cards?
+    - Dash Card text layout improve
+    - Map out clients w/ resources first (unshift for priority, then if any resources)
+    - Improve layout design, considering mobile view (adding Nav buttons bottom)
+      * getting Notificiations?
 
   ClientProfile.jsx
     - Client profile can paginate all notes or referrals if needed (to see even oldest notes and referrals beyond Dashboards limits)
     - Client Profiles need CRUD for client info
     - Add Re-enrollment and extension options on client profile (this updating/adding row to timelineDates table for timeline component!!)
+    - Improve layout design, considreing the mobile view mockup 
 
   Frontend
   - Add timeline modules and logic (shadUI?)
+    - Function to map timeline item (enrollment date, referral status updates)
+    - Add another relation table to Referrals to save referral history?
+    - Google/Indeed Signup API?
 
   Backend
    - Consider other scheduled jobs (cron) for time-based updates (dashboard notifs)

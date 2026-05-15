@@ -1,6 +1,6 @@
 export default function ClientProfileSkeleton() {
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-gray-200">
+    <div className="flex-1 flex h-screen w-full flex-col overflow-hidden bg-gray-200">
       <BannerSkeleton className="shrink-0 w-full bg-gray-100 min-h-[200px]" />
 
       <div className="mx-auto grid min-h-0 w-full max-w-7xl flex-1 grid-cols-1 gap-4 overflow-hidden p-4 md:grid-cols-4">

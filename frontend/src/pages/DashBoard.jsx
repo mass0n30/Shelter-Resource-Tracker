@@ -159,7 +159,7 @@ function DashBoard() {
             )}
 
             <ClientToggleSection
-              className="border-border-400 bg-background border-2 rounded-md col-span-1 lg:col-span-3 row-span-10 max-h-[calc(120vh-250px)] overflow-y-auto"
+              className="border-border-400 bg-background border-2 rounded-md col-span-1 lg:col-span-3 row-span-10 max-h-[calc(120vh-250px)] relative overflow-y-auto"
               dashStatFilter={dashStatFilter}
               setDashStatFilter={setDashStatFilter}
               viewedClients={viewedClients}

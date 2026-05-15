@@ -49,17 +49,24 @@ function ClientList({className, viewedClients}) {
 }
 
 function ClientCard({ client, clientStats }) {
+  const statusStyles = {
+    ENROLLED: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    INACTIVE: "bg-slate-100 text-slate-600 border-slate-200",
+    WC: "bg-blue-50 text-blue-700 border-blue-200",
+    STAYED_OVERNIGHT: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  };
+
+  const currentStatusStyle =
+    statusStyles[client.status] || "bg-gray-50 text-gray-600 border-gray-200";
+
   return (
-    <div className="flex-1 min-w-0 min-h-full bg-white border rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition cursor-pointer">
-      
-      <div className="flex items-center justify-between">
-        
-        <div className="flex items-center gap-2 sm:gap-3">
-          
-          {/* Avatar */}
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-200 flex items-center justify-center text-xs sm:text-sm font-medium text-gray-600">
+    <div className="flex-1 min-w-0 min-h-full bg-white border border-gray-200 rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md hover:border-primary transition cursor-pointer">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs sm:text-sm font-semibold text-slate-600 overflow-hidden">
             {client?.avatar ? (
               <img
+                className="w-full h-full object-cover"
                 src={client.avatar}
                 alt={`${client.firstName} ${client.lastName}`}
               />
@@ -71,46 +78,55 @@ function ClientCard({ client, clientStats }) {
             )}
           </div>
 
-          {/* Name + Bed */}
-          <div className="flex flex-col">
-            <h2 className="text-foreground font-semibold text-sm sm:text-base md:text-lg">
+          <div className="flex flex-col min-w-0">
+            <h2 className="text-foreground font-semibold text-sm sm:text-base md:text-lg truncate">
               {client.firstName} {client.lastName}
             </h2>
 
-            <div className="text-[10px] align-start flex sm:text-xs text-foreground">
-              {client.bedLabel}
-            </div>
-          </div>
 
+          </div>
         </div>
 
-        {/* Status Badge */}
         <span
-          className={`text-[10px] sm:text-xs md:text-sm px-2 py-1 rounded ${
-            client.status === "ENROLLED"
-              ? "bg-green-100 text-green-700"
-              : client.status === "INACTIVE"
-              ? "bg-red-100 text-red-700"
-              : client.status === "WC"
-              ? "bg-blue-100 text-blue-700"
-              : client.status === "STAYED_OVERNIGHT"
-              ? "bg-blue-100 text-blue-700"
-              : "bg-gray-100 text-gray-700"
-          }`}
+          className={`shrink-0 inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] sm:text-xs font-medium ${currentStatusStyle}`}
         >
           {client?.status}
         </span>
       </div>
-      {/* Bottom Row */}
-      <div className="mt-3 sm:mt-4 flex justify-between text-xs sm:text-sm">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-sm">
-            {clientStats?.totalReferrals >= 0 && <div className='p-xs gap-xs text-[12px] sm:text-xs text-foreground rounded-md bg-backgroundAlt'><span className='mr-1'>Resources</span><span>{clientStats.totalReferrals}</span></div>}
-            {clientStats?.urgentReferrals > 0 && <div className='flex gap-xs p-xs text-[10px] sm:text-xs text-white rounded-md bg-red-500'><ClockAlert className='h-4 w-4' /><span className='mr-1'>Urgent</span><span>{clientStats.urgentReferrals}</span></div>}
-            {clientStats?.upcomingFollowUps > 0 && <div className='p-xs gap-xs text-[12px] sm:text-xs text-white rounded-md bg-blue-500'><span className='mr-1'>Upcoming</span><span>{clientStats.upcomingFollowUps}</span></div>}
-            {clientStats?.expiredFollowUps > 0 && <div className='p-xs gap-xs text-[12px] sm:text-xs text-white rounded-md bg-orange-500'><span className='mr-1'>Expired</span><span>{clientStats.expiredFollowUps}</span></div>}
+
+      <div className="mt-4 flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+        {clientStats?.totalReferrals >= 0 && (
+          <div className="inline-flex items-center gap-1 rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] sm:text-xs text-gray-700">
+            <span>Resources</span>
+            <span className="font-semibold">{clientStats.totalReferrals}</span>
           </div>
-        </div>
+        )}
+
+        {clientStats?.urgentReferrals > 0 && (
+          <div className="inline-flex items-center gap-1 rounded-md border border-red-200 bg-red-50 px-2 py-1 text-[11px] sm:text-xs text-red-700">
+            <ClockAlert className="h-3.5 w-3.5" />
+            <span>Urgent</span>
+            <span className="font-semibold">{clientStats.urgentReferrals}</span>
+          </div>
+        )}
+
+        {clientStats?.upcomingFollowUps > 0 && (
+          <div className="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-[11px] sm:text-xs text-blue-700">
+            <span>Upcoming</span>
+            <span className="font-semibold">
+              {clientStats.upcomingFollowUps}
+            </span>
+          </div>
+        )}
+
+        {clientStats?.expiredFollowUps > 0 && (
+          <div className="inline-flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] sm:text-xs text-amber-700">
+            <span>Expired</span>
+            <span className="font-semibold">
+              {clientStats.expiredFollowUps}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -171,7 +187,7 @@ function ClientToggleSection({className, clientData, userNotes, userReferrals, a
               setViewedClients(clientData);
             }
           }}>
-            <UserSearch color="background" />
+            <UserSearch className="color-black hover:color-white"/>
            <span>Search</span>
           </Button>
 
@@ -184,7 +200,7 @@ function ClientToggleSection({className, clientData, userNotes, userReferrals, a
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="flex items-center gap-1">
-                  <Plus color="background" />
+                  <Plus className="color-black hover:color-white" />
                   <span>Add Client</span>
                 </Button>
               </DialogTrigger>
@@ -192,7 +208,7 @@ function ClientToggleSection({className, clientData, userNotes, userReferrals, a
             </Dialog>
           </div>
             <Button onClick={() => setCalendarOpen(prev => !prev)}>
-              <CalendarDays color="background" />
+              <CalendarDays className="color-black hover:color-white" />
             </Button>
           </div>
         </div>

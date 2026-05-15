@@ -11,7 +11,7 @@ import {
   DialogTrigger,
   DialogContent
 } from "@/components/ui/dialog";
-import { Chevron } from "react-day-picker";
+
 
 const groupLabels = {
   overdueToday: "Overdue (Yesterday)",
@@ -333,7 +333,7 @@ function Notifications({
             </div>
           )}
           <div className="flex-1 items-start text-left gap-sm">
-            <h3 className="text-md font-semibold">
+            <h3 className={`text-md font-semibold `}>
               {toggle === "reminders" ? "Reminders" : "Notes"}
             </h3>
           </div>
@@ -358,7 +358,7 @@ function Notifications({
         <div className="flex gap-sm mb-sm">
           <Button
             onClick={() => setToggle("reminders")}
-            className={`flex-1 ${toggle === "reminders" ? " bg-primary" : "bg-white text-foreground"}`}
+            className={`flex-1 ${toggle === "reminders" ? " bg-primary text-white" : "bg-white text-foreground"}`}
           >
             <Bell className="mr-1 w-4 h-4" />
             Reminders
@@ -366,7 +366,7 @@ function Notifications({
 
           <Button
             onClick={() => setToggle("notes")}
-            className={`flex-1 ${toggle === "notes" ? "bg-primary" : "bg-white text-foreground"}`}
+            className={`flex-1 ${toggle === "notes" ? "bg-primary text-white" : "bg-white text-foreground"}`}
           >
             <Notebook className="mr-1 w-4 h-4" />
             Notes
@@ -423,6 +423,7 @@ function Notifications({
               ) : null
             )
           ) : (
+
             viewedNotes?.notes.map((note) => {
               const id = `note-${note.id}`;
               return (
@@ -449,6 +450,11 @@ function Notifications({
                 />
               );
             })
+          )}
+          {toggle === "notes" && viewedNotes?.notes.length === 0 && (
+            <div className="text-center text-muted-foreground py-10">
+              No {viewedNotes?.filterMsg} notes found.
+            </div>
           )}
         </ul>
         </div>

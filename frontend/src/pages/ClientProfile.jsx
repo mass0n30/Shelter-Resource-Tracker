@@ -31,6 +31,7 @@ import { RESOURCE_CONFIG } from "../lib/utils";
 export default function ClientProfile() {
   const { clientId } = useParams();
   const [clientData, setClientData] = useState(null);
+  const [activeSection, setActiveSection] = useState("resources");
 
   const { authRouter } = useOutletContext();
 
@@ -38,7 +39,6 @@ export default function ClientProfile() {
 
   const fetchClientData = async (success) => {
     try {
-      setLoading(true);
       const response = await authRouter.get(`/dashboard/clients/${clientId}`);
       setClientData(response.data);
 
@@ -47,15 +47,20 @@ export default function ClientProfile() {
       }
     } catch (error) {
       console.error("Error fetching client data:", error);
-    } finally {
-      await loaderTimer(1000); 
-      setLoading(false);
-    }
+    } 
   };
 
   // fetching upon mount
   useEffect(() => {
-    fetchClientData();
+    try {
+      setLoading(true);
+      fetchClientData();
+    } catch (err) {
+      console.error("Error fetching client data:", err);
+    } finally {
+      
+      setLoading(false);
+    }
   }, [clientId]);
 
   if (!clientData || loading) {
@@ -63,7 +68,7 @@ export default function ClientProfile() {
   }
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-gray-200">
+    <div className="flex-1 flex w-full flex-col overflow-hidden bg-gray-200">
       <Banner
         clientData={clientData}
         authRouter={authRouter}
@@ -76,6 +81,8 @@ export default function ClientProfile() {
           clientData={clientData}
           authRouter={authRouter}
           fetchClientData={fetchClientData}
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
           className="md:col-span-3"
         />
 
@@ -93,9 +100,10 @@ function ClientInfoSectionToggle({
   clientData,
   authRouter,
   fetchClientData,
+  activeSection,
+  setActiveSection,
   className,
 }) {
-  const [activeSection, setActiveSection] = useState("resources");
 
   return (
     <div
@@ -130,7 +138,7 @@ function ClientInfoSectionToggle({
         </Button>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+      <div className="min-h-0 max-h-[calc(120vh-200px)] flex-1 overflow-y-auto pr-1">
         {activeSection === "resources" && (
           <Resources
             fetchClientData={fetchClientData}
@@ -226,11 +234,11 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
           <Dialog>
             <DialogTrigger asChild>
               <Button
-                variant="outline"
-                className="flex-1 flex w-full items-center justify-start gap-1"
+                variant="ghost"
+                className="flex flex-1 justify-start gap-sm bg-transparent p-sm h-auto rounded-md text-primary font-semibold hover:bg-gray-200"
               >
-                <Plus className="inline mr-1 mb-1 h-4" />
-                <div className="text-xs md:text-sm">Resource</div>
+                <Plus className="inline h-lg w-lg font-medium mr-1 mb-1 h-4" />
+                <div className="text-base md:text-lg">Resource</div>
               </Button>
             </DialogTrigger>
 
@@ -251,11 +259,11 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
           <Dialog>
             <DialogTrigger asChild>
               <Button
-                variant="outline"
-                className="flex-1 flex w-full items-center justify-start gap-1"
+                variant="ghost"
+                className="flex flex-1 justify-start gap-sm bg-transparent p-sm h-auto rounded-md text-primary font-semibold hover:bg-gray-200"
               >
-                <FilePlus className="inline mr-1 mb-1 h-4" />
-                <div className="text-xs md:text-sm">Note</div>
+                <FilePlus className="inline h-lg w-lg font-medium mr-1 mb-1 h-4" />
+                <div className="text-md md:text-lg">Note</div>
               </Button>
             </DialogTrigger>
 
@@ -455,61 +463,140 @@ function Information({ clientData, fetchClientData, className }) {
   );
 }
 
-function Notes({notes, fetchClientData, authRouter}) {
+import { Lock, Globe2, CheckCircle2 } from "lucide-react";
 
+function Notes({ notes, fetchClientData, authRouter }) {
+  const [showCompleted, setShowCompleted] = useState(false);
 
   const handleDelete = async (e, noteId) => {
     e.stopPropagation();
+
     try {
-      await authRouter.delete(`/dashboard/notes/${noteId}`);
+      await authRouter.post(`/dashboard/notes/${noteId}/delete`);
       await fetchClientData();
     } catch (err) {
       console.error(err);
     }
   };
 
+  const handleToggleCompleted = async (e, noteId) => {
+    e.stopPropagation();
+
+    try {
+      await authRouter.post(`/dashboard/notes/${noteId}/completed`);
+      await fetchClientData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleToggleVisibility = async (e, noteId, currentVisibility) => {
+    e.stopPropagation();
+
+    const newVisibility = currentVisibility === "public" ? "private" : "public";
+
+    try {
+      await authRouter.post(`/dashboard/notes/${noteId}/visibility`, {
+        visibility: newVisibility,
+      });
+
+      await fetchClientData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const filteredNotes = showCompleted
+    ? notes
+    : notes?.filter((note) => !note.completed);
 
   return (
     <div className="bg-gray-100 p-4 rounded-xl space-y-3">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-gray-800">Case Notes</h2>
 
-      {notes?.map((note) => (
-        <div
-          key={note.id}
-          className="flex justify-between bg-white border rounded-lg p-3 sm:p-4 shadow-sm hover:shadow-md transition"
+        <button
+          type="button"
+          onClick={() => setShowCompleted(!showCompleted)}
+          className="text-xs sm:text-sm px-3 py-1.5 rounded-md border bg-white hover:bg-gray-50 text-gray-700"
         >
-          <div className="flex flex-col items-start gap-1">
-            <span className="w-full font-medium mb-sm flex justify-start text-xs text-muted-foreground">
-              {note.author?.firstName} {note.author?.lastName}
-            </span>
+          {showCompleted ? "Hide Completed" : "Show Completed"}
+        </button>
+      </div>
 
-            <div className="flex flex-col items-start gap-1">
-              <h3 className="text-sm font-semibold text-foreground">
-                {note?.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-900">
-                {note.content}
-              </p>
-              <span className="text-xs text-muted">
-                {new Date(note.createdAt).toLocaleDateString()}
-              </span>
-            </div>
+      {filteredNotes?.map((note) => {
+        const isCompleted = note.completed;
+        const isPublic = note.visibility === "private" ? false : true;
 
-            {/* META ROW */}
-            <div className="mt-2 flex flex-wrap items-center justify-between text-xs text-muted-foreground gap-2">
-    
-            </div>
-
-            {/* REMINDER */}
-            {note.setReminder && note.reminderDate && (
-              <div className="mt-3 flex items-center gap-2 text-xs sm:text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-2 py-1">
-                <Calendar className="w-3 h-3" />
-                <span>
-                  Reminder: {new Date(note.reminderDate).toLocaleDateString()}
+        return (
+          <div
+            key={note.id}
+            className={`relative flex justify-between gap-3 bg-white border rounded-lg p-4 pb-12 shadow-sm hover:shadow-md transition ${
+              isCompleted ? "opacity-70" : ""
+            }`}
+          >
+            <div className="min-w-0 flex-1 flex flex-col items-start gap-2">
+              <div className="w-full flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span className="font-medium">
+                  {note.author?.firstName} {note.author?.lastName}
                 </span>
+
+                <span className="text-gray-300">•</span>
+
+                <span>{new Date(note.createdAt).toLocaleDateString()}</span>
+
+                <button
+                  type="button"
+                  onClick={(e) =>
+                    handleToggleVisibility(e, note.id, note.visibility)
+                  }
+                  className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+                    isPublic
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      : "bg-slate-50 text-slate-700 border-slate-200"
+                  }`}
+                >
+                  {isPublic ? (
+                    <Globe2 className="w-3 h-3" />
+                  ) : (
+                    <Lock className="w-3 h-3" />
+                  )}
+                  {isPublic ? "Public" : "Private"}
+                </button>
               </div>
-            )}
+
+              <div className="w-full text-left">
+                <h3
+                  className={`text-sm font-semibold text-gray-900 ${
+                    isCompleted ? "line-through text-gray-500" : ""
+                  }`}
+                >
+                  {note?.title}
+                </h3>
+
+                <p
+                  className={`mt-1 text-xs sm:text-sm leading-relaxed text-gray-700 ${
+                    isCompleted ? "line-through text-gray-500" : ""
+                  }`}
+                >
+                  {note.content}
+                </p>
+              </div>
+
+              {note.setReminder && note.reminderDate && (
+                <div className="mt-1 inline-flex items-center gap-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-2 py-1">
+                  <Calendar className="w-3 h-3" />
+                  <span>
+                    Reminder:{" "}
+                    {new Date(note.reminderDate).toLocaleDateString("en-US", {
+                      timeZone: "UTC",
+                    })}
+                  </span>
+                </div>
+              )}
             </div>
-            <div>
+
+            <div className="shrink-0">
               <DropdownNoteEditDelete
                 note={note}
                 authRouter={authRouter}
@@ -517,12 +604,26 @@ function Notes({notes, fetchClientData, authRouter}) {
                 handleDelete={handleDelete}
               />
             </div>
-          </div>
-      ))}
 
+            <button
+              type="button"
+              onClick={(e) => handleToggleCompleted(e, note.id)}
+              className={`absolute bottom-3 right-3 inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md border font-medium ${
+                isCompleted
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
+              }`}
+            >
+              {isCompleted && <CheckCircle2 className="w-3 h-3" />}
+              {isCompleted ? "Completed" : "Mark Completed"}
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 }
+
 
 function Timeline({clientId, authRouter}) {
   return (
@@ -660,7 +761,11 @@ function Resources({referrals, fetchClientData, authRouter}) {
                 <Calendar1Icon className="w-3 h-3" />
                   Next Follow-up:{" "} 
                   <span className="font-medium text-gray-700">
-                    {new Date(resource.followUpDate).toLocaleDateString()}
+                  <span className="font-medium text-gray-700">
+                    {new Date(resource.followUpDate).toLocaleDateString("en-US", {
+                      timeZone: "UTC",
+                    })}
+                  </span>
                   </span>
                 {exp && <span className="flex ml-1 items-center text-red-600 font-medium text-xs sm:text-md"><i>Expired</i></span>}
                 </span>

@@ -18,7 +18,7 @@
     --color-destructive: #dc2626;
     --color-success: #16a34a;
 
-    --color-background: #f8fafcc4;
+    --color-background: #f8fafc;
     --color-background-alt: #ffffff;
     --color-foreground: #0f172a;
     --color-muted: #64748b;
@@ -95,7 +95,6 @@
   min-height: 120dvh;
   text-align: center;
   border: none;
-  background-image: url("/HouseDesign.png");
   background-size: cover;
 }
 

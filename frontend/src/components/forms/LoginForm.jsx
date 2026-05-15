@@ -94,11 +94,9 @@ function Login() {
   };
 
   return (
-<div className="min-h-full flex-1 w-full flex items-start justify-center bg-background px-4 py-12">
+<div className="min-h-full flex-1 w-full flex items-start justify-center bg-white/50 px-4 py-12">
   <Card className="relative overflow-hidden w-full max-w-5xl min-h-[680px] rounded-2xl border border-border/70 bg-white shadow-xl md:grid md:grid-cols-[48%_52%]">
 
-    {/* LEFT IMAGE / BRAND PANEL - DESKTOP ONLY */}
-        {/* LEFT IMAGE / BRAND PANEL */}
         <div className="relative hidden min-h-[720px] overflow-hidden bg-blue-50 md:block">
           <img
             src="/HouseDesign.png"

@@ -1,8 +1,10 @@
 const Router = require("express");
 const { prisma } = require("../../db/prismaClient.js");
 
+// getting all referrals made by all admin users 
 const clientInclude = {
   referrals: {
+  orderBy: { createdAt: 'desc' },
     include: {
       createdBy: {
         select: {
@@ -15,6 +17,7 @@ const clientInclude = {
   },
 
   notes: {
+    orderBy: { createdAt: 'desc' },
     include: {
       author: {
         select: {

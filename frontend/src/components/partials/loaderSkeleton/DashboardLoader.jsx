@@ -24,7 +24,7 @@ export default function DashboardSkeleton() {
         </header>
       </div>
 
-      <main className="flex-1 flex align-start justify-center p-sm md:p-md">
+      <main className="flex-1 flex align-start px-sm md:px-md">
         <div className="w-full max-w-7xl flex">
           <div className="flex-1 w-full h-screen grid grid-cols-1 auto-rows-min lg:grid-cols-4 gap-4 md:p-4">
             

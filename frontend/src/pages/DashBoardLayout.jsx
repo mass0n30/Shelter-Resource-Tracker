@@ -14,7 +14,7 @@ function DashBoardLayout() {
 
   const { error, setError, success, setSuccess, loading, setLoading } = useAsyncStatus({
     successDuration: 3000, // show success for 3 seconds
-    loadingDuration: 3000, // no auto timeout for loading, we will control it manually based on actual data fetch status
+    loadingDuration: 0, // no auto timeout for loading, we will control it manually based on actual data fetch status
   });
 
   const token = localStorage.getItem("usertoken");
@@ -41,7 +41,14 @@ function DashBoardLayout() {
   useEffect(() => {
     if (token) {
       // gets all data 
-      fetchUpdatedData();
+      try {
+        setLoading(true);
+        fetchUpdatedData();
+      } catch (err) {
+        console.error("Error fetching updated data:", err);
+      } finally {
+        setLoading(false);
+      }
     } else {
       navigate("/login");
     }

@@ -10,7 +10,7 @@ export function loaderTimer(ms = 1000) {
 
 export function useAsyncStatus({
   successDuration = 3000,
-  loadingDuration = 2000, // optional
+  loadingDuration = 0, // optional
 } = {}) {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);

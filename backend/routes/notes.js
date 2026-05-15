@@ -8,8 +8,9 @@ noteRouter.post("/", controller.noteController.createNote);
 noteRouter.get("/client/:clientId", controller.noteController.getClientNotes);
 
 
-noteRouter.put("/:noteId", controller.noteController.updateNote);
-noteRouter.post("/:noteId/complete", controller.noteController.completeNote);
+noteRouter.patch("/:noteId", controller.noteController.updateNote);
+noteRouter.post("/:noteId/completed", controller.noteController.completeNote);
+noteRouter.post("/:noteId/visibility", controller.noteController.updateNoteVisibility);
 noteRouter.post("/:noteId/delete", controller.noteController.deleteNote);
 
 

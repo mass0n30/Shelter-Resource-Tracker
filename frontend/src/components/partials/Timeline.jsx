@@ -52,3 +52,25 @@ export default function TimelineHistory() {
     </div>
   );
 }
+
+function TimelineItem({ title, description, date, color }) {
+  return (
+    <div className="relative grid grid-cols-[18px_1fr_auto] gap-3">
+      <div className={`relative z-10 mt-1 h-3 w-3 rounded-full ${color}`} />
+
+      <div>
+        <p className="font-semibold leading-none">{title}</p>
+
+        {description && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            {description}
+          </p>
+        )}
+      </div>
+
+      <p className="whitespace-nowrap text-sm text-muted-foreground">
+        {date}
+      </p>
+    </div>
+  );
+}

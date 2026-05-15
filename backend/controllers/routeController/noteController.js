@@ -21,6 +21,7 @@ async function createNote(req, res, next) {
         clientId: parseInt(req.body.clientId),
         setReminder: req.body.setReminder,
         reminderAt: req.body.reminderAt ? new Date(req.body.reminderAt) : null,
+        visibility: req.body.visibility === 'private' ? 'private' : 'public',
         content: req.body.content,
         title: req.body.title,
         createdAt: new Date(),
@@ -38,7 +39,11 @@ async function updateNote(req, res, next) {
     await prisma.note.update({
       where: { id: parseInt(req.params.noteId) },
       data: {
-        content: req.body.content
+        content: req.body.content,
+        title: req.body.title,
+        setReminder: req.body.setReminder,
+        reminderAt: req.body.reminderAt ? new Date(req.body.reminderAt) : null,
+        visibility: req.body.visibility === 'private' ? 'private' : 'public'
       }
    });
   return res.status(200).json({ message: "Note Updated Successfully" });
@@ -62,21 +67,41 @@ async function deleteNote(req, res, next) {
 
 async function completeNote(req, res, next) {
   try {
+    const note = await prisma.note.findUnique({
+      where: { id: parseInt(req.params.noteId) },
+    });
+
+    const updatedNote = await prisma.note.update({
+      where: { id: parseInt(req.params.noteId) },
+      data: {
+        completed: !note.completed,
+      },
+    });
+    return res.json(updatedNote);
+
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function updateNoteVisibility(req, res, next) {
+  try {
+    const visibilityStatus = req.body.visibility === 'private' ? 'private' : 'public';
     await prisma.note.update({
       where: { id: parseInt(req.params.noteId) },
       data: {
-        completed: true
+        visibility: visibilityStatus
       }
    });
-  return res.status(200).json({ message: "Note Marked Complete" });
+  return res.status(200).json({ message: "Note Visibility Updated" });
   } catch (error) {
-    console.log('failed to mark note complete');
+    console.log('failed to update note visibility');
     return res.status(400).json({ errors:error });
   }
 };
 
 module.exports = { 
   noteController: {
-    getClientNotes, createNote, deleteNote, updateNote, completeNote
+    getClientNotes, createNote, deleteNote, updateNote, completeNote, updateNoteVisibility
   }
 };
