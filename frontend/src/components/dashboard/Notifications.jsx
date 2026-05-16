@@ -122,9 +122,9 @@ function TimelineItem({
       onClick={() => toggleItem(item.id)}
       className="py-md border-b border-gray-200 py-2 cursor-pointer hover:bg-gray-50 transition"
     >
-      <div className="flex justify-between gap-sm">
-        <div className="flex flex-col items-start gap-1 min-w-0">
-          <span className="font-medium flex items-center gap-1 min-w-0">
+      <div className="flex justify-between gap-sm min-w-0">
+        <div className="flex flex-col items-start gap-1 min-w-0 flex-1">
+          <span className="font-medium flex items-center gap-1 min-w-0 w-full">            
             {item.type === "resource" ? (
               <div className="flex p-sm bg-primaryLight rounded-full items-center justify-center gap-1 shrink-0">
                 <House className="inline h-4 w-4 text-primary" />
@@ -135,7 +135,7 @@ function TimelineItem({
               </div>
             )}
 
-            <span className="truncate">
+            <span className="min-w-0 leading-snug break-words">
               {item.type === "note"
                 ? item.title
                   ? item.title
@@ -152,12 +152,15 @@ function TimelineItem({
             </div>
           )}
         </div>
-        <div className="flex items-center gap-xs">
 
-          <span className="text-sm text-muted text-right ml-xs">
-            {!noteToggle ? getDisplayTime(item.date, "referral") : getDisplayTime( item.date, "note")}
+        <div className="flex items-center gap-xs shrink-0">
+          <span className="text-sm text-muted text-right whitespace-nowrap">
+            {!noteToggle
+              ? getDisplayTime(item.date, "referral")
+              : getDisplayTime(item.date, "note")}
           </span>
-          <span className="text-xs text-muted ">
+
+          <span className="text-xs text-muted">
             {isExpanded ? (
               <ChevronDown className="w-3 h-3" />
             ) : (
@@ -181,14 +184,14 @@ function TimelineItem({
               })}
             </span>
           )}
-        {canEdit && (
+        {/* Show action buttons for Reminders or if Note is User's Note */}
+        {canEdit || !noteToggle && (  
           <ActionButtons
             item={item}
             navigate={navigate}
             setLoading={setLoading}
             handleAction={handleAction}
           />
-        
         )}
         </div>
       )}
@@ -308,7 +311,7 @@ function Notifications({
     return a.date - b.date;
   });
 
-  const groups = {
+  let groups = {
     overdueToday: [],
     overdueRecent: [],
     overdueWeek: [],
@@ -353,6 +356,11 @@ function Notifications({
 
     groups.future.push(item);
   });
+
+  groups.soon = groups.soon.sort((a, b) => a.date - b.date);
+  groups.week = groups.week.sort((a, b) => a.date - b.date);
+  groups.future = groups.future.sort((a, b) => a.date - b.date);
+  groups.overdueRecent = groups.overdueRecent.sort((a, b) => b.date - a.date);
 
   return (
     <div className={`${className} bg-backgroundAlt h-full flex flex-col`}>

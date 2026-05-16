@@ -58,7 +58,7 @@ const schema = z.object({
     .or(z.literal("")),
 });
 
-export default function ClientForm({ authRouter, firstName, lastName}) {
+export default function ClientForm({ authRouter, firstName, lastName, fetchUpdatedData, setOpenForm }) {
 
   const today = new Date();
   const next60 = new Date(today.getTime() + 60 * 24 * 60 * 60 * 1000);

@@ -460,9 +460,9 @@ function Information({ clientData, fetchClientData, className }) {
   );
 }
 
-import { Lock, Globe2, CheckCircle2 } from "lucide-react";
+import { Lock, Globe2, CheckCircle2, SquareUserRound } from "lucide-react";
 
-function Notes({ notes, fetchClientData, authRouter }) {
+export function Notes({ notes, fetchClientData, authRouter, showName }) {
   const [showCompleted, setShowCompleted] = useState(false);
 
   const handleDelete = async (e, noteId) => {
@@ -528,13 +528,14 @@ function Notes({ notes, fetchClientData, authRouter }) {
         return (
           <div
             key={note.id}
-            className={`relative flex justify-between gap-3 bg-white border rounded-lg p-4 pb-12 shadow-sm hover:shadow-md transition ${
+            className={`relative flex justify-between gap-3 bg-white border border-border rounded-xl p-4 pb-14 shadow-sm hover:shadow-md transition ${
               isCompleted ? "opacity-70" : ""
             }`}
           >
-            <div className="min-w-0 flex-1 flex flex-col items-start gap-2">
+            <div className="min-w-0 flex-1 flex flex-col items-start gap-3">
+              {/* Meta Row */}
               <div className="w-full flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                <span className="font-medium">
+                <span className="font-medium text-gray-700">
                   {note.author?.firstName} {note.author?.lastName}
                 </span>
 
@@ -544,44 +545,48 @@ function Notes({ notes, fetchClientData, authRouter }) {
 
                 <button
                   type="button"
-                  onClick={(e) =>
-                    handleToggleVisibility(e, note.id, note.visibility)
-                  }
+                  onClick={(e) => handleToggleVisibility(e, note.id, note.visibility)}
                   className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${
                     isPublic
                       ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                       : "bg-slate-50 text-slate-700 border-slate-200"
                   }`}
                 >
-                  {isPublic ? (
-                    <Globe2 className="w-3 h-3" />
-                  ) : (
-                    <Lock className="w-3 h-3" />
-                  )}
+                  {isPublic ? <Globe2 className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
                   {isPublic ? "Public" : "Private"}
                 </button>
               </div>
 
-              <div className="w-full text-left">
+              {/* Title + Content */}
+              <div className="w-full text-left space-y-2">
                 <h3
-                  className={`text-sm font-semibold text-gray-900 ${
+                  className={`text-base font-semibold tracking-tight text-gray-950 ${
                     isCompleted ? "line-through text-gray-500" : ""
                   }`}
                 >
-                  {note?.title}
+                  {note?.title || "Untitled Note"}
                 </h3>
 
-                <p
-                  className={`mt-1 text-xs sm:text-sm leading-relaxed text-gray-700 ${
+                <div
+                  className={`rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 ${
                     isCompleted ? "line-through text-gray-500" : ""
                   }`}
                 >
-                  {note.content}
-                </p>
+                  {note.content == "" || note.content == null ? (
+                    <p className="text-sm italic text-gray-400">
+                      <i>No Content</i>
+                    </p>
+                  ) : (
+                    <p className="text-sm leading-relaxed text-gray-700 whitespace-pre-wrap">
+                      {note.content}
+                    </p>
+                  )}
+                </div>
               </div>
 
+              {/* Reminder */}
               {note.setReminder && note.reminderDate && (
-                <div className="mt-1 inline-flex items-center gap-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-2 py-1">
+                <div className="inline-flex items-center gap-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-2 py-1">
                   <Calendar className="w-3 h-3" />
                   <span>
                     Reminder:{" "}
@@ -590,6 +595,14 @@ function Notes({ notes, fetchClientData, authRouter }) {
                     })}
                   </span>
                 </div>
+              )}
+
+              {/* Client Name */}
+              {showName && note.client && (
+                <p className="absolute bottom-3 left-4 text-xs sm:text-sm text-muted flex items-center gap-1">
+                  <SquareUserRound className="w-3 h-3" />
+                  {note.client.firstName} {note.client.lastName}
+                </p>
               )}
             </div>
 
@@ -631,7 +644,7 @@ function Timeline({clientId, authRouter}) {
 }
 
 
-function Resources({referrals, fetchClientData, authRouter}) {
+export function Resources({referrals, fetchClientData, authRouter, showName}) {
   const [toggleKey, setToggleKey] = useState(null);
 
 
@@ -692,6 +705,12 @@ function Resources({referrals, fetchClientData, authRouter}) {
               {Icon && <Icon className=" w-3 h-3" />}
               {config.label || resource.resourceType}
             </p>
+            {showName && (
+              <p className="text-xs sm:text-sm text-muted flex items-center gap-1">
+                <SquareUserRound className="w-3 h-3" />
+                {resource.client.firstName} {resource.client.lastName}
+              </p>
+            )}
           </div>
 
 

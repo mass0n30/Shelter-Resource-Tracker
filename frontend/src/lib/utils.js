@@ -97,22 +97,49 @@ export function getAllDashboardStats(clients, referrals) {
   return { totalClients, urgentCases, followUps, newClients };
 }
 
+
+
 export function getClientStats(client) {
   if (!client.referrals) {
     return {};
   }
+
+  // counting in even completed and closed referrals to give a full picture of client's referral history
   const totalReferrals = client.referrals.length;
-  const urgentReferrals = client.referrals.filter(referral => referral.isPriority).length;
-  const upcomingFollowUps = client.referrals.filter(referral => {
+
+  // Filter out completed and closed referrals to focus on active ones for badges
+  const activeReferrals = client.referrals.filter(
+    (referral) =>
+      referral.status !== "COMPLETED" &&
+      referral.status !== "CLOSED"
+  );
+
+  const urgentReferrals = activeReferrals.filter(
+    (referral) => referral.isPriority
+  ).length;
+
+  const upcomingFollowUps = activeReferrals.filter((referral) => {
+    if (!referral.followUpDate) return false;
+
     const followUpDate = new Date(referral.followUpDate);
     const today = new Date();
+
     return followUpDate > today;
   }).length;
-  const expiredFollowUps = client.referrals.filter(referral => {
+
+  const expiredFollowUps = activeReferrals.filter((referral) => {
+    if (!referral.followUpDate) return false;
+
     const followUpDate = new Date(referral.followUpDate);
     const today = new Date();
-    return followUpDate < today && referral.followUpDate !== null && referral.status !== "COMPLETED"; 
+
+    return followUpDate < today;
   }).length;
 
-  return { totalReferrals, urgentReferrals, upcomingFollowUps, expiredFollowUps };
+  return {
+    totalReferrals,
+    urgentReferrals,
+    upcomingFollowUps,
+    expiredFollowUps,
+  };
 }

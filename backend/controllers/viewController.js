@@ -1,6 +1,8 @@
 // viewController
 const { prisma } = require("../db/prismaClient.js");
 
+
+// Getting All data, this isn't ideal for scaling performance wise, improve in future as data grows by moving client side filtering mapping to server side (including dashstats)
 async function getAllUserData(req, res, next) {
   try {
     const user = await prisma.user.findUnique({
@@ -45,7 +47,14 @@ async function getUpdateData(req, res, next) {
 
 async function getAllReferrals(req, res, next) {
   try {
-    const referrals = await prisma.referral.findMany();
+    const referrals = await prisma.referral.findMany({
+      include: {
+        client: true,
+        createdBy: true,
+      },
+      orderBy: { createdAt: 'desc' },
+
+    });
     return referrals;
   } catch (error) {
     console.log('failed to get user referrals');

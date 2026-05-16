@@ -5,11 +5,6 @@ https://nodemailer.com/extras/mailparser/ Parsing tool
 https://www.npmjs.com/package/node-cron Scheduling tool for node tasks
 https://crontab.guru/ Schedule time syntax
 
-Loader To:
-  - Start with dashboard, correct controller route paths
-  - Figure out instant UI change logic
-  - success logic with hooks to exit forms 
-
 
 MVP Features: (initially develop for Manager accounts)
   - Manager can CRUD client accounts, set time notifs, see client case management info. Staff can only view add notes.
@@ -39,35 +34,29 @@ Note 4/28:
   Notifications are scoped to user unless explicitly shared
   Avoid global notifications by default
 
-ToDo:
-  (Update UI instant, fetch updated Obj in background ?)
-  - Fix calendar setDate bug (setting one day behind?)
-  - Fix all loader logic inside Loader.jsx
-  - Sonar badges upon create/delete/update ?
-  - If user hits Search (Search's name in entire DB instead of inside filtered)
+TO-DO GENERAL 5/15 (What to do to Finish Project):
+  - Client Profile Completion
+    - CRUD actions (extension button)
+    - improve information comp design (update schema for more client info)
+    - Redesign for mobile layout (button toggles, ect)
+  
+  - Dashboard
+    - Dashcard Design improvements
+    - Double checking all logic (Notifications sidebar especially)
+    - Calendar layout design
+    - Consider more dashboard data (more professional view, not sure what that would look like)
 
-  DashboardLayout.jsx
-    - Consider putting more data in Dash stat cards?
-    - Dash Card text layout improve
-    - Map out clients w/ resources first (unshift for priority, then if any resources)
-    - Improve layout design, considering mobile view (adding Nav buttons bottom)
-      * getting Notificiations?
-
-  ClientProfile.jsx
-    - Client profile can paginate all notes or referrals if needed (to see even oldest notes and referrals beyond Dashboards limits)
-    - Client Profiles need CRUD for client info
-    - Add Re-enrollment and extension options on client profile (this updating/adding row to timelineDates table for timeline component!!)
-    - Improve layout design, considreing the mobile view mockup 
-
-  Frontend
-  - Add timeline modules and logic (shadUI?)
-    - Function to map timeline item (enrollment date, referral status updates)
-    - Add another relation table to Referrals to save referral history?
-    - Google/Indeed Signup API?
-
-  Backend
-   - Consider other scheduled jobs (cron) for time-based updates (dashboard notifs)
-   
+  - Resources Page
+    - Add Navbar Toggle (between Dashboard and Records maybe Calendar?)
+    - From Resources Page User can filter and search for all Referrals and Notes (even old Notes)
+    
+  - Other
+    - Improve performance
+      - Move mapping data to backend
+      - Only retrieve needed data on Dashboard (calculating Dash stats backend?)
+    - Google signup API ?
+    - Cloudify (for documents and images)
+      *consider server storage costs (maybe future iteration)
 
 Done:
  - define schema

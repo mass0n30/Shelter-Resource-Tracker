@@ -107,61 +107,64 @@ function DashBoard() {
             />
 
             {notificationsToggled && (
-              <div className="{col-span-1 lg:col-span-4">
-                <div
-                  className="flex items-center justify-between bg-yellow-50 border border-yellow-200 rounded-md px-4 py-2"
-                >
-                  <div className="flex flex-col items-start text-gray-700 gap-2">
-                  <span className="text-sm font-medium">
-                    Updated{" "}
-                    <span className="font-semibold">
-                      {displayTime &&
-                        ` ${displayTime}`}
+              <div className="col-span-1 lg:col-span-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-backgroundAlt border border-border rounded-md px-4 py-3 shadow-sm">
+                  <div className="flex flex-col items-start gap-1 text-foreground">
+                    <span className="text-sm font-semibold">
+                      Nightly update summary
                     </span>
-                  </span>
 
-                  <span className="text-xs text-muted-foreground">
-                    {foundCount > 0
-                      ? `${foundCount} clients here passed 24 hours.`
-                      : ""}
-                  </span>
+                    <span className="text-xs text-muted-foreground">
+                      Updated{" "}
+                      <span className="font-medium text-foreground">
+                        {displayTime || "recently"}
+                      </span>
+                    </span>
+
+                    {foundCount > 0 && (
+                      <span className="text-xs text-muted-foreground">
+                        {foundCount} clients stayed overnight in the past 24 hours.
+                      </span>
+                    )}
                   </div>
-                  <div className="flex gap-2">
+
+                  <div className="flex items-center gap-2 self-end sm:self-center">
                     {hasUnfound && (
                       <button
-                        className="text-xs bg-yellow-400 text-black hover:bg-yellow-500 px-3 py-1 rounded-md font-medium"
-                        onClick={() => setShowAlerts(prev => !prev)}
+                        className="text-xs bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-200 px-3 py-1.5 rounded-lg font-medium transition"
+                        onClick={() => setShowAlerts((prev) => !prev)}
                       >
-                        {showAlerts ? "Hide" : "View"}
+                        {showAlerts ? "Hide Alerts" : "View Alerts"}
                       </button>
                     )}
+
                     <Button
                       onClick={handleMarkRead}
                       variant="outline"
                       size="sm"
+                      className="text-xs bg-white/80 hover:bg-primaryLight/60 border-primary/20 text-foreground rounded-lg"
                     >
                       Mark Read
                     </Button>
-                    
                   </div>
                 </div>
 
                 {showAlerts && hasUnfound && (
-                  <div className="mt-2 bg-yellow-50 relative border border-yellow-200 rounded-md p-4">
+                  <div className="mt-3 bg-background border border-primary/15 rounded-xl shadow-sm overflow-hidden">
                     <NotificationsAlert
                       data={unfound}
                       fetchNotifications={fetchNotifications}
-
                       authRouter={authRouter}
+                      openForm={openForm}
+                      setOpenForm={setOpenForm}
                     />
                   </div>
                 )}
-
               </div>
             )}
 
             <ClientToggleSection
-              className="border-border-400 bg-background border-2 rounded-md col-span-1 lg:col-span-3 row-span-10 max-h-[calc(120vh-250px)] relative overflow-y-auto"
+              className="border-border-400 bg-background border-2 rounded-md col-span-1 lg:col-span-3 row-span-10 min-h-[calc(120vh-250px)]  max-h-[calc(120vh-250px)] relative overflow-y-auto"
               dashStatFilter={dashStatFilter}
               setDashStatFilter={setDashStatFilter}
               viewedClients={viewedClients}
@@ -174,7 +177,7 @@ function DashBoard() {
               openForm={openForm}
               setOpenForm={setOpenForm}
             />
-            <div className="col-span-1 lg:col-span-1 row-span-10 min-h-0 max-h-[calc(120vh-250px)] overflow-hidden flex flex-col">
+            <div className="col-span-1 lg:col-span-1 row-span-10 min-h-0 min-h-[calc(120vh-250px)] overflow-hidden flex flex-col">
               <Notifications
                 className="border-border-400 shadow-md border-2 rounded-md min-h-0 flex flex-col"
                 userNotes={user.notes}
