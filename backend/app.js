@@ -8,6 +8,7 @@ require("./config/passport"); // booting strategy before any initializing
 const pgPool = require("./config/pool");
 const cors = require('cors');
 const cron = require('node-cron');
+const { handleSignInWithGoogle } = require('./services/google');
 
 const {indexRouter} = require('./routes/index');
 const {profileRouter} = require('./routes/profile');
@@ -57,6 +58,8 @@ app.use(passport.session());  //enables persistent login sessions
 app.use('/sign-up', signupRouter);
 
 app.use('/', indexRouter);
+
+app.post("/auth/google", handleSignInWithGoogle);
 
 app.use('/profile',  profileRouter);
 
@@ -122,7 +125,5 @@ app.use((err, req, res, next) => {
     message: err.message || 'Something went wrong!',
   });
 });
-
-
 
 app.listen(5000, () => console.log('Server started on port 5000'));

@@ -5,6 +5,10 @@ https://nodemailer.com/extras/mailparser/ Parsing tool
 https://www.npmjs.com/package/node-cron Scheduling tool for node tasks
 https://crontab.guru/ Schedule time syntax
 
+Deployment:
+Change URI to deployment URI upon deploying
+https://console.cloud.google.com/auth/clients/create?authuser=1&project=resourcetracker-496508&supportedpurview=project
+
 
 MVP Features: (initially develop for Manager accounts)
   - Manager can CRUD client accounts, set time notifs, see client case management info. Staff can only view add notes.
@@ -45,10 +49,6 @@ TO-DO GENERAL 5/15 (What to do to Finish Project):
     - Double checking all logic (Notifications sidebar especially)
     - Calendar layout design
     - Consider more dashboard data (more professional view, not sure what that would look like)
-
-  - Resources Page
-    - Add Navbar Toggle (between Dashboard and Records maybe Calendar?)
-    - From Resources Page User can filter and search for all Referrals and Notes (even old Notes)
     
   - Other
     - Improve performance

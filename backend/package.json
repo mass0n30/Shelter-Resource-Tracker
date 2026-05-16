@@ -27,6 +27,7 @@
     "express-validator": "^7.2.1",
     "fs": "^0.0.1-security",
     "go": "^3.0.1",
+    "google-auth-library": "^10.6.2",
     "imapflow": "^1.2.18",
     "in": "^0.19.0",
     "install": "^0.13.0",

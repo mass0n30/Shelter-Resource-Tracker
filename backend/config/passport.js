@@ -42,7 +42,7 @@ var JwtStrategy = require('passport-jwt').Strategy,
 var opts = {}
 // include token in bearer schema on client side for protected routes
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = 'secretkey';
+opts.secretOrKey = process.env.JWT_SECRET;
 passport.use(
   new JwtStrategy(opts, async function (jwt_payload, done) {
     try {
@@ -77,7 +77,7 @@ const authenticateUser = (req, res, next) => {
       return res.status(401).json({ error: "Wrong email or password!" });
     }
 
-    jwt.sign({ id: user.id, username: user.username }, "secretkey", { expiresIn: "2d" }, (err, token) => {
+    jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "2d" }, (err, token) => {
       if (err) {
         return res.status(500).json({ error: "Something went wrong" });
       }

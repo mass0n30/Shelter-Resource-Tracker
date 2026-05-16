@@ -1,3 +1,4 @@
+import { GoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { CircleUserRound } from "lucide-react";
@@ -20,7 +21,37 @@ function Login() {
   });
 
   // clear token on mount
-  localStorage.removeItem("usertoken");
+  //localStorage.removeItem("usertoken");
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setError(null);
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google`, {
+        mode: "cors",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          credential: credentialResponse.credential,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || data.error) {
+        setError(data.error || "Google sign in failed");
+        return;
+      }
+
+      localStorage.setItem("usertoken", data.token);
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      setError("Google sign in failed");
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -229,15 +260,12 @@ function Login() {
             <span className="text-xs text-slate-500">or</span>
             <div className="h-px flex-1 bg-slate-200" />
           </div>
-
-          <Button
-            type="button"
-            variant="outline"
-            className="h-11 w-full rounded-md border-slate-200 bg-white"
-          >
-            Sign in with Google
-            <img src="/google.png" alt="Google logo" className="ml-2 h-4" />
-          </Button>
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError("Google sign in failed")}
+            />
+          </div>
         </form>
 
         <div className="mt-8 flex items-center justify-center gap-1 text-sm text-slate-500">
