@@ -1,4 +1,4 @@
-import { Bell, ChevronDown, ChevronUp, Notebook, House, NotebookText } from "lucide-react";
+import { Bell, ChevronDown, ChevronUp, Notebook, House, NotebookText, Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../partials/Button";
@@ -185,14 +185,15 @@ function TimelineItem({
             </span>
           )}
         {/* Show action buttons for Reminders or if Note is User's Note */}
-        {canEdit || !noteToggle && (  
-          <ActionButtons
-            item={item}
-            navigate={navigate}
-            setLoading={setLoading}
-            handleAction={handleAction}
-          />
-        )}
+          {(canEdit || !noteToggle) && (
+            <ActionButtons
+              item={item}
+              navigate={navigate}
+              setLoading={setLoading}
+              handleAction={handleAction}
+              loadingId={loadingId}
+            />
+          )}
         </div>
       )}
     </li>
@@ -284,24 +285,25 @@ function Notifications({
       date: new Date(ref.followUpDate),
       isPriority: ref.isPriority || false,
       client: ref.client,
+
     });
   });
 
   userNotes?.forEach((note) => {
     if (!note.setReminder || !note.reminderAt || note.completed) return;
-
-    timeline.push({
-      id: `note-${note.id}`,
-      rawId: note.id,
-      type: "note",
-      title: note.title,
-      content: note.content,
-      label: note?.title || null,
-      date: new Date(note.reminderAt),
-      isPriority: false,
-      completed: note?.completed,
-      client: note.client,
-    });
+      timeline.push({
+        id: `note-${note.id}`,
+        rawId: note.id,
+        type: "note",
+        title: note.title,
+        content: note.content,
+        label: note?.title || null,
+        date: new Date(note.reminderAt),
+        isPriority: false,
+        completed: note?.completed,
+        client: note.client,
+        author: note.author,
+      });
   });
 
   // putting priority referrals/notes at top of timeline, then sorting by date within priority vs non-priority groups
@@ -384,7 +386,10 @@ function Notifications({
               onOpenChange={(isOpen) => setOpenForm(isOpen ? "note" : null)}
             >
               <DialogTrigger asChild>
-                <Button className="w-full">Create Note</Button>
+                <Button className="w-full flex items-center gap-1">
+                  <Plus className="w-4 h-4" />
+                  <span>Add Note</span>
+                </Button>
               </DialogTrigger>
               <DialogContent className="bg-background w-full max-w-lg">
                 <NoteForm
@@ -402,7 +407,7 @@ function Notifications({
         <div className="flex gap-sm mb-sm">
           <Button
             onClick={() => setToggle("reminders")}
-            className={`flex-1 ${toggle === "reminders" ? " bg-primary text-white" : "bg-white text-foreground"}`}
+            className={`flex-1 ${toggle === "reminders" ? " bg-primary text-white" : "bg-white text-muted"}`}
           >
             <Bell className="mr-1 w-4 h-4" />
             Reminders
@@ -410,7 +415,7 @@ function Notifications({
 
           <Button
             onClick={() => setToggle("notes")}
-            className={`flex-1 ${toggle === "notes" ? "bg-primary text-white" : "bg-white text-foreground"}`}
+            className={`flex-1 ${toggle === "notes" ? "bg-primary text-white" : "bg-white text-muted"}`}
           >
             <Notebook className="mr-1 w-4 h-4" />
             Notes

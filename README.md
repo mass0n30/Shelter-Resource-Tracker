@@ -45,6 +45,7 @@ TO-DO GENERAL 5/15 (What to do to Finish Project):
     - Redesign for mobile layout (button toggles, ect)
   
   - Dashboard
+    - Drop down in Navbar (for user settings or sign-out)
     - Dashcard Design improvements
     - Double checking all logic (Notifications sidebar especially)
     - Calendar layout design
@@ -54,9 +55,11 @@ TO-DO GENERAL 5/15 (What to do to Finish Project):
     - Improve performance
       - Move mapping data to backend
       - Only retrieve needed data on Dashboard (calculating Dash stats backend?)
+    - Manual Document upload (perhaps keep it for future iteration using cloudify for storage)
     - Google signup API ?
     - Cloudify (for documents and images)
       *consider server storage costs (maybe future iteration)
+    - Improve Signup/Login (full screen)
 
 Done:
  - define schema

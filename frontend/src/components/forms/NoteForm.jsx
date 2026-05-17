@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
-import { DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Notebook } from "lucide-react";
-import CalendarPopover from "../partials/Calender"; 
+import {
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Notebook, RotateCcw, Save } from "lucide-react";
+import CalendarPopover from "../partials/Calender";
 import { z } from "zod";
-
 
 const schema = z.object({
   content: z.string().min(1, "Note content is required"),
@@ -12,7 +15,13 @@ const schema = z.object({
   reminderAt: z.date().nullable().optional(),
 });
 
-export default function NoteForm({ authRouter, clientId, noteData, fetchUpdatedData, setOpenForm }) {
+export default function NoteForm({
+  authRouter,
+  clientId,
+  noteData,
+  fetchUpdatedData,
+  setOpenForm,
+}) {
   const [error, setError] = useState(null);
   const [date, setDate] = useState(null);
 
@@ -32,6 +41,20 @@ export default function NoteForm({ authRouter, clientId, noteData, fetchUpdatedD
       ...prev,
       [key]: value,
     }));
+  };
+
+  const resetForm = () => {
+    setError(null);
+    setDate(null);
+
+    setFormData({
+      clientId,
+      content: "",
+      title: "",
+      setReminder: false,
+      reminderAt: null,
+      visibility: "private",
+    });
   };
 
   useEffect(() => {
@@ -74,84 +97,95 @@ export default function NoteForm({ authRouter, clientId, noteData, fetchUpdatedD
       if (fetchUpdatedData) {
         await fetchUpdatedData();
       }
-      setOpenForm(null);
 
+      if (setOpenForm) {
+        setOpenForm(null);
+      }
     } catch (err) {
       console.error(err.response?.data || err.message);
+      setError("Something went wrong while saving this note.");
     }
   };
 
   return (
-    <div className="z-[9999] bg-background rounded-lg w-full max-w-md">
-
+    <div className="bg-background rounded-lg w-full max-w-md">
       <DialogHeader>
-        <DialogTitle>
-          {isEdit ? "Edit Note" : "Create Note"}
-        </DialogTitle>
+        <DialogTitle>{isEdit ? "Edit Note" : "Create Note"}</DialogTitle>
 
         <DialogDescription className="mt-2 flex items-center gap-2 text-sm text-muted">
-          <Notebook className="w-4 h-4" />
+          <Notebook className="h-4 w-4" />
           {isEdit
             ? "Update this note."
             : `Add a note ${clientId ? "for this client" : "to the dashboard"}.`}
         </DialogDescription>
       </DialogHeader>
 
-      {error && <span className="text-red-500 text-sm">{error}</span>}
+      {error && (
+        <span className="mt-3 block text-sm text-red-500">{error}</span>
+      )}
 
       <form onSubmit={handleSubmit} className="grid gap-4 py-4">
+        <input
+          type="text"
+          placeholder="Note Title (optional)"
+          value={formData.title}
+          onChange={(e) => updateField("title", e.target.value)}
+          className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+        />
 
-        {/* Note Content */}
-        <input type="text" placeholder="Note Title(optional)" value={formData.title} onChange={(e) => updateField("title", e.target.value)} className="w-full border px-3 py-2 rounded-md bg-white text-black" />
         <textarea
           placeholder="Write your note..."
           value={formData.content}
           onChange={(e) => updateField("content", e.target.value)}
-          className="w-full border px-3 py-2 rounded-md bg-white text-black min-h-[120px]"
+          className="min-h-[120px] w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
         />
 
-        {/* Reminder Toggle */}
-        <div className="flex items-center justify-between gap-2">
-          <div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <label className="flex items-center justify-between rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground">
+            <span>Set Reminder</span>
             <input
               type="checkbox"
               checked={formData.setReminder}
               onChange={(e) => updateField("setReminder", e.target.checked)}
             />
-            <span className="ml-1">Set Reminder</span>
-          </div>
-          <div>
-            <input type="checkbox" checked={formData.visibility === "public"} onChange={(e) => updateField("visibility", e.target.checked ? "public" : "private")} />
-            <span className="ml-1">Publish Note (Public)</span>
-          </div>
+          </label>
+
+          <label className="flex items-center justify-between rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground">
+            <span>Publish Note</span>
+            <input
+              type="checkbox"
+              checked={formData.visibility === "public"}
+              onChange={(e) =>
+                updateField("visibility", e.target.checked ? "public" : "private")
+              }
+            />
+          </label>
         </div>
 
-        {/* Date Picker */}
         {formData.setReminder && (
-          <CalendarPopover date={date} setDate={setDate} single={true} />
+          <div className="rounded-md border border-border bg-white px-3 py-2">
+            <CalendarPopover date={date} setDate={setDate} single={true} />
+          </div>
         )}
 
-        {/* Actions */}
-        <div className="flex justify-between mt-4">
+        <div className="mt-4 flex justify-between">
           <button
             type="button"
-            onClick={() =>
-              setFormData({
-                clientId,
-                content: "",
-                setReminder: false,
-                reminderAt: null,
-              })
-            }
+            onClick={resetForm}
+            className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted transition hover:bg-primaryLight hover:text-primary"
           >
+            <RotateCcw className="h-4 w-4" />
             Reset
           </button>
 
-          <button type="submit">
+          <button
+            type="submit"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primaryDark"
+          >
+            <Save className="h-4 w-4" />
             {isEdit ? "Update Note" : "Create Note"}
           </button>
         </div>
-
       </form>
     </div>
   );

@@ -33,37 +33,45 @@ function NotificationsAlert({ data, SetLoading, authRouter, className, openForm,
       </p>
 
       <div className="flex flex-col gap-2 overflow-y-auto max-h-48 pr-1">
-        {data?.data?.map((client, i) => (
-          <div
-            key={i}
-            className="flex items-center justify-between gap-2 text-sm text-left px-3 py-2 rounded-lg bg-primaryLight/25 border border-primary/10"
-          >
-            <span className="font-medium text-foreground truncate">
-              {client.firstName} {client.lastName}
-            </span>
+        {data?.data?.map((client, i) => {
+          const dialogKey = `client-${i}`;
 
-            <Dialog
-              open={openForm === "client"}
-              onOpenChange={(isOpen) => setOpenForm(isOpen ? "client" : null)}
+          return (
+            <div
+              key={dialogKey}
+              className="flex items-center justify-between gap-2 text-sm text-left px-3 py-2 rounded-lg bg-primaryLight/25 border border-primary/10"
             >
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="xs"
-                  className="shrink-0 text-xs bg-white/80 hover:bg-primaryLight/60 border-primary/20 rounded-lg"
-                >
-                  Create
-                </Button>
-              </DialogTrigger>
+              <span className="font-medium text-foreground truncate">
+                {client.firstName} {client.lastName}
+              </span>
 
-              <ClientForm
-                authRouter={authRouter}
-                firstName={client.firstName}
-                lastName={client.lastName}
-              />
-            </Dialog>
-          </div>
-        ))}
+              <Dialog
+                open={openForm === dialogKey}
+                onOpenChange={(isOpen) => setOpenForm(isOpen ? dialogKey : null)}
+              >
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    className="shrink-0 text-xs bg-white/80 hover:bg-primaryLight/60 border-primary/20 rounded-lg"
+                  >
+                    Create
+                  </Button>
+                </DialogTrigger>
+
+                {openForm === dialogKey && (
+                  <ClientForm
+                    authRouter={authRouter}
+                    firstName={client.firstName}
+                    lastName={client.lastName}
+                    setOpenForm={setOpenForm}
+                  />
+                )}
+              </Dialog>
+            </div>
+          );
+        })}
+
       </div>
     </div>
   );

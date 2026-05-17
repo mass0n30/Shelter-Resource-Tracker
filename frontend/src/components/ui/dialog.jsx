@@ -64,7 +64,7 @@ const DialogContent = React.forwardRef(function DialogContent(
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close data-slot="dialog-close" asChild>
-            <Button variant="ghost" className="absolute top-2 right-2" size="icon-sm">
+            <Button variant="ghost" className="bg-transparent hover:bg-backgroundAlt absolute top-2 right-2" size="icon-sm">
               <XIcon />
               <span className="sr-only">Close</span>
             </Button>
@@ -131,7 +131,7 @@ function DialogDescription({
     <DialogPrimitive.Description
       data-slot="dialog-description"
       className={cn(
-        "text-sm text-muted-foreground *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground",
+        "text-sm text-muted-foreground text-center *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground",
         className
       )}
       {...props} />

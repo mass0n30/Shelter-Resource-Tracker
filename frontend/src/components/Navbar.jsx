@@ -4,10 +4,14 @@ import {
   CalendarDays,
   Bell,
   ChevronDown,
+  Upload,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import FileForm  from "./forms/FileForm";
+import { UserDropdown } from "./partials/Dropdown";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 
-function Navbar({ className, user }) {
+function Navbar({ className, user, authRouterForm, fetchUpdatedData, openForm, setOpenForm }) {
   return (
     <nav className={className}>
       <header className="h-full border-b border-border bg-backgroundAlt shadow-sm">
@@ -53,21 +57,32 @@ function Navbar({ className, user }) {
                 <FolderSearch className="h-4 w-4" />
                 Records
               </NavLink>
+                <Dialog
+                  open={openForm === "csv"}
+                  onOpenChange={(isOpen) => setOpenForm(isOpen ? "csv" : null)}
+                >
+                  <DialogTrigger asChild>
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-3 text-sm font-medium text-muted transition hover:bg-primaryLight hover:text-primary"
+                    >
+                      <Upload className="h-4 w-4" />
+                      Upload CSV
+                    </button>
+                  </DialogTrigger>
 
+                  <DialogContent className="bg-background w-full max-w-lg">
+                    <FileForm
+                      authRouterForm={authRouterForm}
+                      fetchUpdatedData={fetchUpdatedData}
+                      setOpenForm={setOpenForm}
+                    />
+                  </DialogContent>
+                </Dialog>
             </div>
 
             {/* User */}
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primaryLight text-sm font-semibold text-primary">
-                {user?.firstName?.charAt(0)}
-                {user?.lastName?.charAt(0)}
-              </div>
-
-              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <span className="hidden md:block">{user ? `Welcome, ${user.firstName}` : "Guest"}</span>
-                <ChevronDown className="h-4 w-4 text-muted" />
-              </div>
-            </div>
+            <UserDropdown user={user} />
           </div>
           </div>
         </div>

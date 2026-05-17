@@ -92,7 +92,7 @@ cron.schedule('0 6 * * *', async () => {
 
 // for manual csv uploads form dashboard
 // further logic added for uploading prior days, ect. ?
-app.post('/upload', upload.single('csv_file'), async (req, res, next) => {
+app.post('/upload-csv', upload.single('csv_file'), async (req, res, next) => {
   try {
     const result = await handleCSVUpload(req.file.path);
     res.json({ message: 'File uploaded successfully', clients: result });

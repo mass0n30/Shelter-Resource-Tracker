@@ -1,24 +1,15 @@
-
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectContent, SelectGroup, SelectValue, SelectItem , SelectLabel} from "@/components/ui/select";
-import { DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSeparator,
-  FieldSet,
-} from "@/components/ui/field"
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Field, FieldGroup } from "@/components/ui/field";
 import CalendarPopover from "../partials/Calender";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
-// zod schema for form validation before req sent to backend, where validation chain is also implemented for security and data integrity
 const schema = z.object({
   firstName: z
     .string({ required_error: "First name is required" })
@@ -39,10 +30,7 @@ const schema = z.object({
     .optional()
     .or(z.literal("")),
 
-  gender: z
-    .string()
-    .optional()
-    .or(z.literal("")),
+  gender: z.string().optional().or(z.literal("")),
 
   priorityNeed: z
     .string()
@@ -56,10 +44,20 @@ const schema = z.object({
     .max(5, { message: "Bed label is too long" })
     .optional()
     .or(z.literal("")),
+
+  status: z.string().optional().or(z.literal("")),
+
+  intakeDate: z.date().nullable().optional(),
+  outtakeDate: z.date().nullable().optional(),
 });
 
-export default function ClientForm({ authRouter, firstName, lastName, fetchUpdatedData, setOpenForm }) {
-
+export default function ClientForm({
+  authRouter,
+  firstName,
+  lastName,
+  fetchUpdatedData,
+  setOpenForm,
+}) {
   const today = new Date();
   const next60 = new Date(today.getTime() + 60 * 24 * 60 * 60 * 1000);
 
@@ -67,21 +65,27 @@ export default function ClientForm({ authRouter, firstName, lastName, fetchUpdat
     from: today,
     to: next60,
   });
+
   const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
-    firstName: firstName || "",
-    lastName: lastName || "",
+    firstName: "",
+    lastName: "",
     clientId: "",
-    intakeDate: date.from || null,
-    outtakeDate: date.to || null,
     priorityNeed: "",
     bedLabel: "",
     gender: "",
     status: "",
   });
 
-  // helper function to update form data state on input change
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      firstName: firstName || "",
+      lastName: lastName || "",
+    }));
+  }, [firstName, lastName]);
+
   const updateField = (key, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -89,40 +93,71 @@ export default function ClientForm({ authRouter, firstName, lastName, fetchUpdat
     }));
   };
 
-  // handle form submission, creating client 
+  const resetForm = () => {
+    setError(null);
+
+    setDate({
+      from: today,
+      to: next60,
+    });
+
+    setFormData({
+      firstName: firstName || "",
+      lastName: lastName || "",
+      clientId: "",
+      priorityNeed: "",
+      bedLabel: "",
+      gender: "",
+      status: "",
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // catching any validation errors before sending req to backend, where validation chain is also implemented for security and data integrity on backend
-  const result = schema.safeParse(formData);
+    const payload = {
+      ...formData,
+      intakeDate: date?.from || null,
+      outtakeDate: date?.to || null,
+    };
 
-  if (!result.success) {
-    setError(result.error.issues[0].message);
-    return;
-  }
+    const result = schema.safeParse(payload);
+
+    if (!result.success) {
+      setError(result.error.issues[0].message);
+      return;
+    }
 
     try {
-      const response = await authRouter.post("/dashboard/clients", formData);
+      await authRouter.post("/dashboard/clients", payload);
 
-      console.log("Client created:", response.data);
+      if (fetchUpdatedData) {
+        await fetchUpdatedData();
+      }
 
+      if (setOpenForm) {
+        setOpenForm(null);
+      }
     } catch (error) {
       console.error(
         "Error creating client:",
         error.response?.data || error.message
       );
+
+      setError("Something went wrong while creating the client.");
     }
   };
 
   return (
-    <DialogContent className={'bg-background rounded-lg shadow-lg w-full max-w-md '}>
+    <DialogContent className="bg-background rounded-lg shadow-lg w-full max-w-md">
       <DialogHeader>
         <DialogTitle>Create Client</DialogTitle>
+
         <DialogDescription>
           Fill out the form below to create a new client.
         </DialogDescription>
       </DialogHeader>
-  
+
       {error && (
         <span className="text-red-500 text-sm">
           Error was encountered: {error}
@@ -130,43 +165,66 @@ export default function ClientForm({ authRouter, firstName, lastName, fetchUpdat
       )}
 
       <form onSubmit={handleSubmit} className="grid w-full gap-4 py-4">
-          <FieldGroup>
-            <Field>
-              <Input value={formData.firstName} onChange={(e) => updateField("firstName", e.target.value)} placeholder="First Name" />
-            </Field>
-            <Field>
-              <Input value={formData.lastName} onChange={(e) => updateField("lastName", e.target.value)} placeholder="Last Name" />
-            </Field>
-            <Field>
-              <Input value={formData.clientId} onChange={(e) => updateField("clientId", e.target.value)} placeholder="Client ID" />
-            </Field>
-
-            <Field>
-              <select
-                value={formData.gender}
-                onChange={(e) => updateField("gender", e.target.value)}
-                className="border px-3 py-2 rounded-lg bg-background text-muted w-full"
-              >
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-            </Field>
+        <FieldGroup>
           <Field>
-            <Input value={formData.priorityNeed} onChange={(e) => updateField("priorityNeed", e.target.value)} placeholder="Priority Need" />
+            <Input
+              value={formData.firstName}
+              onChange={(e) => updateField("firstName", e.target.value)}
+              placeholder="First Name"
+            />
           </Field>
 
           <Field>
-            <Input value={formData.bedLabel} onChange={(e) => updateField("bedLabel", e.target.value)} placeholder="Bed Label" />
+            <Input
+              value={formData.lastName}
+              onChange={(e) => updateField("lastName", e.target.value)}
+              placeholder="Last Name"
+            />
+          </Field>
+
+          <Field>
+            <Input
+              value={formData.clientId}
+              onChange={(e) => updateField("clientId", e.target.value)}
+              placeholder="Client ID"
+            />
+          </Field>
+
+          <Field>
+            <select
+              value={formData.gender}
+              onChange={(e) => updateField("gender", e.target.value)}
+              className="border px-3 py-2 rounded-lg bg-background text-muted w-full"
+            >
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </Field>
+
+          <Field>
+            <Input
+              value={formData.priorityNeed}
+              onChange={(e) => updateField("priorityNeed", e.target.value)}
+              placeholder="Priority Need"
+            />
+          </Field>
+
+          <Field>
+            <Input
+              value={formData.bedLabel}
+              onChange={(e) => updateField("bedLabel", e.target.value)}
+              placeholder="Bed Label"
+            />
           </Field>
 
           <CalendarPopover date={date} setDate={setDate} />
 
           <Field>
             <select
-              value={formData.status || ""}
+              value={formData.status}
               onChange={(e) => updateField("status", e.target.value)}
-              className="w-full border px-3 py-2 rounded-lg bg-background text-muted "
+              className="w-full border px-3 py-2 rounded-lg bg-background text-muted"
               name="Select Status"
             >
               <option value="">Select Status</option>
@@ -175,17 +233,22 @@ export default function ClientForm({ authRouter, firstName, lastName, fetchUpdat
             </select>
           </Field>
         </FieldGroup>
-        <Field orientation="horizontal" className="justify-around space-x-2">
-          <button type="button" onClick={() => setFormData({
-            firstName: "",
-            lastName: "",
-            clientId: "",
-            priorityNeed: "",
-            bedLabel: "",
-            gender: "",
-            status: "",
-          })}>Reset</button>
-          <button type="submit">Create Client</button>
+
+        <Field orientation="horizontal" className="justify-between space-x-2">
+          <button
+            type="button"
+            onClick={resetForm}
+            className="rounded-md px-3 py-2 text-sm text-muted hover:bg-primaryLight hover:text-primary"
+          >
+            Reset
+          </button>
+
+          <button
+            type="submit"
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primaryDark"
+          >
+            Create Client
+          </button>
         </Field>
       </form>
     </DialogContent>

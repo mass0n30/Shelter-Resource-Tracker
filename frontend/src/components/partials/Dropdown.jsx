@@ -13,6 +13,64 @@ import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription} f
 
 import { Ellipsis } from "lucide-react";
 
+import { useNavigate } from "react-router-dom";
+import { ChevronDown, Settings, LogOut } from "lucide-react";
+
+export function UserDropdown({ user }) {
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    localStorage.removeItem("usertoken");
+    navigate("/login");
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className="flex w-full sm:w-auto items-center justify-between gap-3 rounded-md bg-white px-4 py-3 text-sm font-medium text-foreground transition hover:bg-primaryLight hover:text-primary"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primaryLight text-sm font-semibold text-primary">
+              {user?.firstName?.charAt(0)}
+              {user?.lastName?.charAt(0)}
+            </div>
+
+            <span className="whitespace-nowrap">
+              {user ? `Welcome, ${user.firstName}` : "Guest"}
+            </span>
+          </div>
+
+          <ChevronDown className="h-4 w-4 text-muted" />
+        </button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent
+        align="end"
+        sideOffset={8}
+        className="z-[9999] w-[var(--radix-dropdown-menu-trigger-width)] rounded-md border border-border bg-white p-1 text-foreground shadow-lg"
+      >
+        <DropdownMenuItem
+          onSelect={() => navigate("/dashboard/settings")}
+          className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-sm text-muted transition focus:bg-primaryLight focus:text-primary"
+        >
+          <Settings className="h-4 w-4" />
+          Settings
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          onSelect={handleSignOut}
+          className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-sm text-red-500 transition focus:bg-red-50 focus:text-red-600"
+        >
+          <LogOut className="h-4 w-4" />
+          Sign Out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 export default function DropdownEditDelete({ resource, authRouter, fetchClientData, handleDelete, setToggle }) {
 
   return (

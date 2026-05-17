@@ -1,115 +1,154 @@
-import { useForm } from "react-hook-form";
-import { useEffect } from "react";
-import { XCircle } from "lucide-react";
+import { useState } from "react";
+import { Upload, FileText, X, Loader2 } from "lucide-react";
+import {
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { set } from "date-fns";
 
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+function FileForm({ authRouterForm, fetchUpdatedData, setOpenForm }) {
+  const [file, setFile] = useState(null);
+  const [error, setError] = useState("");
+  const [uploadResult, setUploadResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-export default function FileForm({
-  file,
-  setFile,
-  fileToggle,
-  setFileToggle,
-  handleUploadFile,
-  preview,
-  setPreview,
-  handleUploadAvatar,
-}) {
+  const handleFileChange = (e) => {
+    setOpenForm("csv");
+    setUploadResult(null);
+    const selectedFile = e.target.files[0];
 
-  const form = useForm();
+    setError("");
+    setUploadResult(null);
 
-  const handleClose = () => {
-    setFileToggle(false);
-    setFile(null);
-    setPreview(null);
-  };
+    if (!selectedFile) return;
 
-  const onSubmit = (data) => {
-    if (handleUploadAvatar) {
-      handleUploadAvatar(data);
-    } else {
-      handleUploadFile(data);
+    if (!selectedFile.name.endsWith(".csv")) {
+      setFile(null);
+      setError("Please upload a CSV file.");
+      return;
     }
-    handleClose();
+
+    setFile(selectedFile);
   };
 
-  useEffect(() => {
-    return () => {
-      if (preview) URL.revokeObjectURL(preview);
-    };
-  }, [preview]);
+  const handleReset = () => {
+    setFile(null);
+    setError("");
+    setUploadResult(null);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!file) {
+      setError("Select a CSV file before uploading.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const formData = new FormData();
+      formData.append("csv_file", file);
+
+      const response = await authRouterForm.post(
+        "/upload-csv",
+        formData
+      );
+
+      setUploadResult(response.data);
+      fetchUpdatedData(true);
+    } catch (err) {
+      console.error(err);
+      setError("CSV upload failed. Please check the file and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-  <Dialog open={fileToggle} onOpenChange={setFileToggle}>
-    <DialogContent className="max-w-md w-full p-6 rounded-xl shadow-lg">
+    <div className="bg-transparent rounded-lg w-full max-w-md">
+      <DialogHeader>
+        <DialogTitle>Upload CSV</DialogTitle>
 
-      <div className="flex flex-col gap-6">
+        <DialogDescription className="mt-2 flex items-center gap-2 text-sm text-muted">
+          <Upload className="w-4 h-4" />
+          Manually upload a client CSV file to update overnight stay data.
+        </DialogDescription>
+      </DialogHeader>
 
-        {/* Close Button */}
-        <div className="flex justify-end">
-          <Button
-            variant="ghost"
-            onClick={handleClose}
-            className="p-2"
-          >
-            <XCircle className="w-5 h-5" />
-          </Button>
+      {error && <span className="text-red-500 text-sm">{error}</span>}
+
+      {uploadResult && (
+        <div className="mt-3 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
+          CSV uploaded successfully.
         </div>
+      )}
 
-        {/* Header */}
-        <div className="flex flex-col items-center gap-3 text-center">
-          <div className="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100">
-            <img src="/open-folder.png" className="w-6 h-6" />
+
+      <form onSubmit={handleSubmit} className="grid gap-4 py-4">
+        <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-white px-4 py-8 text-center transition hover:bg-primaryLight/40">
+          <Upload className="h-8 w-8 text-primary" />
+
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-sm font-medium text-foreground">
+              Choose CSV file
+            </p>
+            <p className="mt-1 text-xs text-muted">
+              Upload the nightly client sheet manually.
+            </p>
           </div>
 
-          <h2 className="text-xl font-semibold">
-            {handleUploadAvatar ? "Upload Avatar" : "Attach a File"}
-          </h2>
-        </div>
-
-        {/* Form */}
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-4"
-          autoComplete="off"
-        >
-
-          {/* File Input */}
           <input
             type="file"
-            {...form.register("file")}
-            className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-300 file:bg-gray-50 file:text-sm file:font-medium hover:file:bg-gray-100"
-            onChange={(e) => {
-              const selected = e.target.files?.[0] || null;
-              setFile(selected);
-
-              if (selected) {
-                setPreview(URL.createObjectURL(selected));
-              }
-            }}
+            accept=".csv"
+            onChange={handleFileChange}
+            className="hidden"
           />
+        </label>
 
-          {/* Preview */}
-          {preview && (
-            <div className="w-full flex justify-center">
-              <img
-                src={preview}
-                alt="preview"
-                className="max-h-40 rounded-md object-contain border"
-              />
+        {file && (
+          <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-backgroundAlt px-3 py-2">
+            <div className="flex min-w-0 items-center gap-2">
+              <FileText className="h-4 w-4 shrink-0 text-primary" />
+              <span className="truncate text-sm text-foreground">
+                {file.name}
+              </span>
             </div>
-          )}
 
-          {/* Submit */}
-          <Button type="submit" className="w-full">
-            Upload
-          </Button>
+            <button
+              type="button"
+              onClick={handleReset}
+              className="bg-transparent rounded-md p-1 text-muted transition hover:bg-red-50 hover:text-red-500"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
 
-        </form>
+        <div className="flex justify-between mt-4">
+          <button
+            type="button"
+            onClick={handleReset}
+            className="text-sm text-white hover:bg-primaryDark"
+          >
+            Reset
+          </button>
 
-      </div>
-
-    </DialogContent>
-  </Dialog>
+          <button
+            type="submit"
+            disabled={loading || !file}
+            className="inline-flex items-center gap-2 rounded-md bg-primary text-white px-4 py-2 text-sm font-medium transition hover:bg-primaryDark disabled:pointer-events-none disabled:opacity-50"
+          >
+            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+            {loading ? "Uploading..." : "Upload CSV"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
+
+export default FileForm;

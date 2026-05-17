@@ -142,41 +142,51 @@ export function CalendarEmbedded({
 
   const selectedItems = getItemsForDate(calendarItems, date);
 
-  return (
-    <div className={cn("flex-1 bg-white flex flex-col md:flex-row rounded-lg border p-md shadow-md", className)}>
+return (
+  <div
+    className={cn(
+      "mx-auto flex w-full max-w-6xl flex-col gap-4 rounded-xl border border-border bg-white p-4 shadow-md lg:flex-row lg:items-start lg:justify-center",
+      className
+    )}
+  >
+    {/* Calendar */}
+    <div className="flex w-full justify-center lg:w-[58%]">
       <Calendar
         mode="single"
         selected={date}
         setSelected={setDate}
         calendarItems={calendarItems}
         captionLayout="dropdown"
-        className="w-full border-0 bg-white p-0 text-foreground shadow-none"
+        className="w-full max-w-2xl border-0 bg-white p-2 text-foreground shadow-none"
       />
+    </div>
 
-      <div className="mt-4 border-t border-border pt-3">
-        <div className="mb-3">
-          <h3 className="text-sm font-semibold text-foreground">
-            {date
-              ? date.toLocaleDateString(undefined, {
-                  weekday: "long",
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })
-              : "Select a date"}
-          </h3>
+    {/* Selected Date Panel */}
+    <div className="w-full rounded-lg border border-border bg-backgroundAlt p-4 lg:w-[42%]">
+      <div className="mb-3">
+        <h3 className="text-sm font-semibold text-foreground">
+          {date
+            ? date.toLocaleDateString(undefined, {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })
+            : "Select a date"}
+        </h3>
 
-          <p className="text-xs text-muted">
-            {selectedItems.length === 0
-              ? "No scheduled items for this day."
-              : `${selectedItems.length} item${
-                  selectedItems.length === 1 ? "" : "s"
-                } scheduled`}
-          </p>
-        </div>
+        <p className="text-xs text-muted">
+          {selectedItems.length === 0
+            ? "No scheduled items for this day."
+            : `${selectedItems.length} item${
+                selectedItems.length === 1 ? "" : "s"
+              } scheduled`}
+        </p>
+      </div>
 
+      <div className="max-h-[420px] overflow-y-auto pr-1">
         {selectedItems.length === 0 ? (
-          <div className="rounded-md border border-dashed border-border bg-background p-3 text-sm text-muted">
+          <div className="rounded-md border border-dashed border-border bg-white p-4 text-sm text-muted">
             Nothing needs attention on this date.
           </div>
         ) : (
@@ -184,7 +194,7 @@ export function CalendarEmbedded({
             {selectedItems.map((item) => (
               <div
                 key={`${item.type}-${item.id}`}
-                className="rounded-md border border-border bg-background p-3 text-sm"
+                className="rounded-md border border-border bg-white p-3 text-sm shadow-sm"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-start gap-2">
@@ -214,41 +224,44 @@ export function CalendarEmbedded({
                     </div>
                   </div>
 
-                  {item.isPriority && (
-                    <div className="flex shrink-0 items-center gap-1 rounded-md bg-red-50 px-2 py-1 text-xs text-destructive">
-                      <ClockAlert className="h-3 w-3" />
-                      Priority
-                    </div>
-                  )}
+                  <div className="flex shrink-0 flex-col items-end gap-1">
+                    {item.isPriority && (
+                      <div className="flex items-center gap-1 rounded-md bg-red-50 px-2 py-1 text-xs text-destructive">
+                        <ClockAlert className="h-3 w-3" />
+                        Priority
+                      </div>
+                    )}
 
-                  {item.completed && (
-                    <div className="shrink-0 rounded-md bg-green-50 px-2 py-1 text-xs text-success">
-                      Done
-                    </div>
-                  )}
+                    {item.completed && (
+                      <div className="rounded-md bg-green-50 px-2 py-1 text-xs text-success">
+                        Done
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
+      </div>
 
-        <div className="mt-4 flex flex-wrap gap-3 border-t border-border pt-3 text-xs text-muted">
-          <div className="flex items-center gap-1">
-            <House className="h-3 w-3 text-primary" />
-            Referral follow-up
-          </div>
+      <div className="mt-4 flex flex-wrap gap-3 border-t border-border pt-3 text-xs text-muted">
+        <div className="flex items-center gap-1">
+          <House className="h-3 w-3 text-primary" />
+          Referral follow-up
+        </div>
 
-          <div className="flex items-center gap-1">
-            <NotebookText className="h-3 w-3 text-success" />
-            Note reminder
-          </div>
+        <div className="flex items-center gap-1">
+          <NotebookText className="h-3 w-3 text-success" />
+          Note reminder
+        </div>
 
-          <div className="flex items-center gap-1">
-            <ClockAlert className="h-3 w-3 text-destructive" />
-            Priority
-          </div>
+        <div className="flex items-center gap-1">
+          <ClockAlert className="h-3 w-3 text-destructive" />
+          Priority
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

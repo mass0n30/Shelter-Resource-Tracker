@@ -25,6 +25,9 @@ import {
   EditIcon,
   Calendar,
   Calendar1Icon,
+  History,
+  FolderSearch,
+  NotebookText
 } from "lucide-react";
 import { RESOURCE_CONFIG } from "../lib/utils";
 
@@ -106,33 +109,42 @@ function ClientInfoSectionToggle({
     <div
       className={`flex min-h-0 flex-col overflow-hidden rounded-md bg-white p-4 ${className}`}
     >
-      <div className="mb-4 flex shrink-0 gap-2 md:gap-4">
-        <Button
-          className={`flex-1 text-xs md:text-sm ${
-            activeSection !== "resources" && "bg-gray-200 text-gray-700"
-          }`}
+      <div className="mb-4 flex shrink-0 flex-wrap gap-2 md:gap-4">
+        <button
           onClick={() => setActiveSection("resources")}
+          className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs md:text-sm font-semibold transition ${
+            activeSection === "resources"
+              ? "bg-primary text-white shadow-sm"
+              : "bg-white text-muted border border-border hover:bg-primaryLight hover:text-primary"
+          }`}
         >
+          <FolderSearch className="h-4 w-4" />
           Resources
-        </Button>
+        </button>
 
-        <Button
-          className={`flex-1 text-xs md:text-sm ${
-            activeSection !== "notes" && "bg-gray-200 text-gray-700"
-          }`}
+        <button
           onClick={() => setActiveSection("notes")}
-        >
-          Notes
-        </Button>
-
-        <Button
-          className={`flex-1 text-xs md:text-sm ${
-            activeSection !== "timeline" && "bg-gray-200 text-gray-700"
+          className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs md:text-sm font-semibold transition ${
+            activeSection === "notes"
+              ? "bg-primary text-white shadow-sm"
+              : "bg-white text-muted border border-border hover:bg-primaryLight hover:text-primary"
           }`}
-          onClick={() => setActiveSection("timeline")}
         >
+          <NotebookText className="h-4 w-4" />
+          Notes
+        </button>
+
+        <button
+          onClick={() => setActiveSection("timeline")}
+          className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs md:text-sm font-semibold transition ${
+            activeSection === "timeline"
+              ? "bg-primary text-white shadow-sm"
+              : "bg-white text-muted border border-border hover:bg-primaryLight hover:text-primary"
+          }`}
+        >
+          <History className="h-4 w-4" />
           Timeline
-        </Button>
+        </button>
       </div>
 
       <div className="min-h-0 max-h-[calc(120vh-200px)] flex-1 overflow-y-auto pr-1">

@@ -92,7 +92,7 @@ function DashBoard() {
 
   return (
     <>
-      <Navbar className="bg-white shadow h-24em" authRouter={authRouter} authRouterForm={authRouterForm} user={user} />
+      <Navbar className="bg-white shadow h-24em" authRouter={authRouter} authRouterForm={authRouterForm} user={user} fetchUpdatedData={fetchUpdatedData} openForm={openForm} setOpenForm={setOpenForm} />
 
       <main className="bg-primaryLight flex px-sm md:px-md">
         <div className="flex-1 w-full max-w-7xl flex">

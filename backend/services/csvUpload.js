@@ -3,54 +3,86 @@
 const fs = require('fs');
 const csv = require('csv-parser');
 const { checkClientCSV } = require("../db/queries.js");
+const { prisma } = require("../db/prismaClient");
 
-// converts attached file in file path to handle 
 async function handleCSVUpload(filePath) {
   return new Promise((resolve, reject) => {
-    console.log('Received file:', filePath);
+    console.log("Received file:", filePath);
 
-    const results = [];
-    const unfoundClients = [];
+    const tasks = [];
+    const updateDate = new Date();
 
     fs.createReadStream(filePath)
       .pipe(csv({ headers: false }))
-      // for each row, check if client exists in db, if so push to results array, if not skip
-      .on('data', (row) => {
-        const firstName = row['1']?.trim();
-        const lastName = row['2']?.trim();
+      .on("data", (row) => {
+        const firstName = row["1"]?.trim();
+        const lastName = row["2"]?.trim();
 
-        // Skip junk rows
-        if (!firstName || !lastName || firstName === '' || lastName === '') return;
+        if (!firstName || !lastName) return;
+        if (firstName === "Guest/Client  Name(First)") return;
 
-        if (firstName === 'Guest/Client  Name(First)') return;
+        const task = checkClientCSV(firstName, lastName)
+          .then((client) => ({
+            found: !!client,
+            client,
+            firstName,
+            lastName,
+          }))
+          .catch((error) => {
+            console.error("Error checking client:", error);
 
-        // Not using await here — streams do not wait for async operations
-        // Instead, store the Promise and resolve all later, pushing into array on line 81
-        const client = checkClientCSV(firstName, lastName)
+            return {
+              found: false,
+              client: null,
+              firstName,
+              lastName,
+            };
+          });
 
-        .catch((error) => {
-          console.error('Error inserting row:', error);
-        });
+        tasks.push(task);
+      })
+      .on("end", async () => {
+        try {
+          const results = await Promise.all(tasks);
 
-        if (client) {
-          results.push(client);
-        } else {
-          unfoundClients.push({ firstName, lastName });
+          const found = results
+            .filter((r) => r.found)
+            .map((r) => r.client);
+
+          const unfound = results
+            .filter((r) => !r.found)
+            .map((r) => ({
+              firstName: r.firstName,
+              lastName: r.lastName,
+            }));
+
+
+          if (unfound.length > 0) {
+            await prisma.notification.create({
+              data: {
+                type: "UNMATCHED_CLIENTS",
+                message: `${unfound.length} clients not found`,
+                data: unfound, // if using JSON column
+              }
+            });
+          }
+
+          if (found.length > 0) {
+            await prisma.notification.create({
+              data: {
+                type: "MATCHED_CLIENTS",
+                message: `${found.length} clients matched successfully`,
+                data: found.map(client => ({ id: client.id, firstName: client.firstName, lastName: client.lastName })), // if using JSON column
+              }
+            });
+          }
+          resolve({ found, unfound, updateDate });
+
+        } catch (error) {
+          reject(error);
         }
       })
-      // on end event callback returns results from function call 
-      .on('end', async () => {
-        const promiseResult = await Promise.all(results);
-        const unfoundPromiseResult = await Promise.all(unfoundClients);
-        // gets all qued promises on end event to resolve all objects at once, from all checkClientCSV queries during stream processing
-        resolve(promiseResult);
-        resolve(unfoundPromiseResult);
-      })
-
-      .on('error', (error) => {
-        console.error('Error processing CSV file:', error);
-        reject(error);
-      });
+      .on("error", reject);
   });
 }
 
