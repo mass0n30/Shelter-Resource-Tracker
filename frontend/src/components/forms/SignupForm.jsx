@@ -25,7 +25,6 @@ function SignUp() {
   .object({
     fname: z.string().min(1, "First name is required"),
     lname: z.string().min(1, "Last name is required"),
-    alias: z.string().min(3, "Username must be at least 3 characters"),
     email: z.email("Enter a valid email"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     passwordconfirm: z.string(),
@@ -54,7 +53,6 @@ function SignUp() {
         body: JSON.stringify({
           firstname: user.fname,
           lastname: user.lname,
-          alias: user.alias,
           username: user.email,
           password: user.password,
           passwordconfirm: user.passwordconfirm,
