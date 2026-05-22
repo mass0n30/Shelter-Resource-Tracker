@@ -20,8 +20,8 @@ async function emailAutomate() {
     secure: true,
     auth: {
       // SET THESE IN ENV BEFORE DEPLOYMENT, USING TEST GMAIL ACCOUNT FOR NOW
-      user: 'masson07vlog@gmail.com', // Indeed configuration upon deployment for work
-      pass: 'motrgclidvdfsrjy' // bypassing oAuth for testing, using app password for security
+    user: process.env.IMAP_EMAIL_USER,
+    pass: process.env.IMAP_EMAIL_PASSWORD,
     }
   });
 
@@ -177,7 +177,6 @@ function startReminderEmailJob() {
     for (const referral of dueReferrals) {
       if (!referral.createdBy?.email) continue;
 
-      // making sure not already sent
       const alreadySent = await prisma.emailNotificationLog.findUnique({
         where: {
           type_targetId_recipient: {

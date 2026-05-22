@@ -27,7 +27,6 @@ import {
   Calendar1Icon,
   History,
   FolderSearch,
-  NotebookText
 } from "lucide-react";
 import { RESOURCE_CONFIG } from "../lib/utils";
 
@@ -68,12 +67,12 @@ export default function ClientProfile() {
   }
 
   return (
-    <div className="flex-1 flex w-full flex-col overflow-hidden bg-gray-200">
+    <div className="flex-1 flex w-full flex-col overflow-hidden bg-primaryLight">
       <Banner
         clientData={clientData}
         authRouter={authRouter}
         fetchClientData={fetchClientData}
-        className="shrink-0 w-full bg-gray-100 min-h-[200px]"
+        className="shrink-0 w-full bg-backgroundAlt min-h-[120px] border-b"
       />
 
       <div className="mx-auto grid min-h-0 w-full max-w-7xl flex-1 grid-cols-1 gap-4 overflow-hidden p-4 md:grid-cols-4">
@@ -180,28 +179,24 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
   return (
     <div className={`flex items-center justify-center ${className}`}>
       <div className="max-w-7xl flex-1 flex items-center justify-between gap-4 px-4">
+        <div className="min-w-0 flex items-center gap-4">
+          
+          <button
+            type="button"
+            onClick={() => window.history.back()}
+            className="inline-flex items-center gap-2 rounded-md px-2 py-1 text-xs font-medium text-muted transition bg-transparent hover:bg-primaryLight hover:text-primary"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back to Dashboard
+          </button>
 
-        <div className="items-start">
-
-          <div className="flex flex-1 mb-2">
-            <Button
-              variant="ghost"
-              className="flex flex-1 justify-start gap-4 bg-transparent p-sm h-auto rounded-md text-gray-600 hover:bg-gray-200"
-              onClick={() => window.history.back()}
-            >
-              <ArrowLeft className="mr-1 mt-0.5" />
-              <div className="text-xs sm:text-sm md:text-md">
-                Back to Dashboard
-              </div>
-            </Button>
-          </div>
-
-          <div className="flex gap-4">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-600">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primaryLight text-sm font-semibold text-primary sm:h-12 sm:w-12">
               {clientData?.avatar ? (
                 <img
                   src={clientData.avatar}
                   alt={`${clientData.firstName} ${clientData.lastName}`}
+                  className="h-full w-full object-cover"
                 />
               ) : (
                 <span>
@@ -211,51 +206,50 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
               )}
             </div>
 
-            <div className="flex flex-col flex-1">
-
-              <div className="flex flex-col sm:flex-row gap-0 sm:gap-2 flex-1 items-start sm:items-center justify-between">
-                <div className="font-semibold text-sm sm:text-md md:text-xl">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="truncate text-base font-semibold text-foreground/90 sm:text-lg">
                   {clientData.firstName} {clientData.lastName}
-                </div>
-                <div className="text-muted-foreground text-xs md:text-sm">
+                </h1>
+
+                <span className="rounded-full bg-backgroundAlt px-2 py-0.5 text-[11px] font-medium text-muted border border-border">
                   {clientData.status}
-                </div>
+                </span>
               </div>
 
-              <div className="flex justify-start text-xs text-muted-foreground sm:gap-4 gap-2 mt-1">
-                <p>
-                  <LucideBedDouble className="inline mr-1" />
-                  {clientData.bedLabel}
-                </p>
-                <p>
-                  <HashIcon className="inline sm:mr-1" />
-                  {clientData.clientId}
-                </p>
-              </div>
+              <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted">
+                <span className="inline-flex items-center gap-1">
+                  <LucideBedDouble className="h-3.5 w-3.5" />
+                  {clientData.bedLabel || "No bed"}
+                </span>
 
+                <span className="inline-flex items-center gap-1">
+                  <HashIcon className="h-3.5 w-3.5" />
+                  {clientData.clientId || "No ID"}
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-2 md:min-w-[350px]">
-
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 md:min-w-[350px]">
           {/* RESOURCE */}
           <Dialog>
             <DialogTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex flex-1 justify-start gap-sm bg-transparent p-sm h-auto rounded-md text-primary font-semibold hover:bg-gray-200"
+              <button
+                type="button"
+                className="inline-flex flex-1 items-center justify-center md:justify-start gap-2 rounded-md bg-white px-4 py-3 text-sm font-medium text-muted transition hover:bg-primaryLight hover:text-primary"
               >
-                <Plus className="inline h-lg w-lg font-medium mr-1 mb-1 h-4" />
-                <div className="text-base md:text-lg">Resource</div>
-              </Button>
+                <Plus className="h-4 w-4" />
+                Resource
+              </button>
             </DialogTrigger>
 
             <DialogContent className="bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
               <VisuallyHidden>
                 <DialogTitle>{`Create Resource for ${clientData.firstName} ${clientData.lastName}`}</DialogTitle>
               </VisuallyHidden>
-                <h2>{`Create Resource for ${clientData.firstName} ${clientData.lastName}`}</h2>
+
               <ResourceForm
                 authRouter={authRouter}
                 clientId={clientData.id}
@@ -267,20 +261,20 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
           {/* NOTE */}
           <Dialog>
             <DialogTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex flex-1 justify-start gap-sm bg-transparent p-sm h-auto rounded-md text-primary font-semibold hover:bg-gray-200"
+              <button
+                type="button"
+                className="inline-flex flex-1 items-center justify-center md:justify-start gap-2 rounded-md bg-white px-4 py-3 text-sm font-medium text-muted transition hover:bg-primaryLight hover:text-primary"
               >
-                <FilePlus className="inline h-lg w-lg font-medium mr-1 mb-1 h-4" />
-                <div className="text-md md:text-lg">Note</div>
-              </Button>
+                <FilePlus className="h-4 w-4" />
+                Note
+              </button>
             </DialogTrigger>
 
-            <DialogContent>
+            <DialogContent className="bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
               <VisuallyHidden>
                 <DialogTitle>{`Create Note for ${clientData.firstName} ${clientData.lastName}`}</DialogTitle>
               </VisuallyHidden>
-            
+
               <NoteForm
                 authRouter={authRouter}
                 clientId={clientData.id}
@@ -288,189 +282,176 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
               />
             </DialogContent>
           </Dialog>
-
         </div>
-
       </div>
     </div>
   );
 }
 
-function Information({ clientData, fetchClientData, className }) {
+import {
+  BedDouble,
+  CalendarDays,
+  ClipboardList,
+  Clock,
+  FileText,
+  HeartHandshake,
+  Info,
+  NotebookText,
+  Phone,
+  ShieldCheck,
+  UserRound,
+} from "lucide-react";
+
+function Information({ clientData, className }) {
+  const formatDate = (date) =>
+    date ? new Date(date).toLocaleDateString() : "N/A";
+
+  const items = [
+    { label: "Status", value: clientData?.status || "N/A", icon: ShieldCheck },
+    { label: "Bed Label", value: clientData?.bedLabel || "N/A", icon: BedDouble },
+    {
+      label: "Stayed Last Night",
+      value: clientData?.hereLastNight ? "Yes" : "No",
+      icon: CheckCircle2,
+    },
+    {
+      label: "Extension",
+      value: clientData?.extensionStatus ? "Active" : "None",
+      icon: Clock,
+    },
+    { label: "Intake Date", value: formatDate(clientData?.intakeDate), icon: CalendarDays },
+    { label: "Outtake Date", value: formatDate(clientData?.outtakeDate), icon: CalendarDays },
+    { label: "Last Stay Update", value: formatDate(clientData?.lastStayDate), icon: Clock },
+    { label: "Client Created", value: formatDate(clientData?.createdAt), icon: UserRound },
+  ];
+
+  const extraItems = [
+    { label: "DOB", value: clientData?.dob || "Not added", icon: CalendarDays },
+    { label: "Age", value: clientData?.age || "Not added", icon: UserRound },
+    { label: "Phone", value: clientData?.phone || "Not added", icon: Phone },
+    {
+      label: "Emergency #",
+      value: clientData?.emergencyContact || "Not added",
+      icon: HeartHandshake,
+    },
+  ];
+
   return (
-    <div className={`bg-white rounded-md border shadow-sm ${className}`}>
-      <div className="border-b p-4">
-        <h2 className="text-lg font-semibold text-foreground">
-          Client Information
-        </h2>
-        <p className="text-sm text-gray-700">
-          Basic client details and shelter activity
+    <div className={`rounded-xl border border-border bg-white shadow-sm ${className}`}>
+      <div className="border-b border-border px-4 py-4">
+        <div className="flex items-center gap-2">
+          <Info className="h-4 w-4 text-primary" />
+          <h2 className="text-base font-semibold text-foreground/90">
+            Client Information
+          </h2>
+        </div>
+
+        <p className="mt-1 text-sm text-muted">
+          Basic details and shelter activity
         </p>
       </div>
 
-      <div className="space-y-5 p-4 text-sm">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Status
-            </p>
-            <p className="mt-1 font-medium text-foreground">
-              {clientData?.status || "N/A"}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Bed Label
-            </p>
-            <p className="mt-1 font-medium text-foreground">
-              {clientData?.bedLabel || "N/A"}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Stayed Last Night
-            </p>
-            <p className="mt-1 font-medium text-foreground">
-              {clientData?.hereLastNight ? "Yes" : "No"}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Extension Status
-            </p>
-            <p className="mt-1 font-medium text-foreground">
-              {clientData?.extensionStatus ? "Active" : "None"}
-            </p>
-          </div>
+      <div className="space-y-sm p-sm text-sm">
+        <div className="grid grid-cols-1 gap-xs ">
+          {items.map(({ label, value, icon: Icon }) => (
+            <InfoCard key={label} label={label} value={value} icon={Icon} />
+          ))}
         </div>
 
         {clientData?.priorityNeed && (
-          <div className="rounded-lg border bg-muted/30 p-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Priority Need
-            </p>
-            <p className="mt-1 font-medium text-foreground">
-              {clientData.priorityNeed}
-            </p>
+          <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-3">
+            <div className="flex items-start gap-2">
+              <HeartHandshake className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-wide text-muted">
+                  Priority Need
+                </p>
+                <p className="mt-1 text-sm font-medium text-foreground/90">
+                  {clientData.priorityNeed}
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Intake Date
-            </p>
-            <p className="mt-1 font-medium text-foreground">
-              {clientData?.intakeDate
-                ? new Date(clientData.intakeDate).toLocaleDateString()
-                : "N/A"}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Outtake Date
-            </p>
-            <p className="mt-1 font-medium text-foreground">
-              {clientData?.outtakeDate
-                ? new Date(clientData.outtakeDate).toLocaleDateString()
-                : "N/A"}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Last Updated Stay
-            </p>
-            <p className="mt-1 font-medium text-foreground">
-              {clientData?.lastStayDate
-                ? new Date(clientData.lastStayDate).toLocaleDateString()
-                : "N/A"}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Client Created
-            </p>
-            <p className="mt-1 font-medium text-foreground">
-              {clientData?.createdAt
-                ? new Date(clientData.createdAt).toLocaleDateString()
-                : "N/A"}
-            </p>
-          </div>
-        </div>
-
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-lg border bg-muted/30 p-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Referrals
-            </p>
-            <p className="mt-1 text-xl font-semibold text-foreground">
-              {clientData?.referrals?.length || 0}
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-muted/30 p-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-              Notes
-            </p>
-            <p className="mt-1 text-xl font-semibold text-foreground">
-              {clientData?.notes?.length || 0}
-            </p>
-          </div>
+          <StatCard
+            label="Referrals"
+            value={clientData?.referrals?.length || 0}
+            icon={ClipboardList}
+          />
+          <StatCard
+            label="Notes"
+            value={clientData?.notes?.length || 0}
+            icon={NotebookText}
+          />
         </div>
 
-        <div className="rounded-lg border border-dashed p-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-            Additional Client Info
-          </p>
+        <div className="rounded-lg border border-dashed border-border bg-backgroundAlt/50 p-3">
+          <div className="mb-3 flex items-center gap-2">
+            <FileText className="h-4 w-4 text-primary" />
+            <p className="text-xs font-medium uppercase tracking-wide text-muted">
+              Additional Client Info
+            </p>
+          </div>
 
-          <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                DOB
-              </p>
-              <p className="mt-1 font-medium text-foreground">
-                {clientData?.dob || "Not added"}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                Age
-              </p>
-              <p className="mt-1 font-medium text-foreground">
-                {clientData?.age || "Not added"}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                Phone #
-              </p>
-              <p className="mt-1 font-medium text-foreground">
-                {clientData?.phone || "Not added"}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                Emergency #
-              </p>
-              <p className="mt-1 font-medium text-foreground">
-                {clientData?.emergencyContact || "Not added"}
-              </p>
-            </div>
+          <div className="grid grid-cols-1 gap-xs">
+            {extraItems.map(({ label, value, icon: Icon }) => (
+              <InfoCard key={label} label={label} value={value} icon={Icon} compact />
+            ))}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+function InfoCard({ label, value, icon: Icon, compact = false }) {
+  return (
+    <div
+      className={`rounded-lg border-b-2 border-border bg-backgroundAlt ${
+        compact ? "p-3" : "p-3.5"
+      }`}
+    >
+      <div className="flex items-start gap-2">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primaryLight text-primary">
+          <Icon className="h-4 w-4" />
+        </div>
+
+        <div className="min-w-0">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-muted">
+            {label}
+          </p>
+          <p className="mt-1 truncate text-sm font-medium text-foreground/85">
+            {value}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ label, value, icon: Icon }) {
+  return (
+    <div className="rounded-lg border border-border bg-white p-3 shadow-sm transition">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="text-[11px] font-medium uppercase tracking-wide text-muted">
+            {label}
+          </p>
+          <p className="mt-1 text-2xl font-semibold text-primaryDark">
+            {value}
+          </p>
+        </div>
+
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primaryLight text-primary">
+          <Icon className="h-4 w-4" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 import { Lock, Globe2, CheckCircle2, SquareUserRound } from "lucide-react";
 
@@ -520,10 +501,12 @@ export function Notes({ notes, fetchClientData, authRouter, showName }) {
     : notes?.filter((note) => !note.completed);
 
   return (
-    <div className="bg-gray-100 p-4 rounded-xl space-y-3">
+    <div className="bg-background h-full p-4 rounded-xl space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-gray-800">Case Notes</h2>
-
+        <div className="flex items-center gap-2">
+          <NotebookText className="h-4 w-4 text-primary" />
+          <h2 className="text-sm font-semibold text-gray-800">Case Notes</h2>
+        </div>
         <button
           type="button"
           onClick={() => setShowCompleted(!showCompleted)}
@@ -532,6 +515,7 @@ export function Notes({ notes, fetchClientData, authRouter, showName }) {
           {showCompleted ? "Hide Completed" : "Show Completed"}
         </button>
       </div>
+      { notes?.length === 0 && (<p className="text-sm text-muted-foreground">No notes available</p>)}
 
       {filteredNotes?.map((note) => {
         const isCompleted = note.completed;

@@ -37,7 +37,7 @@ enum ClientStatus {
   ENROLLED
   WC // Winter Contigency
   INACTIVE
-  // HOUSED ?
+  HOUSED
 }
 
 enum ReferralStatus {
@@ -47,8 +47,6 @@ enum ReferralStatus {
   ENROLLED
   COMPLETED
   CLOSED
-  // HOUSED
-  // ECT.
 }
 
 enum ResourceType {
@@ -104,7 +102,7 @@ model Client {
   priorityNeed String?
   avatarUrl    String?
 
-  referrals Referral[]
+  referrals Referral[] 
   notes     Note[]
 
   createdAt       DateTime          @default(now())
@@ -151,7 +149,7 @@ model EnrollmentDates {
   type      String
   createdAt DateTime @default(now())
 
-  client    Client   @relation(fields: [clientId], references: [id])
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
   @@unique([clientId, date, type]) // unique constraint to prevent duplicates on mount client side
 }

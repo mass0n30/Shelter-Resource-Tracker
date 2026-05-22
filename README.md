@@ -39,6 +39,9 @@ Note 4/28:
   Avoid global notifications by default
 
 TO-DO GENERAL 5/15 (What to do to Finish Project):
+
+  - Add Sidebar toggle (upon smaller screen size, hide navbar NavLinks)
+
   - Client Profile Completion
     - CRUD actions (extension button)
     - improve information comp design (update schema for more client info)
@@ -56,7 +59,6 @@ TO-DO GENERAL 5/15 (What to do to Finish Project):
       - Move mapping data to backend
       - Only retrieve needed data on Dashboard (calculating Dash stats backend?)
     - Manual Document upload (perhaps keep it for future iteration using cloudify for storage)
-    - Google signup API ?
     - Cloudify (for documents and images)
       *consider server storage costs (maybe future iteration)
     - Improve Signup/Login (full screen)

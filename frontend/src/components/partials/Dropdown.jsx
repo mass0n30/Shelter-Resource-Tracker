@@ -263,7 +263,13 @@ export function ClientDropDownFilter({ filter, setFilter }) {
           onSelect={() => setFilter("WC")}
           className={filter === "WC" ? "bg-muted" : ""}
         >
-          W.C.
+          Winter Contingency
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onSelect={() => setFilter("HOUSED")}
+          className={filter === "HOUSED" ? "bg-muted" : ""}
+        >
+          Housed
         </DropdownMenuItem>
 
         <DropdownMenuItem

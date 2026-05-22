@@ -17,6 +17,10 @@ export default {
       // default beyond this at 1280px
 
     },
+      height: {
+        navHeight: "var(--nav-height)",
+        headerHeight: "var(--header-height)",
+      },
       colors: {
         primary: "var(--color-primary)",
         primaryDark: "var(--color-primary-dark)",

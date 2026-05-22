@@ -65,8 +65,14 @@ app.use('/profile',  profileRouter);
 
 app.use('/dashboard', passport.authenticate('jwt', { session: false }), dashboardRouter);
 
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+
+const multer = require("multer");
+const { Readable } = require("stream");
+
+// using multer memory storage to handle csv file to update db and clearing it after processing, no need to save files
+const upload = multer({
+  storage: multer.memoryStorage(),
+});
 const { handleCSVUpload }  = require('./services/csvUpload');
 const { emailAutomate } = require('./services/emailAutomate');
 const { startReminderEmailJob } =  require("./services/emailAutomate.js");
@@ -87,18 +93,33 @@ cron.schedule('0 6 * * *', async () => {
   }
 
 }, {
-  timezone: 'America/New_York'
+  timezone: 'America/Indiana/Indianapolis' // set to local timezone for scheduling
 });
 
 // for manual csv uploads form dashboard
 // further logic added for uploading prior days, ect. ?
-app.post('/upload-csv', upload.single('csv_file'), async (req, res, next) => {
+// for manual csv uploads from dashboard
+app.post("/upload-csv", upload.single("csv_file"), async (req, res) => {
   try {
-    const result = await handleCSVUpload(req.file.path);
-    res.json({ message: 'File uploaded successfully', clients: result });
+    if (!req.file) {
+      return res.status(400).json({ message: "No CSV file uploaded" });
+    }
+
+    const csvStream = Readable.from(req.file.buffer);
+
+    const result = await handleCSVUpload(csvStream);
+
+    res.json({
+      message: "CSV processed successfully",
+      clients: result,
+    });
   } catch (error) {
-    console.error('Error uploading file:', error);
-    res.status(500).json({ message: 'Error uploading file', error });
+    console.error("Error uploading CSV:", error);
+
+    res.status(500).json({
+      message: "Error uploading CSV",
+      error: error.message,
+    });
   }
 });
 

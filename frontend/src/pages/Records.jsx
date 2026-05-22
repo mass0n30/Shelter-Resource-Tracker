@@ -13,7 +13,7 @@ import {
 import Navbar from "../components/Navbar";
 import { Notes, Resources } from "./ClientProfile";
 function RecordsPage() {
-  const { user, data, authRouter, authRouterForm, fetchUpdatedData } =
+  const { user, data, authRouter, authRouterForm, fetchUpdatedData, openForm, setOpenForm } =
     useOutletContext();
 
   const [activeTab, setActiveTab] = useState("resources");
@@ -147,10 +147,12 @@ function RecordsPage() {
         className="bg-white shadow h-24em"
         authRouter={authRouter}
         authRouterForm={authRouterForm}
+        openForm={openForm}
+        setOpenForm={setOpenForm}
         user={user}
       />
 
-      <main className="bg-primaryLight min-h-screen px-sm md:px-md">
+      <main className="bg-primaryLight min-h-full px-sm md:px-md">
         <div className="mx-auto w-full max-w-7xl p-sm md:p-md">
           {/* Header */}
           <section className="mb-md flex flex-col items-start">

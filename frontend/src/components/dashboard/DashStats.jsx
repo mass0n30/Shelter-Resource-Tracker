@@ -1,51 +1,63 @@
-import { Users, AlertTriangle, ClipboardList, Clock } from "lucide-react";
-
+import { Users, AlertTriangle, ClipboardList, Clock ,House} from "lucide-react";
 function DashStats({ data, className, dashStatFilter, setDashStatFilter }) {
+  const stats = [
+    {
+      data: data.urgentCases,
+      label: "Urgent Cases",
+      subLabel: "Needs Attention",
+      filter: "URGENT",
+      icon: AlertTriangle,
+      color: "red",
+    },
+    {
+      data: data.followUps,
+      label: "Follow-ups",
+      subLabel: "Awaiting Response",
+      filter: "FOLLOW_UP",
+      icon: ClipboardList,
+      color: "blue",
+    },
+    {
+      data: data.totalClients,
+      label: "Total Clients",
+      subLabel: "Enrolled",
+      filter: "ALL",
+      icon: Users,
+      color: "green",
+    },
+    {
+      data: data.newClients,
+      label: "New Clients",
+      subLabel: "Last 30 Days",
+      filter: "NEW",
+      icon: Clock,
+      color: "yellow",
+    },
+    {
+      data: data.housedClients,
+      label: "Housed Clients",
+      subLabel: "Past Year",
+      filter: "HOUSED",
+      icon: House,
+      color: "green",
+    },
+  ];
+
   return (
-    <div className={`flex flex-col gap-sm md:gap-md ${className} md:flex-row`}>
-      <div className="flex-1 flex gap-sm md:gap-md">
-        <DashStatCard
-          data={data.urgentCases}
-          label="Urgent Cases"
-          subLabel="Needs Attention"
-          active={dashStatFilter === "URGENT"}
-          onClick={() => setDashStatFilter("URGENT")}
-          icon={AlertTriangle}
-          color="red"
-        />
-
-        <DashStatCard
-          data={data.followUps}
-          label="Follow-ups"
-          subLabel="Awaiting Response"
-          active={dashStatFilter === "FOLLOW_UP"}
-          onClick={() => setDashStatFilter("FOLLOW_UP")}
-          icon={ClipboardList}
-          color="blue"
-        />
-      </div>
-
-      <div className="flex-1 flex gap-sm md:gap-md">
-        <DashStatCard
-          data={data.totalClients}
-          label="Total Clients"
-          subLabel="Enrolled"
-          active={dashStatFilter === "ALL"}
-          onClick={() => setDashStatFilter("ALL")}
-          icon={Users}
-          color="green"
-        />
-
-        <DashStatCard
-          data={data.newClients}
-          label="New Clients"
-          subLabel="Last 30 Days"
-          active={dashStatFilter === "NEW"}
-          onClick={() => setDashStatFilter("NEW")}
-          icon={Clock}
-          color="yellow"
-        />
-      </div>
+    <div className={`flex flex-wrap gap-sm md:gap-md ${className}`}>
+      {stats.map((stat) => (
+        <div key={stat.filter} className="min-w-[190px] flex-1">
+          <DashStatCard
+            data={stat.data}
+            label={stat.label}
+            subLabel={stat.subLabel}
+            active={dashStatFilter === stat.filter}
+            onClick={() => setDashStatFilter(stat.filter)}
+            icon={stat.icon}
+            color={stat.color}
+          />
+        </div>
+      ))}
     </div>
   );
 }
@@ -64,7 +76,7 @@ function DashStatCard({ data, label, subLabel, onClick, active, icon: Icon, colo
     <button
       type="button"
       onClick={onClick}
-      className={`group flex min-h-[92px] w-full items-center justify-between gap-3 rounded-md border bg-backgroundAlt p-4 text-left shadow-sm transition-all duration-150
+      className={`group flex-1 flex h-full w-full items-center justify-between gap-3 rounded-md border bg-backgroundAlt p-4 text-left shadow-sm transition-all duration-150
         ${
           active
             ? "border-primary bg-primaryLight/40 ring-2 ring-primary/30 shadow-md"

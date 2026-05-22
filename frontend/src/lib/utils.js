@@ -93,8 +93,18 @@ export function getAllDashboardStats(clients, referrals) {
     const today = new Date();
     return (today - createdAt) / (1000 * 60 * 60 * 24) <= 30; // last 30 days
   }).length;
+const oneYearAgo = new Date();
+oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
 
-  return { totalClients, urgentCases, followUps, newClients };
+const housedClients = clients.filter((client) => {
+  return (
+    client.status === "HOUSED" &&
+    client.updatedAt &&
+    new Date(client.updatedAt) >= oneYearAgo
+  );
+}).length;
+
+  return { totalClients, urgentCases, followUps, newClients, housedClients };
 }
 
 

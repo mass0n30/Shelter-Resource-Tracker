@@ -8,6 +8,7 @@ import { useAsyncStatus, loaderTimer } from "@/components/partials/Loading";
 function DashBoardLayout() {
   const [user, SetUser] = useState(null);
   const [data, SetData] = useState(null);
+  const [openForm, setOpenForm] = useState(null);
   const [notifications, setNotifications] = useState([]);
   // useful for navigation 
   const [mount, SetMount] = useState(false);
@@ -125,6 +126,8 @@ function DashBoardLayout() {
         notifications,
         authRouter,
         authRouterForm,
+        openForm,
+        setOpenForm
       }}
     />
   );

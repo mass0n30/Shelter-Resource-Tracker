@@ -5,14 +5,13 @@ const csv = require('csv-parser');
 const { checkClientCSV } = require("../db/queries.js");
 const { prisma } = require("../db/prismaClient");
 
-async function handleCSVUpload(filePath) {
+async function handleCSVUpload(stream) {
   return new Promise((resolve, reject) => {
-    console.log("Received file:", filePath);
 
     const tasks = [];
     const updateDate = new Date();
 
-    fs.createReadStream(filePath)
+    stream
       .pipe(csv({ headers: false }))
       .on("data", (row) => {
         const firstName = row["1"]?.trim();

@@ -12,13 +12,12 @@ import { getAllDashboardStats, getDisplayTime } from '@/lib/utils';
 
 
 function DashBoard() {
-  const { user, data, fetchUpdatedData, fetchNotifications, notifications, authRouter, authRouterForm } = useOutletContext();
+  const { user, data, fetchUpdatedData, fetchNotifications, notifications, authRouter, authRouterForm, openForm, setOpenForm } = useOutletContext();
 
   const [viewedClients, setViewedClients] = useState(data.clients);
   const [dashStatFilter, setDashStatFilter] = useState(null);
   const [showAlerts, setShowAlerts] = useState(false);
   const [toggle, setToggle] = useState("reminders");
-  const [openForm, setOpenForm] = useState(null);
 
   const clients = data.clients;
 
@@ -92,7 +91,7 @@ function DashBoard() {
 
   return (
     <>
-      <Navbar className="bg-white shadow h-24em" authRouter={authRouter} authRouterForm={authRouterForm} user={user} fetchUpdatedData={fetchUpdatedData} openForm={openForm} setOpenForm={setOpenForm} />
+      <Navbar className="bg-white shadow min-h-navHeight" authRouter={authRouter} authRouterForm={authRouterForm} user={user} fetchUpdatedData={fetchUpdatedData} openForm={openForm} setOpenForm={setOpenForm} />
 
       <main className="bg-primaryLight flex px-sm md:px-md">
         <div className="flex-1 w-full max-w-7xl flex">

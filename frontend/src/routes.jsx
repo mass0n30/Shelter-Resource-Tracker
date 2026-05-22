@@ -6,6 +6,7 @@ import Login from "./components/forms/LoginForm";
 import Signup from "./components/forms/SignupForm";
 import Records from "./pages/Records";
 import ClientProfile from "./pages/ClientProfile";
+import SettingsPage from "./pages/UserSettings";
 import ChangePassword from "./components/forms/PasswordReset";
 const routes = [
   {
@@ -44,6 +45,10 @@ const routes = [
           {
             path: "clients/:clientId",
             element: <ClientProfile/>
+          },
+          {
+            path: "settings",
+            element: <SettingsPage />
           }
         ]
       },
