@@ -48,12 +48,8 @@ TO-DO GENERAL 5/15 (What to do to Finish Project):
     - Redesign for mobile layout (button toggles, ect)
   
   - Dashboard
-    - Drop down in Navbar (for user settings or sign-out)
-    - Dashcard Design improvements
     - Double checking all logic (Notifications sidebar especially)
-    - Calendar layout design
-    - Consider more dashboard data (more professional view, not sure what that would look like)
-    
+
   - Other
     - Improve performance
       - Move mapping data to backend

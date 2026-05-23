@@ -5,12 +5,6 @@ const { sign } = require("jsonwebtoken");
 
 const signupRouter = Router();
 
-signupRouter.post("/", (req, res) => {
-    handleCreateUser(req, res);
-});
+signupRouter.post("/", validateCreateUser(), handleCreateUser);
 
-//signupRouter.post("/", validateCreateUser(), handleCreateUser);
-
-
-
-module.exports = {signupRouter};
+module.exports = { signupRouter };

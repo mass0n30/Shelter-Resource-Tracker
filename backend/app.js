@@ -25,20 +25,34 @@ const app = express();
 app.use(express.static(__dirname + "/public"));
 app.use(express.static(__dirname + "/styles"));
 
-app.use(cors({
-  origin: ['http://localhost:5173', 'https://shelter-resource-tracker-git-main-masson-corlettes-projects.vercel.app/'], // Allow requests from these origins
-  credentials: true, // Allow cookies to be sent with requests
+app.use(cors({// put client URL domain in .env eventuallay
+  origin: [
+    "http://localhost:5173",
+    process.env.CLIENT_URL,
+    process.env.CLIENT_URL_PROD,
+      // "https://shelter-resource-tracker.vercel.app",
+    // "https://shelter-resource-tracker-git-main-masson-corlettes-projects.vercel.app"
+  
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true,
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.set("trust proxy", 1); // need to include with secure:true to trust Railway proxy before sending HTTPS request to Express Node.js
+
+// https://expressjs.com/en/resources/middleware/session.html
 app.use(
   expressSession({
-    cookie: {
-     maxAge: 7 * 24 * 60 * 60 * 1000 // tells how long session user signed in
+   cookie: {
+    maxAge: 7 * 24 * 60 * 60 * 1000, // ms
+    httpOnly: true, // Prevents client-side JS from reading the cookie
+    secure: true, // Only transmit cookie over HTTPS (essential for production)
+    sameSite: "None", // Explicitly allow cross-site cookies (essential for separate F/E, B/E)
     },
-    secret: 'cats',
+    secret:  process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
     store: new PrismaSessionStore(
@@ -52,7 +66,6 @@ app.use(
     )
   })
 );
-
 app.use(passport.session());  //enables persistent login sessions
 
 app.use('/sign-up', signupRouter);
