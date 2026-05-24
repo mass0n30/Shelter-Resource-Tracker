@@ -1,7 +1,7 @@
 const { ImapFlow } = require('imapflow');
 const { simpleParser } = require('mailparser');
 const { prisma } = require('../db/prismaClient');
-const {handleAutoCSVUpload} = require('../services/csvUpload');
+const { handleTotalClientCSVUpload} = require('../services/csvUpload');
 const { Readable } = require('stream');
 const cron = require("node-cron");
 
@@ -35,7 +35,7 @@ async function emailAutomate() {
 
     // using imapflow search method to find all unseen emails from specific sender
     const messages = await client.search({
-      since: new Date(Date.now() - 24 * 60 * 60 * 1000)
+      since: new Date(Date.now() - 24 * 60 * 60 * 1000) // past 24 hours 
     });
 
     if (messages.length === 0) {
@@ -78,13 +78,8 @@ async function emailAutomate() {
       };
 
       const csvBuffer = csvFile.content;
-     // console.log(csvFile.content.toString().slice(0, 200));
-
-      // converting buffer to stream for csv parsing
       const csvStream = bufferToStream(csvBuffer);
-
-      // calling the csv upload function with the email attachment stream
-      const results = await handleAutoCSVUpload(csvStream);
+      results = await handleTotalClientCSVUpload(csvStream);
 
       // adding unmatched/matched client names to get req for a notification on dashboard to add new client
       if (results.unfound.length > 0) {

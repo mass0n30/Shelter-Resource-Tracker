@@ -3,6 +3,7 @@ const express = require('express');
 const expressSession = require("express-session");
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const { PrismaClient } = require('./generated/prisma/client');
+const { prisma } = require('./db/prismaClient');
 const passport = require("passport");
 require("./config/passport"); // booting strategy before any initializing
 const pgPool = require("./config/pool");
@@ -52,7 +53,7 @@ app.use(
     secure: true, // Only transmit cookie over HTTPS (essential for production)
     sameSite: "None", // Explicitly allow cross-site cookies (essential for separate F/E, B/E)
     },
-    secret:  process.env.SESSION_SECRET,
+    secret:  process.env.JWT_SECRET,
     resave: true,
     saveUninitialized: true,
     store: new PrismaSessionStore(
@@ -86,7 +87,7 @@ const { Readable } = require("stream");
 const upload = multer({
   storage: multer.memoryStorage(),
 });
-const { handleCSVUpload }  = require('./services/csvUpload');
+const { handleTotalClientCSVUpload }  = require('./services/csvUpload');
 const { emailAutomate } = require('./services/emailAutomate');
 const { startReminderEmailJob } =  require("./services/emailAutomate.js");
 
@@ -118,13 +119,39 @@ app.post("/upload-csv", upload.single("csv_file"), async (req, res) => {
       return res.status(400).json({ message: "No CSV file uploaded" });
     }
 
-    const csvStream = Readable.from(req.file.buffer);
+    let results = await handleTotalClientCSVUpload(Readable.from(req.file.buffer));
 
-    const result = await handleCSVUpload(csvStream);
+
+      // adding unmatched/matched client names to get req for a notification on dashboard to add new client
+      if (results.unfound.length > 0) {
+        await prisma.notification.create({
+          data: {
+            type: "UNMATCHED_CLIENTS",
+            message: `${results.unfound.length} clients not found`,
+            data: results.unfound, // if using JSON column
+          }
+        });
+      }
+
+      if (results.found.length > 0) {
+        await prisma.notification.create({
+          data: {
+            type: "MATCHED_CLIENTS",
+            message: `${results.found.length} clients matched successfully`,
+            data: results.found.map(client => ({ id: client.id, firstName: client.firstName, lastName: client.lastName })), // if using JSON column
+          }
+        });
+      }
+
+    if (!results) {
+      return res.status(400).json({
+        message: "CSV format not recognized",
+      });
+    }
 
     res.json({
       message: "CSV processed successfully",
-      clients: result,
+      clients: results,
     });
   } catch (error) {
     console.error("Error uploading CSV:", error);

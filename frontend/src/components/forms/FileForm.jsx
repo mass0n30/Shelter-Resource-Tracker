@@ -114,7 +114,9 @@ function FileForm({ authRouterForm, fetchUpdatedData, setOpenForm }) {
             <div className="flex min-w-0 items-center gap-2">
               <FileText className="h-4 w-4 shrink-0 text-primary" />
               <span className="truncate text-sm text-foreground">
-                {file.name}
+                {file.name.trim().length > 20
+                  ? `${file.name.slice(0, 10)}...${file.name.slice(-10)}`
+                  : file.name}
               </span>
             </div>
 

@@ -9,6 +9,21 @@ Deployment:
 Change URI to deployment URI upon deploying
 https://console.cloud.google.com/auth/clients/create?authuser=1&project=resourcetracker-496508&supportedpurview=project
 
+**Security**
+- **Secure authentication:** Users must log in before accessing protected dashboard routes.
+- **Password safety:** Passwords are securely hashed and are never stored in plain text. (Admin sends temporary password for reset)
+- **Role-based access:** User permissions can be limited based on their role, such as admin, manager, or staff.
+- **Workspace separation:** Each organization’s data is intended to remain separated from other organizations’ data.
+- **Private notes:** Users can create private notes that are only visible to them.
+- **Public case notes:** Shared notes and referrals are visible to authorized staff within the workspace.
+- **Activity attribution:** Notes and referrals track who created them and when they were created.
+- **Protected API routes:** Sensitive client, referral, and note data is accessed through authenticated backend routes.
+- **Demo-safe data:** The public demo uses mock client data only, not real shelter/client records. Use for showing examples for recruiters or devs forks as well. 
+
+5/23/25
+Public Database URL not showing? 
+Seed demo database with mock data?
+
 
 MVP Features: (initially develop for Manager accounts)
   - Manager can CRUD client accounts, set time notifs, see client case management info. Staff can only view add notes.
@@ -29,9 +44,6 @@ Extra Possible Features (after making core MVP product):
   - audit log
 
 
-Note 4/28:
-    Follow up dates seem to expire correctly, along with new client filter in dash stats. Cron CSV parsing update feature returns unmatched enrolled clients and clients who stayed last night from client excel sheet from email attachment. Of course these configs should be confirmed to work again before deployments. 
-
 ***Notification Reminder System Overview**
   Notifications = action required
   Notes = information only
@@ -51,6 +63,7 @@ TO-DO GENERAL 5/15 (What to do to Finish Project):
     - Double checking all logic (Notifications sidebar especially)
 
   - Other
+    - Run Linter 
     - Improve performance
       - Move mapping data to backend
       - Only retrieve needed data on Dashboard (calculating Dash stats backend?)

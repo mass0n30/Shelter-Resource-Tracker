@@ -47,67 +47,96 @@ function ChangePassword() {
     }
   }
 
-  return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-background px-4 py-12">
-      <div className="absolute top-4 left-4 text-sm text-slate-500">
-        Go Back to <a href="/login" className="font-semibold text-primary hover:underline">Login</a>
-      </div>
-      <Card className="bg-white w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Change Password</CardTitle>
-          <CardDescription>
-            Change your temporary password before continuing.
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent>
-          {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label>Current Password <span className="text-xs text-slate-500">(Temporary)</span></Label>
-              <Input
-                type="password"
-                onChange={(e) => setCurrentPassword(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label>New Password</Label>
-              <Input
-                type="password"
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <Label>Confirm New Password</Label>
-              <Input
-                type="password"
-                onChange={(e) => setPasswordConfirm(e.target.value)}
-              />
-            </div>
-
-            <Button type="submit" className="text-white w-full">
-              Update Password
-            </Button>
-          </form>
-        </CardContent>
-        <div className="flex flex-col align-center justify-center gap-sm text-center text-xs text-slate-500">
-          <span className="flex items-center justify-center gap-1 text-xs text-slate-500">
-            Need to reset a forgotten password?{" "}
-          </span>
-          <a
-            href="mailto:massoncorlette07@gmail.com?subject=Password Reset Request"
-            className="flex items-center justify-center font-semibold text-primary hover:underline"
-          >
-            Contact administrator for Temporary Password
-          </a>
-          <span className="flex items-center justify-center font-semibold text-primaryDark hover:underline">massoncorlette07@gmail.com</span>
-        </div>
-      </Card>
+return (
+  <div className="relative min-h-screen w-full bg-primaryLight flex items-center justify-center p-md">
+    <div className="absolute top-4 left-4 text-sm text-muted">
+      Go Back to{" "}
+      <a href="/login" className="font-semibold text-primary hover:underline">
+        Login
+      </a>
     </div>
-  );
+
+    <Card className="w-full max-w-md rounded-lg border border-border bg-backgroundAlt shadow-xl">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold text-foreground">
+          Change Password
+        </CardTitle>
+
+        <CardDescription className="text-sm text-muted">
+          Change your temporary password before continuing.
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent>
+        {error && (
+          <p className="mb-4 text-center text-sm text-destructive">
+            {error}
+          </p>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold text-foreground">
+              Current Password{" "}
+              <span className="text-xs font-normal text-muted">
+                (Temporary)
+              </span>
+            </Label>
+
+            <Input
+              type="password"
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold text-foreground">
+              New Password
+            </Label>
+
+            <Input
+              type="password"
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold text-foreground">
+              Confirm New Password
+            </Label>
+
+            <Input
+              type="password"
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+              className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
+            />
+          </div>
+
+          <Button type="submit" className="h-11 w-full rounded text-white">
+            Update Password
+          </Button>
+        </form>
+      </CardContent>
+
+      <div className="px-6 pb-6 flex flex-col items-center justify-center gap-sm text-center text-xs text-muted">
+        <span>Need to reset a forgotten password?</span>
+
+        <a
+          href="mailto:massoncorlette07@gmail.com?subject=Password Reset Request"
+          className="font-semibold text-primary hover:underline"
+        >
+          Contact administrator for Temporary Password
+        </a>
+
+        <span className="font-semibold text-primaryDark">
+          massoncorlette07@gmail.com
+        </span>
+      </div>
+    </Card>
+  </div>
+);
 }
 
 export default ChangePassword;

@@ -103,190 +103,155 @@ function Login() {
     });
   };
 
-  const handleGuestSubmit = async () => {
-    await fetch(`${import.meta.env.VITE_API_URL}/home/guest`, {
-      mode: "cors",
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then(async (response) => {
-      const data = await response.json();
+ return (
+  <div className="min-h-screen w-full bg-primaryLight flex items-center justify-center p-md">
+    <div className="w-full max-w-6xl min-h-[90vh] bg-backgroundAlt rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row">
+      <div className="hidden md:flex flex-1 relative bg-secondary">
+        <img
+          src="/HouseDesign.png"
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
 
-      if (data.error) {
-        setError(data.error);
-        return;
-      }
-
-      if (!data.error) {
-        navigate("/home");
-      }
-    });
-  };
-
-  return (
-<div className="min-h-full flex-1 w-full flex items-start justify-center bg-white/50 px-4 py-12">
-  <Card className="relative overflow-hidden w-full max-w-5xl min-h-[680px] rounded-2xl border border-border/70 bg-white shadow-xl md:grid md:grid-cols-[48%_52%]">
-
-        <div className="relative hidden min-h-[720px] overflow-hidden bg-blue-50 md:block">
-          <img
-            src="/HouseDesign.png"
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover object-center"
-          />
-
-          <div className="absolute inset-0 bg-white/10" />
-
-          <div className="relative z-10 p-10">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border-2 border-primary text-primary">
+        <div className="relative z-10 flex h-full w-full flex-col justify-between p-lg">
+          <div>
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary text-primary">
               <span className="text-xl font-bold">⌂</span>
             </div>
 
-            <h1 className="text-xl font-bold text-slate-950">
+            <h1 className="text-xl font-bold text-foreground">
               Shelter Resource Tracker
             </h1>
 
-            <p className="mt-1 text-sm text-slate-600 mt-1 text-sm text-slate-500 w-full flex-1 align-center text-center">
+            <p className="mt-1 text-sm text-center text-muted">
               Bringing a supportive community together.
             </p>
           </div>
 
-          <div className="absolute bottom-10 left-10 right-10 z-10 rounded-lg border border-white/70 bg-white/80 p-4 shadow-sm backdrop-blur">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-primary">
-                <span className="text-sm">◇</span>
-              </div>
-
-            <p className="mt-1 text-sm text-slate-500 w-full flex-1 align-center text-center">
-                Secure. Private. Built for shelters and service providers.
-              </p>
-            </div>
+          <div className="rounded-lg border border-white/70 bg-white/80 p-md shadow-sm backdrop-blur">
+            <p className="text-sm text-muted text-center">
+              Secure. Private. Built for shelters and service providers.
+            </p>
           </div>
         </div>
-
-
-    {/* RIGHT LOGIN PANEL */}
-    <div className="relative flex min-h-[640px] flex-col overflow-hidden bg-white px-6 py-8 sm:px-10 md:px-16 md:py-20">
-
-      {/* MOBILE BRAND HEADER */}
-      <div className="relative z-10 mb-10 flex flex-col items-center text-center md:hidden">
-        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border-2 border-primary text-primary">
-          <span className="text-xl font-bold">⌂</span>
-        </div>
-
-        <h1 className="text-lg font-bold leading-tight text-slate-950">
-          Shelter <br /> Resource Tracker
-        </h1>
-
-        <p className="mt-2 max-w-[220px] text-sm text-slate-500 w-full align-center text-center">
-          Bringing a supportive community together.
-        </p>
       </div>
 
-      <CardHeader className="relative z-10 px-0 pb-6 pt-0">
-        <CardTitle className="text-2xl font-bold tracking-tight text-slate-950">
-          Welcome back
-        </CardTitle>
-
-        <CardDescription className="text-sm text-slate-500 ">
-          Sign in to continue to your account
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent className="relative z-10 px-0">
-        {error && (
-          <span className="mb-4 block text-sm text-red-500 w-full text-center">
-            Error was encountered: {error}
-          </span>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-xs font-semibold text-slate-700">
-              Email address
-            </Label>
-
-            <Input
-              id="email"
-              name="username"
-              type="text"
-              placeholder="Enter your email"
-              autoComplete="off"
-              onChange={(e) => setUsername(e.target.value)}
-              className="h-11 rounded-md border-slate-200 bg-white text-sm shadow-none placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/30"
-            />
+      <div className="flex-1 flex flex-col justify-center bg-backgroundAlt px-lg py-lg sm:px-10 md:px-16">
+        <div className="mb-8 flex flex-col items-center text-center md:hidden">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary text-primary">
+            <span className="text-xl font-bold">⌂</span>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-xs font-semibold text-slate-700">
-              Password
-            </Label>
+          <h1 className="text-lg font-bold text-foreground">
+            Shelter Resource Tracker
+          </h1>
 
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Enter your password"
-              autoComplete="new-password"
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-11 rounded-md border-slate-200 bg-white text-sm shadow-none placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-primary/30"
-            />
-          </div>
-
-          <div className="flex items-center justify-between text-xs">
-            <label className="flex items-center gap-2 text-slate-600">
-              <input
-                type="checkbox"
-                className="h-3.5 w-3.5 rounded border-slate-300"
-              />
-              Remember me
-            </label>
-
-            <button
-              onClick={() => navigate("/change-password")}
-              type="button"
-              className="font-semibold bg-transparent text-primary hover:underline"
-            >
-              Forgot password?
-            </button>
-          </div>
-
-          <Button type="submit" className="h-11 w-full text-white rounded-md">
-            Continue
-          </Button>
-
-          <div className="flex items-center gap-4 py-1">
-            <div className="h-px flex-1 bg-slate-200" />
-            <span className="text-xs text-slate-500">or</span>
-            <div className="h-px flex-1 bg-slate-200" />
-          </div>
-          <div className="flex justify-center">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => setError("Google sign in failed")}
-            />
-          </div>
-        </form>
-
-        <div className="mt-8 flex items-center justify-center gap-1 text-sm text-slate-500">
-          <span>Don&apos;t have an account?</span>
-
-          <Link to="/sign-up" className="font-semibold text-primary hover:underline">
-            Contact your administrator
-          </Link>
+          <p className="mt-2 max-w-[240px] text-sm text-muted">
+            Bringing a supportive community together.
+          </p>
         </div>
-      </CardContent>
 
-      {/* MOBILE BOTTOM ILLUSTRATION */}
-      <img
-        src="/HouseDesign.png"
-        alt=""
-        className="pointer-events-none absolute bottom-0 left-1/2 z-0 w-full max-w-[420px] -translate-x-1/2 opacity-90 md:hidden"
-      />
+        <CardHeader className="px-0 pb-6 pt-0">
+          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+            Welcome,
+          </CardTitle>
+
+          <CardDescription className="text-sm text-muted">
+            Sign in to continue to your account
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="px-0">
+          {error && (
+            <span className="mb-4 block text-center text-sm text-destructive">
+              Error was encountered: {error}
+            </span>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-xs font-semibold text-foreground">
+                Email address
+              </Label>
+
+              <Input
+                id="email"
+                name="username"
+                type="text"
+                placeholder="Enter your email"
+                autoComplete="off"
+                onChange={(e) => setUsername(e.target.value)}
+                className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-xs font-semibold text-foreground">
+                Password
+              </Label>
+
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                autoComplete="new-password"
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
+              />
+            </div>
+
+            <div className="flex items-center justify-between text-xs">
+              <label className="flex items-center gap-2 text-muted">
+                <input
+                  type="checkbox"
+                  className="h-3.5 w-3.5 rounded border-border"
+                />
+                Remember me
+              </label>
+
+              <button
+                onClick={() => navigate("/change-password")}
+                type="button"
+                className="bg-transparent font-semibold text-primary hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            <Button type="submit" className="h-11 w-full rounded text-white">
+              Continue
+            </Button>
+
+            <div className="flex items-center gap-4 py-1">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs text-muted">or</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+
+            <div className="flex justify-center">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => setError("Google sign in failed")}
+              />
+            </div>
+          </form>
+
+          <div className="mt-8 flex items-center justify-center gap-1 text-center text-sm text-muted">
+            <span>Don&apos;t have an account?</span>
+
+            <Link
+              to="/sign-up"
+              className="font-semibold text-primary hover:underline"
+            >
+              Contact your administrator
+            </Link>
+          </div>
+        </CardContent>
+      </div>
     </div>
-  </Card>
-</div>
-  );
+  </div>
+);
 }
 
 export default Login;
