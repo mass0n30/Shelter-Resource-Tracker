@@ -42,7 +42,7 @@ export default function CalendarPopover({ date, setDate, single }) {
 
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="bg-background w-auto p-0">
+      <PopoverContent className="z-[9999] bg-background w-auto p-0">
           <Calendar
             mode={single ? "single" : "range"}
             selected={date}

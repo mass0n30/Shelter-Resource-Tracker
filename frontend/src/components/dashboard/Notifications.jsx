@@ -103,6 +103,45 @@ function ActionButtons({ item, navigate, setLoading, handleAction, loadingId }) 
   );
 }
 
+function RecentPostedNotes({ notes, className }) {
+  const recentPostedNotes = notes
+    ?.filter((note) => note.visibility !== "private")
+    ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    ?.slice(0, 4);
+
+  if (!recentPostedNotes?.length) return null;
+
+  return (
+    <section className={`w-full bg-yellow-100 border-t border-border px-4 py-4 ${className || ""}`}>
+      <h3 className="text-sm text-left font-semibold text-foreground">
+        Recent Posted Notes
+      </h3>
+
+      <ul className="mt-3 flex flex-col">
+        {recentPostedNotes.map((note) => (
+          <li
+            key={note.id}
+            className="border-b border-gray-200 py-3 last:border-b-0"
+          >
+            <div className="flex flex-col gap-1">
+              <p className="text-sm text-foreground leading-relaxed">
+                {note.content}
+              </p>
+
+              {note.author && (
+                <span className="text-xs text-muted-foreground">
+                  Posted by {note.author.firstName}{" "}
+                  {note.author.lastName}
+                </span>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function TimelineItem({
   item,
   isExpanded,
@@ -148,7 +187,7 @@ function TimelineItem({
 
           {noteToggle && viewedNotes?.filterMsg === "Posted Notes" && item.author && (
             <div className="text-xs text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-full">
-              Posted by {item.author.firstName} {item.author.lastName.charAt(0)}.
+              {item.author.firstName} {item.author.lastName}.
             </div>
           )}
         </div>
@@ -365,14 +404,15 @@ function Notifications({
   groups.overdueRecent = groups.overdueRecent.sort((a, b) => b.date - a.date);
 
   return (
-    <div className={`${className} bg-backgroundAlt h-full flex flex-col`}>
-      <div className="flex-1 flex flex-col p-4 overflow-hidden">
+    <div className={`${className} bg-backgroundAlt flex flex-col overflow-hidden`}>
+      <div className="flex flex-col p-4 overflow-hidden flex-1 min-h-0">
         <div className="flex items-center justify-between mb-sm gap-sm">
           {success && (
             <div className="text-green-600 font-medium">
               Action completed successfully!
             </div>
           )}
+
           <div className="flex-1 items-start text-left gap-sm">
             <h3 className={`text-md font-semibold `}>
               {toggle === "reminders" ? "Reminders" : "Notes"}
@@ -380,31 +420,32 @@ function Notifications({
           </div>
 
           <div className="flex-1 items-center gap-sm">
-          {toggle === "notes" && (
-            <Dialog
-              open={openForm === "note"}
-              onOpenChange={(isOpen) => setOpenForm(isOpen ? "note" : null)}
-            >
-              <DialogTrigger asChild>
-                <Button className="w-full flex items-center gap-1">
-                  <Plus className="w-4 h-4" />
-                  <span>Add Note</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-background w-full max-w-lg">
-                <NoteForm
-                  authRouter={authRouter}
-                  setSuccess={setSuccess}
-                  fetchUpdatedData={fetchUpdatedData}
-                  setOpenForm={setOpenForm}
-                />
-              </DialogContent>
-            </Dialog>
-          )}
+            {toggle === "notes" && (
+              <Dialog
+                open={openForm === "note"}
+                onOpenChange={(isOpen) => setOpenForm(isOpen ? "note" : null)}
+              >
+                <DialogTrigger asChild>
+                  <Button className="w-full flex items-center gap-1">
+                    <Plus className="w-4 h-4" />
+                    <span>Add Note</span>
+                  </Button>
+                </DialogTrigger>
+
+                <DialogContent className="bg-background w-full max-w-lg">
+                  <NoteForm
+                    authRouter={authRouter}
+                    setSuccess={setSuccess}
+                    fetchUpdatedData={fetchUpdatedData}
+                    setOpenForm={setOpenForm}
+                  />
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
         </div>
 
-        <div className="flex gap-sm mb-sm">
+        <div className="flex gap-sm mb-sm shrink-0">
           <Button
             onClick={() => setToggle("reminders")}
             className={`flex-1 ${toggle === "reminders" ? " bg-primary text-white" : "bg-white text-muted"}`}
@@ -423,7 +464,7 @@ function Notifications({
         </div>
 
         {toggle === "notes" && (
-          <>
+          <div className="shrink-0">
             <DropdownNoteFilter
               setViewedNotes={setViewedNotes}
               noteMsg={viewedNotes.filterMsg}
@@ -434,93 +475,109 @@ function Notifications({
             <div className="mt-2 text-sm font-medium text-left italic">
               {viewedNotes.filterMsg}
             </div>
-              <div className="text-xs text-muted-foreground mb-2 text-right" onClick={() => toggleView()}>
-                {view === "latest"
-                  ? " Latest"
-                  : " Older"}
-                  <ChevronUp
-                    className={`w-3 h-3 inline-block ml-1 ${view === "latest" ? "rotate-180" : ""}`}
-                  />
-              </div>
-          </>
+
+            <div
+              className="text-xs text-muted-foreground mb-2 text-right"
+              onClick={() => toggleView()}
+            >
+              {view === "latest" ? " Latest" : " Older"}
+
+              <ChevronUp
+                className={`w-3 h-3 inline-block ml-1 ${view === "latest" ? "rotate-180" : ""}`}
+              />
+            </div>
+          </div>
         )}
-      <div className="flex-1 overflow-y-auto">
-        <ul className="mt-2 text-sm">
-          {toggle === "reminders" ? (
-            Object.entries(groups).map(([key, items]) =>
-              items.length > 0 ? (
-                <div key={key} className="mb-2">
 
-                  <p className="text-xs font-semibold text-muted mb-1">
-                    {groupLabels[key]}
-                  </p>
+        <div className="flex-1 min-h-0 overflow-y-auto relative">
+          <ul className="mt-2 text-sm">
+            {toggle === "reminders"
+              ? Object.entries(groups).map(([key, items]) =>
+                  items.length > 0 ? (
+                    <div key={key} className="mb-2">
+                      <p className="text-xs font-semibold text-muted mb-1">
+                        {groupLabels[key]}
+                      </p>
 
-                  {items.map((item) => (
+                      {items.map((item) => (
+                        <TimelineItem
+                          key={item.id}
+                          item={item}
+                          isExpanded={expandedId === item.id}
+                          toggleItem={toggleItem}
+                          navigate={navigate}
+                          handleAction={handleAction}
+                          loadingId={loadingId}
+                          setLoading={setLoading}
+                          noteReminder={item.noteReminder}
+                          viewedNotes={viewedNotes}
+                          currentUser={currentUser}
+                        />
+                      ))}
+                    </div>
+                  ) : null
+                )
+              : viewedNotes?.notes.map((note) => {
+                  const id = `note-${note.id}`;
+
+                  return (
                     <TimelineItem
-                      key={item.id}
-                      item={item}
-                      isExpanded={expandedId === item.id}
+                      key={id}
+                      item={{
+                        id,
+                        rawId: note.id,
+                        type: "note",
+                        title: note.title,
+                        content: note.content,
+                        label: note?.title || null,
+                        date: new Date(note.createdAt),
+                        client: note.client,
+                        author: note.author,
+                        noteToggle: true,
+                        noteReminder: note.reminderAt
+                          ? new Date(note.reminderAt)
+                          : null,
+                        completed: note?.completed,
+                      }}
+                      isExpanded={expandedId === id}
                       toggleItem={toggleItem}
                       navigate={navigate}
                       handleAction={handleAction}
                       loadingId={loadingId}
-                      setLoading={setLoading}
-                      noteReminder={item.noteReminder}
+                      noteToggle={true}
                       viewedNotes={viewedNotes}
                       currentUser={currentUser}
                     />
-                  ))}
-                </div>
-              ) : null
-            )
-          ) : (
+                  );
+                })}
 
-            viewedNotes?.notes.map((note) => {
-              const id = `note-${note.id}`;
-              return (
-                <TimelineItem
-                  key={id}
-                  item={{
-                    id,
-                    rawId: note.id,
-                    type: "note",
-                    title: note.title,
-                    content: note.content,
-                    label: note?.title || null,
-                    date: new Date(note.createdAt),
-                    client: note.client,
-                    author: note.author,
-                    noteToggle: true,
-                    noteReminder: note.reminderAt ? new Date(note.reminderAt) : null,
-                    completed: note?.completed,
-                  }}
-                  isExpanded={expandedId === id}
-                  toggleItem={toggleItem}
-                  navigate={navigate}
-                  handleAction={handleAction}
-                  loadingId={loadingId}
-                  noteToggle={true}
-                  viewedNotes={viewedNotes}
-                  currentUser={currentUser}
-                />
-              );
-            })
-          )}
-          {toggle === "notes" && viewedNotes?.notes.length === 0 && (
-            <div className="text-center text-muted-foreground py-10">
-              No {viewedNotes?.filterMsg} notes found.
-            </div>
-          )}
-          {toggle === "reminders" && timeline.length === 0 && (
-            <div className="text-center text-muted-foreground py-10">
-              No upcoming reminders found.
-            </div>
-          )}
-        </ul>
+            {toggle === "notes" && viewedNotes?.notes.length === 0 && (
+              <div className="text-center text-muted-foreground py-10">
+                No {viewedNotes?.filterMsg} notes found.
+              </div>
+            )}
+
+            {toggle === "reminders" && timeline.length === 0 && (
+              <div className="text-center text-muted-foreground py-10">
+                No upcoming reminders found.
+              </div>
+            )}
+          </ul>
         </div>
       </div>
+
+      {toggle === "reminders" && (
+        <RecentPostedNotes
+          notes={globalNotes}
+          className="border-border bg-backgroundAlt"
+        />
+      )}
     </div>
   );
 }
+
+
+
+
 
 export default Notifications;

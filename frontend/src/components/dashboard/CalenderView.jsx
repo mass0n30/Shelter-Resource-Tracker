@@ -101,7 +101,7 @@ export default function Calendar({
         isPriority: "ring-2 ring-destructive",
       }}
       className={cn(
-        "h-full flex flex align-center justify-center bg-white p-4 rounded-xl shadow-md border",
+        "h-full z-[2000] flex flex align-center justify-center bg-white p-4 rounded-xl shadow-md border",
         className
       )}
       classNames={{

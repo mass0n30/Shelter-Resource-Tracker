@@ -153,7 +153,7 @@ function RecordsPage() {
       />
 
       <main className="bg-primaryLight min-h-full px-sm md:px-md">
-        <div className="mx-auto w-full max-w-7xl p-sm md:p-md">
+        <div className="mx-auto w-full p-sm md:p-md">
           {/* Header */}
           <section className="mb-md flex flex-col items-start">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">

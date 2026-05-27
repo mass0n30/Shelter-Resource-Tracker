@@ -9,13 +9,20 @@ import NotificationsAlert from '../components/dashboard/NotificationsAlert';
 import Navbar from '../components/Navbar';
 import { Button } from '@/components/ui/button';
 import { getAllDashboardStats, getDisplayTime } from '@/lib/utils';
-
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { CircleAlert, Users } from "lucide-react";
 
 function DashBoard() {
   const { user, data, fetchUpdatedData, fetchNotifications, notifications, authRouter, authRouterForm, openForm, setOpenForm } = useOutletContext();
 
   const [viewedClients, setViewedClients] = useState(data.clients);
   const [dashStatFilter, setDashStatFilter] = useState(null);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
   const [toggle, setToggle] = useState("reminders");
 
@@ -89,96 +96,109 @@ function DashBoard() {
   return <Navigate to="/change-password" replace />;
 }
 
-  return (
-    <>
-      <Navbar className="bg-white shadow min-h-navHeight" authRouter={authRouter} authRouterForm={authRouterForm} user={user} fetchUpdatedData={fetchUpdatedData} openForm={openForm} setOpenForm={setOpenForm} />
+return (
+  <>
+    <Navbar
+      className="sticky top-0 z-50 bg-white shadow-sm min-h-navHeight"
+      authRouter={authRouter}
+      authRouterForm={authRouterForm}
+      user={user}
+      fetchUpdatedData={fetchUpdatedData}
+      openForm={openForm}
+      setOpenForm={setOpenForm}
+      notificationsOpen={notificationsOpen}
+      setNotificationsOpen={setNotificationsOpen}
+    />
 
-      <main className="bg-primaryLight flex px-sm md:px-md">
-        <div className="flex-1 w-full max-w-7xl flex">
+    <main className="min-h-screen bg-primaryLight">
+      <div className="mx-auto flex w-full flex-col">
+        <DashStats
+          className="w-full"
+          data={dashboardStats}
+          dashStatFilter={dashStatFilter}
+          setDashStatFilter={setDashStatFilter}
+          setViewedClients={setViewedClients}
+        />
 
-          <div className="flex-1 w-full h-full grid grid-cols-1 auto-rows-min lg:grid-cols-4 gap-sm md:gap-md p-sm md:p-md">
-            <DashStats
-              className="col-span-1 row-span-3 lg:row-span-2 lg:col-span-4"
-              data={dashboardStats}
-              dashStatFilter={dashStatFilter}
-              setDashStatFilter={setDashStatFilter}
-              setViewedClients={setViewedClients}
-            />
+        {notificationsToggled && (
+          <section className="border border-border bg-backgroundAlt shadow-sm overflow-hidden">
+            <div className="flex flex-col gap-3 py-md px-lg sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col items-start gap-1 text-foreground relative">
+                <span className="text-sm font-semibold">
+                  <CircleAlert className="inline mr-1 mb-2 text-red-500" size={18} />
+                  Nightly update summary
+                </span>
 
-            {notificationsToggled && (
-              <div className="col-span-1 lg:col-span-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-backgroundAlt border border-border rounded-md px-4 py-3 shadow-sm">
-                  <div className="flex flex-col items-start gap-1 text-foreground">
-                    <span className="text-sm font-semibold">
-                      Nightly update summary
-                    </span>
+                <span className="text-xs text-muted-foreground">
+                  Updated{" "}
+                  <span className="font-medium text-foreground">
+                    {displayTime || "recently"}
+                  </span>
+                </span>
 
-                    <span className="text-xs text-muted-foreground">
-                      Updated{" "}
-                      <span className="font-medium text-foreground">
-                        {displayTime || "recently"}
-                      </span>
-                    </span>
-
-                    {foundCount > 0 && (
-                      <span className="text-xs text-muted-foreground">
-                        {foundCount} clients stayed overnight in the past 24 hours.
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 self-end sm:self-center">
-                    {hasUnfound && (
-                      <button
-                        className="text-xs bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-200 px-3 py-1.5 rounded-lg font-medium transition"
-                        onClick={() => setShowAlerts((prev) => !prev)}
-                      >
-                        {showAlerts ? "Hide Alerts" : "View Alerts"}
-                      </button>
-                    )}
-
-                    <Button
-                      onClick={handleMarkRead}
-                      variant="outline"
-                      size="sm"
-                      className="text-xs bg-white/80 hover:bg-primaryLight/60 border-primary/20 text-foreground rounded-lg"
-                    >
-                      Mark Read
-                    </Button>
-                  </div>
-                </div>
-
-                {showAlerts && hasUnfound && (
-                  <div className="mt-3 bg-background border border-primary/15 rounded-xl shadow-sm overflow-hidden">
-                    <NotificationsAlert
-                      data={unfound}
-                      fetchNotifications={fetchNotifications}
-                      authRouter={authRouter}
-                      openForm={openForm}
-                      setOpenForm={setOpenForm}
-                    />
-                  </div>
+                {foundCount > 0 && (
+                  <span className="text-xs text-muted-foreground">
+                    {foundCount} clients stayed overnight in the past 24 hours.
+                  </span>
                 )}
               </div>
-            )}
 
-            <ClientToggleSection
-              className="border-border-400 bg-background border-2 rounded-md col-span-1 lg:col-span-3 row-span-10 min-h-[calc(120vh-250px)]  max-h-[calc(120vh-250px)] relative overflow-y-auto"
-              dashStatFilter={dashStatFilter}
-              setDashStatFilter={setDashStatFilter}
-              viewedClients={viewedClients}
-              setViewedClients={setViewedClients}
-              clientData={data.clients}
-              userNotes={user.notes}
-              userReferrals={user.referrals}
-              authRouter={authRouter}
-              authRouterForm={authRouterForm}
-              openForm={openForm}
-              setOpenForm={setOpenForm}
-            />
-            <div className="col-span-1 lg:col-span-1 row-span-10 min-h-0 min-h-[calc(120vh-250px)] overflow-hidden flex flex-col">
+              <div className="flex items-center gap-2 self-end sm:self-center">
+                {hasUnfound && (
+                  <button
+                    className="rounded-lg border border-amber-200 bg-amber-100 px-3 py-1.5 text-xs font-medium text-amber-800 transition hover:bg-amber-200"
+                    onClick={() => setShowAlerts((prev) => !prev)}
+                  >
+                    {showAlerts ? "Hide Alerts" : "View Alerts"}
+                  </button>
+                )}
+
+                <Button
+                  onClick={handleMarkRead}
+                  variant="outline"
+                  size="sm"
+                  className="rounded-lg border-primary/20 bg-white/80 text-xs text-foreground hover:bg-primary hover:text-white hover:border-primary/40"
+                >
+                  Mark Read
+                </Button>
+              </div>
+            </div>
+
+            {showAlerts && hasUnfound && (
+              <div className="border-t border-border bg-backgroundAlt">
+                <NotificationsAlert
+                  unfound={unfound}
+                  found={found}
+                  fetchNotifications={fetchNotifications}
+                  authRouter={authRouter}
+                  openForm={openForm}
+                  setOpenForm={setOpenForm}
+                />
+              </div>
+            )}
+          </section>
+        )}
+
+        <section className="grid grid-cols-1 lg:grid-cols-5">
+          <ClientToggleSection
+            className="min-w-0 lg:col-span-4 border border-border bg-background shadow-sm overflow-hidden"
+            dashStatFilter={dashStatFilter}
+            setDashStatFilter={setDashStatFilter}
+            viewedClients={viewedClients}
+            setViewedClients={setViewedClients}
+            clientData={data.clients}
+            userNotes={user.notes}
+            userReferrals={user.referrals}
+            authRouter={authRouter}
+            authRouterForm={authRouterForm}
+            openForm={openForm}
+            setOpenForm={setOpenForm}
+          />
+
+          <aside className="hidden min-w-0 lg:block h-[calc(120vh)]">
+            <div className="flex h-full overflow-hidden">
               <Notifications
-                className="border-border-400 shadow-md border-2 rounded-md min-h-0 flex flex-col"
+                className="flex flex-1 h-full flex-col border border-border bg-background shadow-sm"
                 userNotes={user.notes}
                 currentUser={user}
                 userReferrals={user.referrals}
@@ -192,10 +212,36 @@ function DashBoard() {
                 setOpenForm={setOpenForm}
               />
             </div>
-          </div>
+          </aside>
+        </section>
+      </div>
+    </main>
+
+    <Sheet open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+      <SheetContent side="right" className="w-full bg-background p-0 lg:hidden">
+        <SheetHeader className="border-b border-border px-4 py-4 text-left">
+          <SheetTitle>Reminders</SheetTitle>
+        </SheetHeader>
+
+        <div className="h-[calc(100vh)] overflow-y-auto p-3">
+          <Notifications
+            className="min-h-0 border-0 shadow-none"
+            userNotes={user.notes}
+            currentUser={user}
+            userReferrals={user.referrals}
+            globalNotes={data.notes}
+            fetchUpdatedData={fetchUpdatedData}
+            authRouter={authRouter}
+            authRouterForm={authRouterForm}
+            toggle={toggle}
+            setToggle={setToggle}
+            openForm={openForm}
+            setOpenForm={setOpenForm}
+          />
         </div>
-      </main>
-    </>
-  );
+      </SheetContent>
+    </Sheet>
+  </>
+);
 }
 export default DashBoard;

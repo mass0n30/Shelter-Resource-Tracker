@@ -12,7 +12,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription} from "@/components/ui/dialog";
 
 import { Ellipsis } from "lucide-react";
-
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, Settings, LogOut } from "lucide-react";
 
@@ -71,14 +71,16 @@ export function UserDropdown({ user }) {
   );
 }
 
-export default function DropdownEditDelete({ resource, authRouter, fetchClientData, handleDelete, setToggle }) {
+export default function DropdownEditDelete({
+  resource,
+  authRouter,
+  fetchClientData,
+  handleDelete,
+}) {
+  const [editOpen, setEditOpen] = useState(false);
 
   return (
-    <div
-      onClick={(e) => {
-        e.stopPropagation();
-      }}
-    >      
+    <div onClick={(e) => e.stopPropagation()}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
@@ -95,26 +97,14 @@ export default function DropdownEditDelete({ resource, authRouter, fetchClientDa
           sideOffset={6}
           className="min-w-32 bg-white text-black border rounded-md shadow-lg"
         >
-
-          <Dialog>
-            <DialogTrigger asChild>
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                Edit
-              </DropdownMenuItem>
-            </DialogTrigger>
-
-            <DialogContent className="z-[9999] bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
-              <VisuallyHidden>
-                <DialogTitle></DialogTitle>
-              </VisuallyHidden>
-              <ResourceForm
-                authRouter={authRouter}
-                clientId={resource.clientId}
-                resourceData={resource}
-                fetchClientData={fetchClientData}
-              />
-            </DialogContent>
-          </Dialog>
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              setEditOpen(true);
+            }}
+          >
+            Edit
+          </DropdownMenuItem>
 
           <DropdownMenuItem
             onSelect={(e) => {
@@ -125,9 +115,24 @@ export default function DropdownEditDelete({ resource, authRouter, fetchClientDa
           >
             Delete
           </DropdownMenuItem>
-
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="z-[200] bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
+          <VisuallyHidden>
+            <DialogTitle>Edit Resource</DialogTitle>
+          </VisuallyHidden>
+
+          <ResourceForm
+            authRouter={authRouter}
+            clientId={resource.clientId}
+            resourceData={resource}
+            fetchClientData={fetchClientData}
+            setOpenForm={setEditOpen}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -191,7 +196,7 @@ export function DropdownNoteFilter({ setViewedNotes, noteMsg, userNotes, globalN
     <DropdownMenu className="z-[9999] w-full">
       <DropdownMenuTrigger asChild>
         <Button
-          className="flex w-full items-center gap-2 bg-white text-foreground border px-3 py-1 shadow-sm hover:shadow-md transition"
+          className="flex w-full items-center gap-2 rounded-xl bg-white text-foreground border px-3 py-1 shadow-sm hover:shadow-md transition"
         >
           <Funnel className="h-4 w-4" />
           <span className="text-muted-foreground">Filter</span>
@@ -201,15 +206,21 @@ export function DropdownNoteFilter({ setViewedNotes, noteMsg, userNotes, globalN
       <DropdownMenuContent
         align="end"
         sideOffset={6}
-        className="z-[9999] w-[var(--radix-dropdown-menu-trigger-width)] bg-red-500 text-black border rounded-md shadow-lg"
+        className="z-[9999] w-[var(--radix-dropdown-menu-trigger-width)] text-black border rounded-md shadow-lg"
       >
-        <DropdownMenuItem onSelect={() => setViewedNotes({notes: globalNotes, filterMsg: "Posted Notes"})}>
+        <DropdownMenuItem 
+        className={noteMsg === "Posted Notes" ? "bg-primary text-white" : ""}
+        onSelect={() => setViewedNotes({notes: globalNotes, filterMsg: "Posted Notes"})}>
           Posted Notes
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => setViewedNotes({notes: userNotes.filter(note => !note.completed), filterMsg: "Personal Notes"})}>
+        <DropdownMenuItem 
+        className={noteMsg === "Personal Notes" ? "bg-primary text-white" : ""}
+        onSelect={() => setViewedNotes({notes: userNotes.filter(note => !note.completed), filterMsg: "Personal Notes"})}>
           Personal Notes
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => setViewedNotes({notes: userNotes.filter(note => note.completed === true), filterMsg: "Completed Notes"})}>
+        <DropdownMenuItem
+          className={noteMsg === "Completed Notes" ? "bg-primary text-white" : ""}
+          onSelect={() => setViewedNotes({notes: userNotes.filter(note => note.completed === true), filterMsg: "Completed Notes"})}>
           Completed Notes
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -226,7 +237,7 @@ export function ClientDropDownFilter({ filter, setFilter }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          className="flex items-center gap-2"
+          className="flex rounded-xl items-center gap-2"
         >
           <Funnel className="h-4 w-4" />
           Filter
@@ -236,45 +247,45 @@ export function ClientDropDownFilter({ filter, setFilter }) {
       <DropdownMenuContent
         align="end"
         sideOffset={6}
-        className="min-w-[180px]"
+        className="min-w-[200px] bg-white text-black border rounded-md shadow-lg"
       >
         <DropdownMenuItem
           onSelect={() => setFilter("ALL")}
-          className={filter === "ALL" ? "bg-muted" : ""}
+          className={filter === "ALL" ? "bg-primary text-white" : ""}
         >
           All Clients
         </DropdownMenuItem>
 
         <DropdownMenuItem
           onSelect={() => setFilter("ENROLLED")}
-          className={filter === "ENROLLED" ? "bg-muted" : ""}
+          className={filter === "ENROLLED" ? "bg-primary text-white" : ""}
         >
           Enrolled
         </DropdownMenuItem>
 
         <DropdownMenuItem
           onSelect={() => setFilter("STAYED_OVERNIGHT")}
-          className={filter === "STAYED_OVERNIGHT" ? "bg-muted" : ""}
+          className={filter === "STAYED_OVERNIGHT" ? "bg-primary text-white" : ""}
         >
           Stayed Overnight
         </DropdownMenuItem>
 
         <DropdownMenuItem
           onSelect={() => setFilter("WC")}
-          className={filter === "WC" ? "bg-muted" : ""}
+          className={filter === "WC" ? "bg-primary text-white" : ""}
         >
           Winter Contingency
         </DropdownMenuItem>
         <DropdownMenuItem
           onSelect={() => setFilter("HOUSED")}
-          className={filter === "HOUSED" ? "bg-muted" : ""}
+          className={filter === "HOUSED" ? "bg-primary text-white" : ""}
         >
           Housed
         </DropdownMenuItem>
 
         <DropdownMenuItem
           onSelect={() => setFilter("INACTIVE")}
-          className={filter === "INACTIVE" ? "bg-muted" : ""}
+          className={filter === "INACTIVE" ? "bg-primary text-white" : ""}
         >
           Inactive
         </DropdownMenuItem>

@@ -199,7 +199,10 @@ export default function ResourceForm({
             />
           </label>
         </div>
-        <CalendarPopover date={date} setDate={setDate} single={true} />
+        <div className="rounded-md border border-border bg-white px-3 py-2">
+          <CalendarPopover date={date} setDate={setDate} single={true} />
+        </div>
+
         <textarea
           placeholder="Summary / Notes"
           value={formData.summary}

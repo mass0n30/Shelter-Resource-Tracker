@@ -23,6 +23,7 @@ https://console.cloud.google.com/auth/clients/create?authuser=1&project=resource
 5/23/25
 Public Database URL not showing? 
 Seed demo database with mock data?
+Fix Notes (retrieve all public and user private and public on dashboard + records page)
 
 
 MVP Features: (initially develop for Manager accounts)
@@ -51,6 +52,8 @@ Extra Possible Features (after making core MVP product):
   Avoid global notifications by default
 
 TO-DO GENERAL 5/15 (What to do to Finish Project):
+  - Add pagination to client list
+  - Normalize Calendar Popovers (height issues on edit forms)
 
   - Add Sidebar toggle (upon smaller screen size, hide navbar NavLinks)
 

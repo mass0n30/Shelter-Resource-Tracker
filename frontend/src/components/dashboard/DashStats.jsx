@@ -8,6 +8,8 @@ function DashStats({ data, className, dashStatFilter, setDashStatFilter }) {
       filter: "URGENT",
       icon: AlertTriangle,
       color: "red",
+      className: "text-red-500 bg-red-50",
+      glowOnMount: data.urgentCases > 0,
     },
     {
       data: data.followUps,
@@ -16,6 +18,8 @@ function DashStats({ data, className, dashStatFilter, setDashStatFilter }) {
       filter: "FOLLOW_UP",
       icon: ClipboardList,
       color: "blue",
+      className: "text-blue-500 bg-blue-50",
+      glowOnMount: data.followUps > 0,
     },
     {
       data: data.totalClients,
@@ -39,12 +43,12 @@ function DashStats({ data, className, dashStatFilter, setDashStatFilter }) {
       subLabel: "Past Year",
       filter: "HOUSED",
       icon: House,
-      color: "green",
+      color: "orange",
     },
   ];
 
   return (
-    <div className={`flex flex-wrap gap-sm md:gap-md ${className}`}>
+    <div className={`flex flex-wrap ${className}`}>
       {stats.map((stat) => (
         <div key={stat.filter} className="min-w-[190px] flex-1">
           <DashStatCard
@@ -55,6 +59,8 @@ function DashStats({ data, className, dashStatFilter, setDashStatFilter }) {
             onClick={() => setDashStatFilter(stat.filter)}
             icon={stat.icon}
             color={stat.color}
+            glow={stat.glow}
+            glowOnMount={stat.glowOnMount}
           />
         </div>
       ))}
@@ -62,12 +68,13 @@ function DashStats({ data, className, dashStatFilter, setDashStatFilter }) {
   );
 }
 
-function DashStatCard({ data, label, subLabel, onClick, active, icon: Icon, color }) {
+function DashStatCard({ data, label, subLabel, onClick, active, icon: Icon, color, glow, glowOnMount }) {
   const iconStyles = {
     red: "bg-red-50 text-red-600",
     blue: "bg-blue-50 text-blue-600",
     green: "bg-green-50 text-green-600",
     yellow: "bg-yellow-50 text-yellow-700",
+    orange: "bg-orange-50 text-orange-600",
   };
 
   const iconColor = iconStyles[color] || iconStyles.blue;
@@ -76,11 +83,11 @@ function DashStatCard({ data, label, subLabel, onClick, active, icon: Icon, colo
     <button
       type="button"
       onClick={onClick}
-      className={`group flex-1 flex h-full w-full items-center justify-between gap-3 rounded-md border bg-backgroundAlt p-4 text-left shadow-sm transition-all duration-150
+      className={`group flex-1 p-md flex h-full rounded-none w-full items-center justify-between gap-3 border bg-backgroundAlt text-left shadow-sm transition-all duration-150
         ${
           active
             ? "border-primary bg-primaryLight/40 ring-2 ring-primary/30 shadow-md"
-            : "border-border hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+            : "border-border hover:bg-white hover:shadow-md"
         }
       `}
     >
@@ -89,28 +96,27 @@ function DashStatCard({ data, label, subLabel, onClick, active, icon: Icon, colo
           <div
             className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition ${
               active ? "bg-primary text-white" : iconColor
-            }`}
+            } ${glowOnMount && color === "red" ? "urgent-glow-on-mount-red" : ""} ${glowOnMount && color === "blue" ? "urgent-glow-on-mount-blue" : ""}`}
           >
-            <Icon className="h-5 w-5" />
+            <Icon className="h-3 w-3 sm:h-4 sm:w-4" />
           </div>
         )}
 
         <div className="min-w-0">
-          <h3 className="truncate text-sm font-semibold text-foreground">
+          <h3 className="truncate text-xs sm:text-sm font-semibold text-foreground">
             {label}
           </h3>
 
-          <p className="mt-1 line-clamp-2 text-xs text-muted">
+          <p className="mt-1 line-clamp-2 text-[12px] sm:text-[14px] text-muted">
             {subLabel}
           </p>
         </div>
       </div>
 
-      <p className="shrink-0 text-3xl font-bold leading-none text-primaryDark sm:text-4xl">
+      <p className="shrink-0 text-1xl font-bold leading-none text-primaryDark sm:text-2xl">
         {data}
       </p>
     </button>
   );
 }
-
 export default DashStats;

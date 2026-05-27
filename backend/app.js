@@ -35,7 +35,7 @@ app.use(cors({// put client URL domain in .env eventuallay
     // "https://shelter-resource-tracker-git-main-masson-corlettes-projects.vercel.app"
   
   ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
 }));
 

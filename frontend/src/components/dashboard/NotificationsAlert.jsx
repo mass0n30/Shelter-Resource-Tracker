@@ -1,39 +1,58 @@
 import { Button } from "../ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { CircleAlert, User, Users } from "lucide-react";
 import ClientForm from "../forms/ClientForm";
 import { getDisplayTime } from "@/lib/utils";
 
-function NotificationsAlert({ data, SetLoading, authRouter, className, openForm, setOpenForm }) {
-  const displayTime = getDisplayTime(data?.createdAt, "notificationAlert");
+function NotificationsAlert({
+  found,
+  unfound,
+  SetLoading,
+  authRouter,
+  className,
+  openForm,
+  setOpenForm,
+}) {
+  const displayTime = getDisplayTime(
+    unfound?.createdAt || found?.createdAt,
+    "notificationAlert"
+  );
 
-  if (!data) return null;
+  if (!unfound && !found) return null;
+
+  const unfoundClients = unfound?.data || [];
+  const foundClients = found?.data || [];
+  const foundCount = foundClients.length;
 
   return (
-    <div className={`flex flex-col p-4 gap-3 ${className || ""}`}>
+    <div className={`flex flex-col p-lg gap-3 ${className || ""}`}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
         <div>
-          <h3 className="text-sm font-semibold text-foreground">
-            Unmatched Clients
+          <h3 className="text-sm text-left font-semibold text-foreground">
+            Summary
           </h3>
 
           {displayTime && (
-            <p className="text-[11px] text-muted-foreground">
-              Found during update {displayTime}
+            <p className="text-[12px] text-muted-foreground italic">
+              {foundCount} clients stayed {displayTime}
             </p>
           )}
         </div>
 
         <span className="w-fit text-[11px] bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full font-medium">
-          {data?.data?.length || 0} unmatched
+          {unfoundClients.length} unmatched
         </span>
       </div>
 
-      <p className="text-xs text-muted-foreground leading-relaxed">
-        {data?.message}
-      </p>
+      {unfound?.message && (
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          <Users className="inline mr-1 mb-1" size={14} />
+          {unfound.message}
+        </p>
+      )}
 
       <div className="flex flex-col gap-2 overflow-y-auto max-h-48 pr-1">
-        {data?.data?.map((client, i) => {
+        {unfoundClients.map((client, i) => {
           const dialogKey = `client-${i}`;
 
           return (
@@ -47,7 +66,9 @@ function NotificationsAlert({ data, SetLoading, authRouter, className, openForm,
 
               <Dialog
                 open={openForm === dialogKey}
-                onOpenChange={(isOpen) => setOpenForm(isOpen ? dialogKey : null)}
+                onOpenChange={(isOpen) =>
+                  setOpenForm(isOpen ? dialogKey : null)
+                }
               >
                 <DialogTrigger asChild>
                   <Button
@@ -71,10 +92,8 @@ function NotificationsAlert({ data, SetLoading, authRouter, className, openForm,
             </div>
           );
         })}
-
       </div>
     </div>
   );
 }
-
 export default NotificationsAlert;
