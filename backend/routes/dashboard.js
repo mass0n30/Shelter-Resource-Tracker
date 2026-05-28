@@ -78,5 +78,30 @@ dashboardRouter.post('/notes/mark-read', async (req, res) => {
   res.json({ success: true });
 });
 
+dashboardRouter.post("/notes/:noteId/visibility", async (req, res) => {
+  const noteId = Number(req.params.noteId);
+  const { visibility } = req.body;
+
+  if (!noteId) {
+    return res.status(400).json({ error: "Invalid note id" });
+  }
+
+  try {
+    const updatedNote = await prisma.note.update({
+      where: {
+        id: noteId,
+      },
+      data: {
+        visibility,
+      },
+    });
+
+    res.json({ success: true, note: updatedNote });
+  } catch (error) {
+    console.error("Error updating note visibility:", error);
+    res.status(500).json({ error: "Failed to update note visibility" });
+  }
+});
+
 
 module.exports = {dashboardRouter}

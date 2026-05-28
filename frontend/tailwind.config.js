@@ -7,6 +7,8 @@ export default {
   theme: {
     extend: {
     screens: {
+      'xs': '480px',
+
       'sm': '640px',
       // scale down font further and adjust flex/grid layouts possibly?
 

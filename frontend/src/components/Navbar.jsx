@@ -48,9 +48,9 @@ function Navbar({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full"
+                  className="rounded-full bg-transparent text-muted-foreground hover:bg-primaryLight hover:text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
                 >
-                  <Menu className="h-5 w-5" />
+                  <Menu className="h-5 w-5 text-foreground" />
                 </Button>
               </SheetTrigger>
 
@@ -132,18 +132,20 @@ function Navbar({
             </h1>
 
             {/* Bell */}
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={() => setNotificationsOpen?.(true)}
-              className="relative flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition hover:bg-primaryLight hover:text-primary"
+              className="relative bg-transparent flex h-12 w-12 items-center justify-center rounded-full text-foreground transition hover:bg-primaryLight hover:text-primary"
             >
-              <Bell className="h-5 w-5" />
+              <Bell className="h-12 w-12 bg-transparent text-foreground" />
 
               {/* Optional notification dot/count */}
-              <span className="absolute right-2 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
+              <span className="absolute right-2 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-700 px-1 text-[10px] font-bold text-white">
                 3
               </span>
-            </button>
+            </Button>
           </div>
 
           {/* Desktop Navbar */}

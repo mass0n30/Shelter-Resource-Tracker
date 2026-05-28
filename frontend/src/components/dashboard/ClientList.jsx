@@ -137,13 +137,18 @@ import { ClientSearch } from '../partials/Search';
 import { ClientDropDownFilter } from '../partials/Dropdown';
 import { useEffect } from 'react';
 import { CalendarEmbedded } from './CalenderView';
+import { getAllDashboardStats } from '@/lib/utils';
+import DashStats from './DashStats';
+import { all } from 'axios';
 
-function ClientToggleSection({className, clientData, userNotes, userReferrals, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter, openForm, setOpenForm}) {
+function ClientToggleSection({className, data, allReferrals, allClientData, userNotes, userReferrals, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter, openForm, setOpenForm}) {
   // for searching by name
   const [clientId, setClientId] = useState(null);
   const [date, setDate] = useState(null);
   const [filter, setFilter] = useState("ENROLLED");
   const [calendarOpen, setCalendarOpen] = useState(false);
+
+  const dashboardStats = getAllDashboardStats(allClientData, allReferrals);
 
   useEffect(() => {
     if (dashStatFilter) {
@@ -167,12 +172,12 @@ function ClientToggleSection({className, clientData, userNotes, userReferrals, a
 
 return (
   <div className={`flex flex-col overflow-hidden ${className}`}>
-    <div className="flex flex-col border-b border-border p-sm md:p-lg">
+    <div className="flex flex-col border border-border p-sm md:p-lg">
       <div className="flex items-center justify-between gap-2">
         {/* Section date/title */}
         <div className="flex flex-col gap-sm">
-          <p className="text-sm font-semibold text-foreground">
-            Today — {new Date().toLocaleDateString()}
+          <p className="text-xs sm:text-sm font-semibold text-foreground">
+            Today  {new Date().toLocaleDateString()}
           </p>
 
           <p className="text-xs text-muted-foreground m-sm">
@@ -236,9 +241,9 @@ return (
             className="flex items-center gap-1 rounded-lg"
             onClick={() => {
               if (clientId) {
-                setViewedClients(clientData.filter((client) => client.id === clientId));
+                setViewedClients(allClientData.filter((client) => client.id === clientId));
               } else {
-                setViewedClients(clientData);
+                setViewedClients(allClientData);
               }
             }}
           >
@@ -261,9 +266,16 @@ return (
         />
       </div>
     )}
+        <DashStats
+          className="w-full border-t border-border "
+          data={dashboardStats}
+          dashStatFilter={dashStatFilter}
+          setDashStatFilter={setDashStatFilter}
+          setViewedClients={setViewedClients}
+        />
 
     <ClientList
-      className="max-h-none ml-1 overflow-visible lg:max-h-screen lg:overflow-y-auto"
+      className="border-t border-border max-h-none ml-1 overflow-visible lg:max-h-screen lg:overflow-y-auto"
       viewedClients={viewedClients}
     />
   </div>

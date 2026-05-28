@@ -500,134 +500,144 @@ export function Notes({ notes, fetchClientData, authRouter, showName }) {
     ? notes
     : notes?.filter((note) => !note.completed);
 
-  return (
-    <div className="bg-background h-full p-4 rounded-xl space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <NotebookText className="h-4 w-4 text-primary" />
-          <h2 className="text-sm font-semibold text-gray-800">Case Notes</h2>
-        </div>
-        <button
-          type="button"
-          onClick={() => setShowCompleted(!showCompleted)}
-          className="text-xs sm:text-sm px-3 py-1.5 rounded-md border bg-white hover:bg-gray-50 text-gray-700"
-        >
-          {showCompleted ? "Hide Completed" : "Show Completed"}
-        </button>
+return (
+  <div className="bg-background h-full p-2 xs:p-3 sm:p-4 rounded-xl space-y-2 sm:space-y-3">
+    <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center gap-1 xs:gap-2">
+        <NotebookText className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+        <h2 className="text-xs sm:text-sm font-semibold text-gray-800">
+          Case Notes
+        </h2>
       </div>
-      { notes?.length === 0 && (<p className="text-sm text-muted-foreground">No notes available</p>)}
 
-      {filteredNotes?.map((note) => {
-        const isCompleted = note.completed;
-        const isPublic = note.visibility === "private" ? false : true;
+      <button
+        type="button"
+        onClick={() => setShowCompleted(!showCompleted)}
+        className="text-[10px] xs:text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-md border bg-white hover:bg-gray-50 text-gray-700"
+      >
+        {showCompleted ? "Hide Completed" : "Show Completed"}
+      </button>
+    </div>
 
-        return (
-          <div
-            key={note.id}
-            className={`relative flex justify-between gap-3 bg-white border border-border rounded-xl p-4 pb-14 shadow-sm hover:shadow-md transition ${
-              isCompleted ? "opacity-70" : ""
+    {notes?.length === 0 && (
+      <p className="text-xs sm:text-sm text-muted-foreground">
+        No notes available
+      </p>
+    )}
+
+    {filteredNotes?.map((note) => {
+      const isCompleted = note.completed;
+      const isPublic = note.visibility === "private" ? false : true;
+
+      return (
+        <div
+          key={note.id}
+          className={`relative bg-white border border-border rounded-xl p-3 sm:p-4 pb-12 sm:pb-14 pr-12 sm:pr-14 shadow-sm hover:shadow-md transition ${
+            isCompleted ? "opacity-70" : ""
+          }`}
+        >
+          <div className="min-w-0 w-full flex flex-col items-start gap-2 sm:gap-3">
+            <div className="w-full flex flex-wrap items-center gap-1 xs:gap-2 text-[10px] xs:text-xs sm:text-sm text-muted-foreground">
+              <span className="font-medium text-gray-700">
+                {note.author?.firstName} {note.author?.lastName}
+              </span>
+
+              <span className="text-gray-300">•</span>
+
+              <span>{new Date(note.createdAt).toLocaleDateString()}</span>
+
+              <button
+                type="button"
+                onClick={(e) =>
+                  handleToggleVisibility(e, note.id, note.visibility)
+                }
+                className={`inline-flex items-center gap-1 rounded-full border px-1.5 sm:px-2 py-0.5 text-[10px] xs:text-xs font-medium ${
+                  isPublic
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    : "bg-slate-50 text-slate-700 border-slate-200"
+                }`}
+              >
+                {isPublic ? (
+                  <Globe2 className="w-3 h-3" />
+                ) : (
+                  <Lock className="w-3 h-3" />
+                )}
+                {isPublic ? "Public" : "Private"}
+              </button>
+            </div>
+
+            <div className="w-full text-left space-y-1.5 sm:space-y-2">
+              <h3
+                className={`text-sm text-left sm:text-base md:text-lg font-semibold tracking-tight text-gray-950 ${
+                  isCompleted ? "line-through text-gray-500" : ""
+                }`}
+              >
+                {note?.title || ""}
+              </h3>
+
+              <div
+                className={`rounded-lg border border-gray-200 bg-gray-50 px-2 sm:px-3 py-2 sm:py-2.5 ${
+                  isCompleted ? "line-through text-gray-500" : ""
+                }`}
+              >
+                {note.content == "" || note.content == null ? (
+                  <p className="text-xs sm:text-sm italic text-gray-400">
+                    <i>No Content</i>
+                  </p>
+                ) : (
+                  <p className="text-xs sm:text-sm md:text-md leading-relaxed text-gray-700 whitespace-pre-wrap">
+                    {note.content}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {note.setReminder && note.reminderDate && (
+              <div className="inline-flex items-center gap-1 sm:gap-2 text-[10px] xs:text-xs sm:text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-1.5 sm:px-2 py-1">
+                <Calendar className="w-3 h-3" />
+                <span>
+                  Reminder:{" "}
+                  {new Date(note.reminderDate).toLocaleDateString("en-US", {
+                    timeZone: "UTC",
+                  })}
+                </span>
+              </div>
+            )}
+
+            {showName && note.client && (
+              <p className="absolute bottom-3 left-3 sm:left-4 text-[10px] xs:text-xs sm:text-sm text-muted flex items-center gap-1">
+                <SquareUserRound className="w-3 h-3" />
+                {note.client.firstName} {note.client.lastName}
+              </p>
+            )}
+          </div>
+
+          <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
+            <DropdownNoteEditDelete
+              note={note}
+              authRouter={authRouter}
+              fetchClientData={fetchClientData}
+              handleDelete={handleDelete}
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={(e) => handleToggleCompleted(e, note.id)}
+            className={`absolute bottom-3 right-3 inline-flex items-center gap-1 text-[10px] xs:text-xs sm:text-sm px-2 sm:px-2.5 py-1 rounded-md border font-medium ${
+              isCompleted
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
             }`}
           >
-            <div className="min-w-0 flex-1 flex flex-col items-start gap-3">
-              {/* Meta Row */}
-              <div className="w-full flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                <span className="font-medium text-gray-700">
-                  {note.author?.firstName} {note.author?.lastName}
-                </span>
-
-                <span className="text-gray-300">•</span>
-
-                <span>{new Date(note.createdAt).toLocaleDateString()}</span>
-
-                <button
-                  type="button"
-                  onClick={(e) => handleToggleVisibility(e, note.id, note.visibility)}
-                  className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${
-                    isPublic
-                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                      : "bg-slate-50 text-slate-700 border-slate-200"
-                  }`}
-                >
-                  {isPublic ? <Globe2 className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
-                  {isPublic ? "Public" : "Private"}
-                </button>
-              </div>
-
-              {/* Title + Content */}
-              <div className="w-full text-left space-y-2">
-                <h3
-                  className={`text-base font-semibold tracking-tight text-gray-950 ${
-                    isCompleted ? "line-through text-gray-500" : ""
-                  }`}
-                >
-                  {note?.title || "Untitled Note"}
-                </h3>
-
-                <div
-                  className={`rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 ${
-                    isCompleted ? "line-through text-gray-500" : ""
-                  }`}
-                >
-                  {note.content == "" || note.content == null ? (
-                    <p className="text-sm italic text-gray-400">
-                      <i>No Content</i>
-                    </p>
-                  ) : (
-                    <p className="text-sm leading-relaxed text-gray-700 whitespace-pre-wrap">
-                      {note.content}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Reminder */}
-              {note.setReminder && note.reminderDate && (
-                <div className="inline-flex items-center gap-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-2 py-1">
-                  <Calendar className="w-3 h-3" />
-                  <span>
-                    Reminder:{" "}
-                    {new Date(note.reminderDate).toLocaleDateString("en-US", {
-                      timeZone: "UTC",
-                    })}
-                  </span>
-                </div>
-              )}
-
-              {/* Client Name */}
-              {showName && note.client && (
-                <p className="absolute bottom-3 left-4 text-xs sm:text-sm text-muted flex items-center gap-1">
-                  <SquareUserRound className="w-3 h-3" />
-                  {note.client.firstName} {note.client.lastName}
-                </p>
-              )}
-            </div>
-
-            <div className="shrink-0">
-              <DropdownNoteEditDelete
-                note={note}
-                authRouter={authRouter}
-                fetchClientData={fetchClientData}
-                handleDelete={handleDelete}
-              />
-            </div>
-
-            <button
-              type="button"
-              onClick={(e) => handleToggleCompleted(e, note.id)}
-              className={`absolute bottom-3 right-3 inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md border font-medium ${
-                isCompleted
-                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                  : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
-              }`}
-            >
-              {isCompleted && <CheckCircle2 className="w-3 h-3" />}
-              {isCompleted ? "Completed" : "Mark Completed"}
-            </button>
-          </div>
-        );
-      })}
-    </div>
-  );
+            {isCompleted && <CheckCircle2 className="w-3 h-3" />}
+            {isCompleted ? "Completed" : "Mark Completed"}
+          </button>
+        </div>
+      );
+    })}
+  </div>
+);
 }
 
 
@@ -711,7 +721,7 @@ export function Resources({referrals, fetchClientData, authRouter, showName}) {
 
 
           {/* STATUS */}
-          <div className="flex  items-center gap-sm">
+          <div className="flex flex-col-reverse sm:flex-row items-end gap-sm">
             <span
               className={`text-[10px] sm:text-xs px-2 py-1 rounded-full font-medium ${
                 resource.status === "INQUIRED"
@@ -769,16 +779,19 @@ export function Resources({referrals, fetchClientData, authRouter, showName}) {
             </div>
             <div className="flex-1 w-full flex justify-between items-center border-2 border-primary bg-blue-100 p-xs rounded-xs gap-1 text-xs text-muted-foreground">
               {resource.followUpDate && (
-                <span className="flex border  items-center gap-1">
-                <Calendar1Icon className="w-3 h-3" />
-                  Next Follow-up:{" "} 
-                  <span className="font-medium text-gray-700">
-                  <span className="font-medium text-gray-700">
-                    {new Date(resource.followUpDate).toLocaleDateString("en-US", {
-                      timeZone: "UTC",
-                    })}
-                  </span>
-                  </span>
+                <span className="flex border w-full justify-between items-center gap-1">
+                  <div className={`flex items-center gap-1 ${exp ? "text-red-600" : "text-gray-700"}`}>
+                    <Calendar1Icon className="w-3 h-3" />
+                    <span className="hidden sm:block">Next Follow-up</span>
+                    <span className="font-medium text-gray-700">
+                    <span className="font-medium text-gray-700">
+                      {new Date(resource.followUpDate).toLocaleDateString("en-US", {
+                        timeZone: "UTC",
+                      })}
+                    </span>
+                    </span>
+                  </div>
+                
                 {exp && <span className="flex ml-1 items-center text-red-600 font-medium text-xs sm:text-md"><i>Expired</i></span>}
                 </span>
               )}

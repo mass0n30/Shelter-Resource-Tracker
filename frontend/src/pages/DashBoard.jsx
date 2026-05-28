@@ -28,7 +28,6 @@ function DashBoard() {
 
   const clients = data.clients;
 
-  const dashboardStats = getAllDashboardStats(clients, data.referrals);
 
   const unfound = notifications?.unfoundClients?.[0];
   const found = notifications?.foundClients?.[0];
@@ -112,13 +111,6 @@ return (
 
     <main className="min-h-screen bg-primaryLight">
       <div className="mx-auto flex w-full flex-col">
-        <DashStats
-          className="w-full"
-          data={dashboardStats}
-          dashStatFilter={dashStatFilter}
-          setDashStatFilter={setDashStatFilter}
-          setViewedClients={setViewedClients}
-        />
 
         {notificationsToggled && (
           <section className="border border-border bg-backgroundAlt shadow-sm overflow-hidden">
@@ -180,13 +172,15 @@ return (
         )}
 
         <section className="grid grid-cols-1 lg:grid-cols-5">
+
           <ClientToggleSection
             className="min-w-0 lg:col-span-4 border border-border bg-background shadow-sm overflow-hidden"
             dashStatFilter={dashStatFilter}
             setDashStatFilter={setDashStatFilter}
             viewedClients={viewedClients}
             setViewedClients={setViewedClients}
-            clientData={data.clients}
+            allClientData={data.clients}
+            allReferrals={data.referrals}
             userNotes={user.notes}
             userReferrals={user.referrals}
             authRouter={authRouter}
@@ -214,6 +208,7 @@ return (
             </div>
           </aside>
         </section>
+
       </div>
     </main>
 
