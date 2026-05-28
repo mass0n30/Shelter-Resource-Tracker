@@ -28,11 +28,15 @@ const clientInclude = {
       },
     },
   },
+  EnrollmentDates: {
+    orderBy: { date: 'asc' },
+  },
 };
 
 async function getClients(req, res, next) {
   try {
     let clients = null;
+    let validClients = null;
     const now = new Date();
     const filter = req.query?.filter;
         
@@ -48,28 +52,64 @@ async function getClients(req, res, next) {
         },
       },
     });
-    await Promise.all(
-      clients.map((client) => {
 
-        return prisma.enrollmentDates.upsert({
-          where: {
-            clientId_date_type: {
+    validClients = await prisma.client.findMany({
+      where: {
+        outtakeDate: {
+          gte: now,
+        },
+        status: {
+          equals: "ENROLLED",
+        },
+      },
+    });
+
+    // updating enrollmentDates column, updating if passed outtakeDate or creating enrollment date
+    await Promise.all([
+      ...clients
+        .filter((client) => client.outtakeDate)
+        .map((client) => {
+          return prisma.enrollmentDates.upsert({
+            where: {
+              clientId_date_type: {
+                clientId: client.id,
+                date: client.outtakeDate,
+                type: "exit",
+              },
+            },
+            update: {
+              type: "exit",
+            },
+            create: {
               clientId: client.id,
               date: client.outtakeDate,
               type: "exit",
             },
-          },
-          update: {
-            type: "exit",
-          },
-          create: {
-            clientId: client.id,
-            date: client.outtakeDate,
-            type: "exit",
-          },
-        });
-      })
-    );
+          });
+        }),
+
+      ...validClients
+        .filter((client) => client.intakeDate)
+        .map((client) => {
+          return prisma.enrollmentDates.upsert({
+            where: {
+              clientId_date_type: {
+                clientId: client.id,
+                date: client.intakeDate,
+                type: "enroll",
+              },
+            },
+            update: {
+              type: "enroll",
+            },
+            create: {
+              clientId: client.id,
+              date: client.intakeDate,
+              type: "enroll",
+            },
+          });
+        }),
+    ]);
 
     // updating enrollmentDates creating rows for exit dates for timeline components
     await prisma.client.updateMany({

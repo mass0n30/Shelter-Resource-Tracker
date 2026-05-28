@@ -67,7 +67,7 @@ export default function ClientProfile() {
   }
 
   return (
-    <div className="flex-1 flex w-full flex-col overflow-hidden bg-primaryLight">
+    <div className="flex-1 flex w-full flex-col overflow-hidden bg-background">
       <Banner
         clientData={clientData}
         authRouter={authRouter}
@@ -168,6 +168,7 @@ function ClientInfoSectionToggle({
             fetchClientData={fetchClientData}
             clientId={clientData.id}
             authRouter={authRouter}
+            clientData={clientData}
           />
         )}
       </div>
@@ -192,9 +193,9 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
 
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primaryLight text-sm font-semibold text-primary sm:h-12 sm:w-12">
-              {clientData?.avatar ? (
+              {clientData?.avatarUrl ? (
                 <img
-                  src={clientData.avatar}
+                  src={clientData.avatarUrl}
                   alt={`${clientData.firstName} ${clientData.lastName}`}
                   className="h-full w-full object-cover"
                 />
@@ -287,6 +288,18 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
     </div>
   );
 }
+
+import TimelineHistory from "@/components/partials/Timeline";
+
+
+function Timeline({clientId, authRouter, fetchClientData, clientData}) {
+  return (
+    <div>
+      <TimelineHistory clientData={clientData} />
+    </div>
+  );
+}
+
 
 import {
   BedDouble,
@@ -639,16 +652,6 @@ return (
   </div>
 );
 }
-
-
-function Timeline({clientId, authRouter}) {
-  return (
-    <div className="bg-grey-100 p-4 rounded-md">
-      <p>Timeline for client ID: {clientId}</p>
-    </div>
-  );
-}
-
 
 export function Resources({referrals, fetchClientData, authRouter, showName}) {
   const [toggleKey, setToggleKey] = useState(null);

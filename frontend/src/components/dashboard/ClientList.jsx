@@ -65,10 +65,10 @@ function ClientCard({ client, clientStats }) {
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <div className="shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs sm:text-sm font-semibold text-slate-600 overflow-hidden">
-            {client?.avatar ? (
+            {client?.avatarUrl ? (
               <img
                 className="w-full h-full object-cover"
-                src={client.avatar}
+                src={client.avatarUrl}
                 alt={`${client.firstName} ${client.lastName}`}
               />
             ) : (
