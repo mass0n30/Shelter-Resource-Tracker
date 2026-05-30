@@ -21,10 +21,6 @@ https://console.cloud.google.com/auth/clients/create?authuser=1&project=resource
 - **Demo-safe data:** The public demo uses mock client data only, not real shelter/client records. Use for showing examples for recruiters or devs forks as well. 
 
 5/23/25
-Public Database URL not showing? 
-Seed demo database with mock data?
-Fix Notes (retrieve all public and user private and public on dashboard + records page)
-
 
 MVP Features: (initially develop for Manager accounts)
   - Manager can CRUD client accounts, set time notifs, see client case management info. Staff can only view add notes.
@@ -51,29 +47,32 @@ Extra Possible Features (after making core MVP product):
   Notifications are scoped to user unless explicitly shared
   Avoid global notifications by default
 
-TO-DO GENERAL 5/15 (What to do to Finish Project):
-  - Add pagination to client list
+TO-DO GENERAL 5/28 (What to do to Finish Project):
+  - Fix housed dashstat bug (counts 0?)
+  - Fix loader skeleton bug (dash skeleton loads on records/profile page?)
+  - Add/Check all client CRUD routes
+  - Add/Check all success/fetchUpdated data calls for mounts
+  - Add pagination to client list (limit 50?)
   - Normalize Calendar Popovers (height issues on edit forms)
-
-  - Add Sidebar toggle (upon smaller screen size, hide navbar NavLinks)
-
-  - Client Profile Completion
-    - CRUD actions (extension button)
-    - improve information comp design (update schema for more client info)
-    - Redesign for mobile layout (button toggles, ect)
-  
-  - Dashboard
-    - Double checking all logic (Notifications sidebar especially)
+  - Polish forms (buttons, bg-color, add z-index-9999, ect)
+  - Fix drop down arrows to close in filter dropdowns (recordsPage)
+  - Google Auth sign-in not working on deployment fix?
+  - Add Docs/Img avatar upload routes, look into cloudify cost?
+  - POLISH
+  - Update Loader Skeletons
 
   - Other
     - Run Linter 
     - Improve performance
       - Move mapping data to backend
       - Only retrieve needed data on Dashboard (calculating Dash stats backend?)
-    - Manual Document upload (perhaps keep it for future iteration using cloudify for storage)
-    - Cloudify (for documents and images)
-      *consider server storage costs (maybe future iteration)
-    - Improve Signup/Login (full screen)
+
+Deployment To-Do:
+  - Update Google URI (link at top)
+  - Make 1-2 minute video for demonstration
+  - Add a Demo Mode for Recruiters (Demo Button w/ Guest Mode?)
+  - Update ReadME
+  - Make a Blog Post on the process (identify what I should focus on writing about technical vs business workflow, not being too techy for recruiters?)
 
 Done:
  - define schema
@@ -103,132 +102,3 @@ Done:
   - Calendar logic (mapping Icons for either Client Initials/Note reminders / Referral Followups?) --> clicking calendar cell shows limited info.. Not sure what to exactly do here, as Calendar should function different from Reminders sidebar for the value it provides.
   -- Figure out Loader logic (using setLoading and setSuccess module from partials/Loading.jsx ??)
 
-
-
-
-# PERN-Starter-Template
-Starter template, using PERN stack, keeping backend and frontend in seperate directories. 
-
-BACKEND directory:
-
-Commands:
-Commands in BACKEND directory!
-npm install (installs all dependencies found in package.json)
-
-npm install supertest --save-dev (for testing) (scripts in package.json)
-
-
-PRISMA:
-npm install prisma --save-dev
-npm install @prisma/client
-npx prisma init  (makes prisma folder)
-npm install @quixo3/prisma-session-store  https://github.com/kleydon/prisma-session-store#readme   (set up Session Model in Prisma) 
-
-
-npx prisma generate (after making schema)
-npx prisma migrate dev (after making changes to schema)
- ----------------------------------------------------------------------
-FRONTEND directory:
-
-Design: Keep CSS inline or modular
-
-npm install - sets up all node modules (installs all dependencies)
-
-npm run dev - starts vite server
-
-If using React to setup up default frontend directory run: 
-npm create vite@latest . -- --template react
-
-
-This template uses Prisma ORM supporting PostgreSQL. 
-Prisma Setup Guide: https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases-node-postgresql 
-or use quick commands: 
- ---> npx prisma init  (then after adding DATABASE_URL to .env)  ---> npx prisma migrate dev --name init  ---> npx prisma generate
-
-Don't forget to setup .env where variables such as DATABASE_URL(where data is being served) will go
-.gitignore has .env and /generated/schema to ignore from public 
-
-Using PostMan Web Agent (for full API functionality): https://learning.postman.com/docs/getting-started/installation/installation-and-updates/#install-postman-on-linux   (after installing with snap command, just run 'postman' as a command to launch)
-
-npm install -g nodemon --live view? 
-
-Linter & Prettier Commands
-npm install --save-dev eslint
-npx eslint --init   (Optional for configuration)  
-
-Linting commands
-- Run: npx eslint .
-- Fix: npx eslint . --fix
-
-Prettier commands
-- npm install --save-dev prettier
-- touch .prettierrc  (Optional config file for tab space, ect. )
-
-
-This template encourages using small layout primitives to manage spacing and responsiveness instead of hard-coded margins or excessive media queries.
-
-Using Primitive Component Examples:
-
-```jsx
-
-<Shell>
-  <Stack>
-    <h1>Page Title</h1>
-
-    <Cluster>
-      <Button />
-      <Button />
-      <Button />
-    </Cluster>
-
-    <Content />
-  </Stack>
-</Shell>
-
-another example
-<Shell>
-  <Stack>
-    <Header />
-    <Cluster>
-      <FilterTag />
-      <FilterTag />
-      <FilterTag />
-    </Cluster>
-    <Content />
-  </Stack>
-</Shell>
-
-detailed example (*Section and Main content being semantic tags*)
-
-<Shell>
-  <Stack>
-    <PageHeader>
-      <h1>Dashboard</h1>
-      <p>Overview of your recent activity</p>
-    </PageHeader>
-
-    <MainContent>
-      <Stack>
-        <Section>
-          <h2>Quick Stats</h2>
-          <Grid>
-            <StatCard />
-            <StatCard />
-            <StatCard />
-          </Grid>
-        </Section>
-
-        <Section>
-          <h2>Recent Items</h2>
-          <Stack>
-            <ItemRow />
-            <ItemRow />
-            <ItemRow />
-          </Stack>
-        </Section>
-      </Stack>
-    </MainContent>
-
-    <Footer />
-  </Stack>
-</Shell>

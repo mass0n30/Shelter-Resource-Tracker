@@ -8,6 +8,7 @@ import { useAsyncStatus, loaderTimer } from "@/components/partials/Loading";
 function DashBoardLayout() {
   const [user, SetUser] = useState(null);
   const [data, SetData] = useState(null);
+  const [dashStats, SetDashStats] = useState(null);
   const [openForm, setOpenForm] = useState(null);
   const [notifications, setNotifications] = useState([]);
   // useful for navigation 
@@ -44,6 +45,7 @@ function DashBoardLayout() {
       try {
         setLoadingDuration(3000); 
         setLoading(true);
+        // fetching initial data
         fetchUpdatedData();
       } catch (err) {
         console.error("Error fetching updated data:", err);
@@ -77,6 +79,7 @@ function DashBoardLayout() {
 
       SetUser(result.user); // (only non sensitive user data from backend)
       SetData(result.globalData); // all clients, notes, referrals for dashboard display, consider separate fetches for each in future if performance issues arise with large data sets
+      SetDashStats(result.clientStats); // dashboard stats for summary cards, consider calculating on client side in future if performance issues arise with large data sets
 
       if (result.user?.mustChangePassword) {
       return navigate("/change-password");
@@ -124,6 +127,7 @@ function DashBoardLayout() {
         SetMount,
         mount,
         notifications,
+        dashStats,
         authRouter,
         authRouterForm,
         openForm,

@@ -3,6 +3,7 @@ import { useOutletContext, useParams } from "react-router-dom";
 import { Button } from "@base-ui/react";
 import NoteForm from "../components/forms/NoteForm";
 import ResourceForm from "../components/forms/ResourceForm";
+import ClientForm from "@/components/forms/ClientForm";
 import DropdownEditDelete from "../components/partials/Dropdown";
 import { DropdownNoteEditDelete } from "../components/partials/Dropdown";
 import ClientProfileSkeleton from "@/components/partials/loaderSkeleton/ClientProfileLoader";
@@ -22,17 +23,18 @@ import {
   Plus,
   FilePlus,
   HashIcon,
-  EditIcon,
+  UserRoundPen,
   Calendar,
   Calendar1Icon,
   History,
   FolderSearch,
 } from "lucide-react";
-import { RESOURCE_CONFIG } from "../lib/utils";
+import { RESOURCE_CONFIG , getClientReferralStats} from "../lib/utils";
 
 export default function ClientProfile() {
   const { clientId } = useParams();
   const [clientData, setClientData] = useState(null);
+  const [clientStats, setClientStats] = useState(null);
   const [activeSection, setActiveSection] = useState("resources");
 
   const { authRouter } = useOutletContext();
@@ -42,7 +44,10 @@ export default function ClientProfile() {
   const fetchClientData = async (success) => {
     try {
       const response = await authRouter.get(`/dashboard/clients/${clientId}`);
+      console.log("Fetched client data:", response.data);
+      const getClientStats = getClientReferralStats(response.data);
       setClientData(response.data);
+      setClientStats(getClientStats);
 
       if (success) {
         setSuccess(true);
@@ -87,7 +92,8 @@ export default function ClientProfile() {
 
         <Information
           clientData={clientData}
-          fetchClientData={fetchClientData}
+          fetchUpdatedData={fetchClientData}
+          authRouter={authRouter}
           className="min-h-0 overflow-y-auto md:col-span-1"
         />
       </div>
@@ -315,7 +321,7 @@ import {
   UserRound,
 } from "lucide-react";
 
-function Information({ clientData, className }) {
+function Information({ clientData, className, authRouter, fetchClientData }) {
   const formatDate = (date) =>
     date ? new Date(date).toLocaleDateString() : "N/A";
 
@@ -352,13 +358,40 @@ function Information({ clientData, className }) {
   return (
     <div className={`rounded-xl border border-border bg-white shadow-sm ${className}`}>
       <div className="border-b border-border px-4 py-4">
-        <div className="flex items-center gap-2">
-          <Info className="h-4 w-4 text-primary" />
-          <h2 className="text-base font-semibold text-foreground/90">
-            Client Information
-          </h2>
-        </div>
+        <div className="flex w-full items-center justify-between rounded-full bg-primaryLight px-4 py-2">
+          <div className="flex items-center gap-2">
+            <Info className="h-4 w-4 text-primary" />
 
+            <h2 className="text-base font-semibold text-foreground/90">
+              Client Information
+            </h2>
+          </div>
+
+        <Dialog>
+          <DialogTrigger asChild>
+            <button
+              type="button"
+              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted transition bg-transparent hover:bg-primaryLight hover:text-primary"
+            >
+              <UserRoundPen className="h-3.5 w-3.5" />
+              Edit
+            </button>
+          </DialogTrigger>
+
+          <DialogContent className="bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
+            <VisuallyHidden>
+              <DialogTitle>{`Edit Client Information for ${clientData.firstName} ${clientData.lastName}`}</DialogTitle>
+            </VisuallyHidden>
+
+            <ClientForm
+              authRouter={authRouter}
+              clientId={clientData.id}
+              fetchClientData={fetchClientData}
+              clientData={clientData}
+            />
+          </DialogContent>
+        </Dialog>
+        </div>
         <p className="mt-1 text-sm text-muted">
           Basic details and shelter activity
         </p>

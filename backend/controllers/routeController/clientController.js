@@ -33,40 +33,59 @@ const clientInclude = {
   },
 };
 
+const { getAllDashboardStats } = require("../../utils.js");
+
+async function getClientStats(req, res, next) {
+  const allClients = await prisma.client.findMany({
+    include: {
+      referrals: {
+        include: {
+          createdBy: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  try {
+    const stats = getAllDashboardStats(allClients);
+    return stats;
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function getClients(req, res, next) {
   try {
-    let clients = null;
-    let validClients = null;
     const now = new Date();
     const filter = req.query?.filter;
-        
-      // use Scheduled Cron instead of get Request ??
-    // upating clients that are passed outtakeData to INACTIVE, so they are not included in the stayed overnight query return, and to maintain accurate client status in the system
-    clients = await prisma.client.findMany({
+
+    // Update clients past outtake date to INACTIVE
+    const expiredClients = await prisma.client.findMany({
       where: {
         outtakeDate: {
           lte: now,
         },
-        status: {
-          equals: "ENROLLED",
-        },
+        status: "ENROLLED",
       },
     });
 
-    validClients = await prisma.client.findMany({
+    const validClients = await prisma.client.findMany({
       where: {
         outtakeDate: {
           gte: now,
         },
-        status: {
-          equals: "ENROLLED",
-        },
+        status: "ENROLLED",
       },
     });
 
-    // updating enrollmentDates column, updating if passed outtakeDate or creating enrollment date
     await Promise.all([
-      ...clients
+      ...expiredClients
         .filter((client) => client.outtakeDate)
         .map((client) => {
           return prisma.enrollmentDates.upsert({
@@ -111,11 +130,10 @@ async function getClients(req, res, next) {
         }),
     ]);
 
-    // updating enrollmentDates creating rows for exit dates for timeline components
     await prisma.client.updateMany({
       where: {
         id: {
-          in: clients.map((client) => client.id),
+          in: expiredClients.map((client) => client.id),
         },
       },
       data: {
@@ -123,11 +141,10 @@ async function getClients(req, res, next) {
       },
     });
 
-    // updating clients stayed last night to false if outside of window
     await prisma.client.updateMany({
       where: {
         lastStayDate: {
-          lte: new Date(now.getTime() - 24 * 60 * 60 * 1000), // past 24 hours
+          lte: new Date(now.getTime() - 24 * 60 * 60 * 1000),
         },
         hereLastNight: true,
       },
@@ -136,15 +153,14 @@ async function getClients(req, res, next) {
       },
     });
 
+    let clients;
 
-    // for Stayed over night clients, updated by CSV pipeline and db query everyday
     if (filter === "STAYED_OVERNIGHT") {
-      // past 32 hours to account for clients who stayed overnight and were updated by the CSV pipeline, which runs at 8am daily, so captures stays from 4pm the previous day to 4pm the current day
       const pastWindow = new Date(now.getTime() - 32 * 60 * 60 * 1000);
 
-      const clients = await prisma.client.findMany({
+      clients = await prisma.client.findMany({
         where: {
-          intakeDate: {
+          lastStayDate: {
             gte: pastWindow,
             lte: now,
           },
@@ -152,45 +168,38 @@ async function getClients(req, res, next) {
         },
         include: clientInclude,
       });
-      return res.json({ clients });
+    } else {
+      clients = await prisma.client.findMany({
+        where: {
+          status: filter && filter !== "ALL" ? filter : "ENROLLED",
+        },
+        include: clientInclude,
+      });
     }
 
-    // default enrolled client mount return
-    if (filter == undefined) {
-      clients = await prisma.client.findMany({
-        where: {
-          status: "ENROLLED",
-        },
-        include: clientInclude,
-      });
-    } else {
-      // else get by filter 
-      clients = await prisma.client.findMany({
-        where: {
-          status: filter && filter !== "ALL" ? filter : undefined,
-        },
-        include: clientInclude,
-      });
-    }
     if (req.query?.filter) {
       return res.json({ clients });
     }
 
     return clients;
   } catch (error) {
-    console.log('failed to get clients');
+    console.log("failed to get clients", error);
     throw error;
   }
-};
+}
 
 async function getClientById(req, res, next) {
-  console.log('Getting client by ID:', req.params.clientId);
 
   try {
     const client = await prisma.client.findUnique({
       where: { id: parseInt(req.params.clientId) },
       include: clientInclude,
     });
+
+
+    if (!client) {
+      return res.status(404).json({ message: "Client not found" });
+    }
 
     return res.json(client);
 
@@ -321,6 +330,6 @@ async function handleUploadFile(req, res, next) {
 
 module.exports = {
   clientController: {
-    getClients, getClientById, createClient, updateClient, deleteClient, handleUploadFile
+    getClients, getClientStats, getClientById, createClient, updateClient, deleteClient, handleUploadFile
   }
 };

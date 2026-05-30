@@ -2,13 +2,13 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
-import DashStats from '../components/dashboard/DashStats';
 import ClientToggleSection from '../components/dashboard/ClientList';
 import Notifications from '../components/dashboard/Notifications';
 import NotificationsAlert from '../components/dashboard/NotificationsAlert';
 import Navbar from '../components/Navbar';
+import DashboardHero from '../components/dashboard/DashboardHero'
 import { Button } from '@/components/ui/button';
-import { getAllDashboardStats, getDisplayTime } from '@/lib/utils';
+import {  getDisplayTime } from '@/lib/utils';
 import {
   Sheet,
   SheetContent,
@@ -18,7 +18,7 @@ import {
 import { CircleAlert, Users } from "lucide-react";
 
 function DashBoard() {
-  const { user, data, fetchUpdatedData, fetchNotifications, notifications, authRouter, authRouterForm, openForm, setOpenForm } = useOutletContext();
+  const { user, data, fetchUpdatedData, fetchNotifications, notifications, dashStats, authRouter, authRouterForm, openForm, setOpenForm } = useOutletContext();
 
   const [viewedClients, setViewedClients] = useState(data.clients);
   const [dashStatFilter, setDashStatFilter] = useState(null);
@@ -111,7 +111,7 @@ return (
 
     <main className="min-h-screen bg-primaryLight">
       <div className="mx-auto flex w-full flex-col">
-
+        <DashboardHero dashStats={dashStats} dashStatFilter={dashStatFilter} setDashStatFilter={setDashStatFilter} />
         {notificationsToggled && (
           <section className="border border-border bg-backgroundAlt shadow-sm overflow-hidden">
             <div className="flex flex-col gap-3 py-md px-lg sm:flex-row sm:items-center sm:justify-between">

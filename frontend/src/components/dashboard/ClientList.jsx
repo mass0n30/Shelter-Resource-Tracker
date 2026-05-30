@@ -7,7 +7,7 @@ import { Combobox,ComboboxValue, ComboboxContent } from "@/components/ui/combobo
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import ClientForm from '../forms/ClientForm';
 import { useOutletContext } from "react-router-dom";
-import { getClientStats } from '@/lib/utils';
+import { getClientReferralStats } from '@/lib/utils';
 
 function ClientList({className, viewedClients}) {
     const { user, data, SetNewFetch, authRouter, authRouterForm } = useOutletContext();
@@ -30,7 +30,7 @@ function ClientList({className, viewedClients}) {
       <div className="grid grid-cols-1 md:grid-cols-2">
 
         {viewedClients.map((client) => {
-          const clientStats = getClientStats(client);
+          const clientStats = getClientReferralStats(client);
           return (
             <Button
               key={client.id}
@@ -137,9 +137,7 @@ import { ClientSearch } from '../partials/Search';
 import { ClientDropDownFilter } from '../partials/Dropdown';
 import { useEffect } from 'react';
 import { CalendarEmbedded } from './CalenderView';
-import { getAllDashboardStats } from '@/lib/utils';
-import DashStats from './DashStats';
-import { all } from 'axios';
+import { get } from 'react-hook-form';
 
 function ClientToggleSection({className, data, allReferrals, allClientData, userNotes, userReferrals, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter, openForm, setOpenForm}) {
   // for searching by name
@@ -148,7 +146,6 @@ function ClientToggleSection({className, data, allReferrals, allClientData, user
   const [filter, setFilter] = useState("ENROLLED");
   const [calendarOpen, setCalendarOpen] = useState(false);
 
-  const dashboardStats = getAllDashboardStats(allClientData, allReferrals);
 
   useEffect(() => {
     if (dashStatFilter) {
@@ -266,13 +263,7 @@ return (
         />
       </div>
     )}
-        <DashStats
-          className="w-full border-t border-border "
-          data={dashboardStats}
-          dashStatFilter={dashStatFilter}
-          setDashStatFilter={setDashStatFilter}
-          setViewedClients={setViewedClients}
-        />
+
 
     <ClientList
       className="border-t border-border max-h-none ml-1 overflow-visible lg:max-h-screen lg:overflow-y-auto"

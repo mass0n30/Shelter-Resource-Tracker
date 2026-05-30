@@ -10,17 +10,16 @@ require('../config/passport');
 
 dashboardRouter.get('/', async (req, res, next ) => {
 
-  console.log('Dashboard route hit, fetching data...');
-
   Promise.all([
     getAllUserData(req, res, next), // includes users referrals and personal notes
     getUpdateData(req, res, next), // includes update data for dashboard news feed
     clientController.getClients(req, res, next),
+    clientController.getClientStats(req, res, next), // includes client stats for dashboard display, consider combining with getClients query in future to reduce number of calls to db on dashboard mount, or consider caching some of this data if performance becomes an issue
     getAllReferrals(req, res, next), // includes all referrals in db, will filter on client side for dashboard display, limit in future?
     getAllNotes(req, res, next) // includes all notes in db, will filter on client side for dashboard display, limit in future?
   ])
-  .then(([user, updateData, clients, referrals, notes]) => {
-    res.json({ message: "Dashboard route is working", user, updateData,
+  .then(([user, updateData, clients, clientStats, referrals, notes]) => {
+    res.json({ user, clientStats, updateData,
       globalData: { clients, referrals, notes } });
   })
   .catch(error => {

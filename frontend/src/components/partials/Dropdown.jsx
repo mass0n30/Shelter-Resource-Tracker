@@ -29,17 +29,17 @@ export function UserDropdown({ user }) {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex w-full sm:w-auto items-center justify-between gap-3 rounded-md bg-white px-4 py-3 text-sm font-medium text-foreground transition hover:bg-primaryLight hover:text-primary"
+          className="flex w-full sm:w-auto items-center border-b  rounded-none border-primary justify-between gap-3 bg-white px-4 py-3 text-xs font-semibold text-foreground transition hover:bg-primaryLight hover:text-primary"
         >
           <div className="flex items-center gap-3">
             {user?.avatar ? (
               <img
-                className="h-9 w-9 rounded-full object-cover"
+                className="h-9 w-9 object-cover"
                 src={user.avatar}
                 alt={`${user.firstName} ${user.lastName}`}
               />
             ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primaryLight text-sm font-semibold text-primary">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primaryLight text-xs font-bold text-primary">
               {user?.firstName?.charAt(0)}
               {user?.lastName?.charAt(0)}
             </div>

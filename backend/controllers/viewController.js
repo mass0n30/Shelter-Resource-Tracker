@@ -72,7 +72,6 @@ async function getAllNotes(req, res, next) {
       orderBy: { createdAt: 'desc' },
       take: 50,
     });
-    console.log('fetched notes:', notes);
     return notes;
   } catch (error) {
     console.log('failed to get user notes');
