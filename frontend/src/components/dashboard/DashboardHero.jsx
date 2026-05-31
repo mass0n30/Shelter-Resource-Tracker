@@ -17,8 +17,7 @@ function DashboardHero({
   const firstName =
     user?.firstName ||
     user?.name?.split(" ")?.[0] ||
-    user?.username?.split("@")?.[0] ||
-    "Masson";
+    user?.username?.split("@")?.[0];
 
   const today = new Date();
 
@@ -39,7 +38,7 @@ function DashboardHero({
 
   return (
     <section
-      className={`relative overflow-hidden bg-gradient-to-r from-[#1b46bd] to-[#1945be] text-white ${className}`}
+      className={`relative overflow-hidden bg-gradient-to-r from-[#1b46bd] to-[#123797] text-white ${className}`}
     >
 
       <div className="relative z-10 px-md pt-md sm:px-lg">
@@ -69,6 +68,7 @@ function DashboardHero({
 }
 
 function HeroDashStats({ dashStats, dashStatFilter, setDashStatFilter }) {
+  
   const stats = [
     {
       data: dashStats?.urgentCases ?? 0,
@@ -90,7 +90,7 @@ function HeroDashStats({ dashStats, dashStatFilter, setDashStatFilter }) {
       data: dashStats?.totalClients ?? 0,
       label: "Total Clients",
       subLabel: "Enrolled",
-      filter: "ALL",
+      filter: "ENROLLED",
       icon: Users,
       iconClassName: "text-blue-100",
     },
@@ -119,7 +119,9 @@ function HeroDashStats({ dashStats, dashStatFilter, setDashStatFilter }) {
           key={stat.filter}
           stat={stat}
           active={dashStatFilter === stat.filter}
-          onClick={() => setDashStatFilter(stat.filter)}
+          onClick={() => {
+            setDashStatFilter(stat.filter);
+          }}
         />
       ))}
     </div>

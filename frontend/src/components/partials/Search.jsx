@@ -1,13 +1,15 @@
 import {useState, useEffect} from "react";
 
-export function ClientSearch({ currentClients, setViewedClients, setClientId, filter, setFilter }) {
+export function ClientSearch({ currentClients, setViewedClients, setClientId, fetchClients, filter, setFilter, setDashStatFilter }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [storedClients, setStoredClients] = useState(currentClients);
 
   useEffect(() => {
     if (!searchTerm.trim()) {
-      setFilter("ENROLLED");
+      setViewedClients(storedClients);
       setClientId(null);
+      setDashStatFilter(null);
+      setFilter(null);
       return;
     }
 

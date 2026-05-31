@@ -16,9 +16,11 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { CircleAlert, Users } from "lucide-react";
+import { useAsyncStatus } from '../components/partials/Loading';
 
 function DashBoard() {
   const { user, data, fetchUpdatedData, fetchNotifications, notifications, dashStats, authRouter, authRouterForm, openForm, setOpenForm } = useOutletContext();
+  const { success, setSuccess, loading, setLoading, setLoadingDuration, error, setError } = useAsyncStatus({loadingDuration: 2000, successDuration: 3000});
 
   const [viewedClients, setViewedClients] = useState(data.clients);
   const [dashStatFilter, setDashStatFilter] = useState(null);
@@ -27,7 +29,6 @@ function DashBoard() {
   const [toggle, setToggle] = useState("reminders");
 
   const clients = data.clients;
-
 
   const unfound = notifications?.unfoundClients?.[0];
   const found = notifications?.foundClients?.[0];
@@ -46,39 +47,27 @@ function DashBoard() {
   const displayTime = getDisplayTime(notificationsCreatedAt, "notificationAlert");
 
   useEffect(() => {
-    if (!clients) return;
-
-    let filtered = clients;
-
-    switch (dashStatFilter) {
-      case "URGENT":
-        filtered = clients.filter(client =>
-          client.referrals?.some(ref => ref.isPriority)
-        );
-        break;
-
-      case "FOLLOW_UP":
-        filtered = clients.filter(client =>
-          client.referrals?.some(ref =>
-            ref.followUpDate &&
-            new Date(ref.followUpDate) >= new Date() 
-          )
-        );
-        break;
-
-      case "NEW":
-        filtered = clients.filter(client => {
-          const createdAt = new Date(client.createdAt);
-          return (new Date() - createdAt) / (1000 * 60 * 60 * 24) <= 30;
-        });
-        break;
-
-      default:
-        filtered = clients;
+    if (dashStatFilter) {
+      handleGetClientsByFilter();
+    } else {
+      setViewedClients(clients);
     }
+  }, [dashStatFilter, clients]);
 
-    setViewedClients(filtered);
-  }, [dashStatFilter]);
+  const handleGetClientsByFilter = async () => {
+      if (!clients) return;
+      setViewedClients(null); 
+      setLoading(true);
+      try {
+        authRouter.get('/dashboard/dashStatFilters', {
+          params: { filter: dashStatFilter }
+        }).then(res => {
+          setViewedClients(res.data);
+        });
+      } catch (err) {
+        console.error("Error filtering clients:", err);
+      } 
+    };
 
   const handleMarkRead = async () => {
     try {
@@ -111,7 +100,7 @@ return (
 
     <main className="min-h-screen bg-primaryLight">
       <div className="mx-auto flex w-full flex-col">
-        <DashboardHero dashStats={dashStats} dashStatFilter={dashStatFilter} setDashStatFilter={setDashStatFilter} />
+        <DashboardHero dashStats={dashStats} dashStatFilter={dashStatFilter} setDashStatFilter={setDashStatFilter} handleGetClientsByFilter={handleGetClientsByFilter} />
         {notificationsToggled && (
           <section className="border border-border bg-backgroundAlt shadow-sm overflow-hidden">
             <div className="flex flex-col gap-3 py-md px-lg sm:flex-row sm:items-center sm:justify-between">
@@ -187,6 +176,8 @@ return (
             authRouterForm={authRouterForm}
             openForm={openForm}
             setOpenForm={setOpenForm}
+            loading={loading}
+            setLoading={setLoading}
           />
 
           <aside className="hidden min-w-0 lg:block h-[calc(120vh)]">
@@ -212,8 +203,8 @@ return (
       </div>
     </main>
 
-    <Sheet open={notificationsOpen} onOpenChange={setNotificationsOpen}>
-      <SheetContent side="right" className="w-full bg-background p-0 lg:hidden">
+    <Sheet open={notificationsOpen} className="transition-all duration-300 ease-in-out" onOpenChange={setNotificationsOpen}>
+      <SheetContent side="right" className="w-full transition-all duration-300 ease-in-out bg-background p-0 lg:hidden">
         <SheetHeader className="border-b border-border px-4 py-4 text-left">
           <SheetTitle>Reminders</SheetTitle>
         </SheetHeader>

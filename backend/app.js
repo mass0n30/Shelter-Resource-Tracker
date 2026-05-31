@@ -89,6 +89,7 @@ const upload = multer({
 });
 const { handleTotalClientCSVUpload }  = require('./services/csvUpload');
 const { emailAutomate } = require('./services/emailAutomate');
+const { updateClientStatuses } = require('./controllers/dataController/updateController');
 const { startReminderEmailJob } =  require("./services/emailAutomate.js");
 
 // reminder email job that processes at 8:00 AM every day 
@@ -100,6 +101,7 @@ cron.schedule('0 6 * * *', async () => {
 
   try {
     await emailAutomate();
+    await updateClientStatuses(); // updates client statuses based on dates for referrals and follow-ups, runs after email automate to update any new clients added from csv upload
 
     console.log('Email csv automation task completed successfully');
   } catch (error) {

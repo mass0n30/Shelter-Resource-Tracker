@@ -239,7 +239,7 @@ import { Button } from "../partials/Button";
 import {  Funnel } from 'lucide-react';
 
 
-export function ClientDropDownFilter({ filter, setFilter }) {
+export function ClientDropDownFilter({ filter, fetchClients }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -257,41 +257,41 @@ export function ClientDropDownFilter({ filter, setFilter }) {
         className="min-w-[200px] bg-white text-black border rounded-md shadow-lg"
       >
         <DropdownMenuItem
-          onSelect={() => setFilter("ALL")}
+          onSelect={() => fetchClients("ALL")}
           className={filter === "ALL" ? "bg-primary text-white" : ""}
         >
           All Clients
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onSelect={() => setFilter("ENROLLED")}
+          onSelect={() => fetchClients("ENROLLED")}
           className={filter === "ENROLLED" ? "bg-primary text-white" : ""}
         >
           Enrolled
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onSelect={() => setFilter("STAYED_OVERNIGHT")}
+          onSelect={() => fetchClients("STAYED_OVERNIGHT")}
           className={filter === "STAYED_OVERNIGHT" ? "bg-primary text-white" : ""}
         >
           Stayed Overnight
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onSelect={() => setFilter("WC")}
+          onSelect={() => fetchClients("WC")}
           className={filter === "WC" ? "bg-primary text-white" : ""}
         >
           Winter Contingency
         </DropdownMenuItem>
         <DropdownMenuItem
-          onSelect={() => setFilter("HOUSED")}
+          onSelect={() => fetchClients("HOUSED")}
           className={filter === "HOUSED" ? "bg-primary text-white" : ""}
         >
           Housed
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onSelect={() => setFilter("INACTIVE")}
+          onSelect={() => fetchClients("INACTIVE")}
           className={filter === "INACTIVE" ? "bg-primary text-white" : ""}
         >
           Inactive

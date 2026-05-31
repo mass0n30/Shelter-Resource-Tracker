@@ -22,7 +22,7 @@
     --color-background-alt: #ffffff;
     --color-foreground: #0f172a;
     --color-muted: #64748b;
-    --color-border: #e8f2fc;
+    --color-border: #edf4fa;
     /* RADIUS */
     --radius-xs: 0.25rem;
     --radius-sm: 0.375rem;
@@ -167,7 +167,7 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgb(189, 189, 189); 
+  background-color: var(--color-border); 
   border-radius: 10px; 
 }
 

@@ -94,7 +94,7 @@ export default function ClientProfile() {
           clientData={clientData}
           fetchUpdatedData={fetchClientData}
           authRouter={authRouter}
-          className="min-h-0 overflow-y-auto md:col-span-1"
+          className="min-h-0 max-h-[calc(140vh-200px)] overflow-y-auto md:col-span-1"
         />
       </div>
     </div>
@@ -152,7 +152,7 @@ function ClientInfoSectionToggle({
         </button>
       </div>
 
-      <div className="min-h-0 max-h-[calc(120vh-200px)] flex-1 overflow-y-auto pr-1">
+      <div className="min-h-0 max-h-[calc(140vh-200px)] bg-background flex-1 overflow-y-auto pr-1">
         {activeSection === "resources" && (
           <Resources
             fetchClientData={fetchClientData}
@@ -170,7 +170,7 @@ function ClientInfoSectionToggle({
         )}
 
         {activeSection === "timeline" && (
-          <Timeline
+          <TimelineHistory
             fetchClientData={fetchClientData}
             clientId={clientData.id}
             authRouter={authRouter}
@@ -297,14 +297,6 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
 
 import TimelineHistory from "@/components/partials/Timeline";
 
-
-function Timeline({clientId, authRouter, fetchClientData, clientData}) {
-  return (
-    <div>
-      <TimelineHistory clientData={clientData} />
-    </div>
-  );
-}
 
 
 import {
@@ -712,7 +704,7 @@ export function Resources({referrals, fetchClientData, authRouter, showName}) {
   };
 
   return (
-    <div className="flex flex-col bg-gray-100 p-3 sm:p-4 rounded-xl space-y-3 overflow-y-auto relative position-relative ">
+    <div className="flex flex-col bg-background p-3 sm:p-4 rounded-xl space-y-3 overflow-y-auto relative position-relative ">
 
     {referrals?.map((resource) => {
       const config = RESOURCE_CONFIG[resource.resourceType] || {};

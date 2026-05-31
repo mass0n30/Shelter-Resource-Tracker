@@ -29,6 +29,8 @@ dashboardRouter.get('/', async (req, res, next ) => {
   // req.user from passport callback authentication
 });
 
+dashboardRouter.get('/dashStatFilters', clientController.getClientsByStatFilter);
+
 dashboardRouter.get('/notifications', async (req, res, next) => {
   try {
     const unfoundClients = await prisma.notification.findMany({

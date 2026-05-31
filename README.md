@@ -48,7 +48,7 @@ Extra Possible Features (after making core MVP product):
   Avoid global notifications by default
 
 TO-DO GENERAL 5/28 (What to do to Finish Project):
-  - Fix housed dashstat bug (counts 0?)
+  - Fix Closed and Completed referrals mapping on client profiles
   - Fix loader skeleton bug (dash skeleton loads on records/profile page?)
   - Add/Check all client CRUD routes
   - Add/Check all success/fetchUpdated data calls for mounts
@@ -63,9 +63,8 @@ TO-DO GENERAL 5/28 (What to do to Finish Project):
 
   - Other
     - Run Linter 
-    - Improve performance
-      - Move mapping data to backend
-      - Only retrieve needed data on Dashboard (calculating Dash stats backend?)
+    - Add transition animations to mobile panels (shadUI causing issues currently)
+
 
 Deployment To-Do:
   - Update Google URI (link at top)

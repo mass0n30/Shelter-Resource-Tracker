@@ -16,18 +16,6 @@ const clientInclude = {
     },
   },
 
-  notes: {
-    orderBy: { createdAt: 'desc' },
-    include: {
-      author: {
-        select: {
-          firstName: true,
-          lastName: true,
-          email: true,
-        },
-      },
-    },
-  },
   EnrollmentDates: {
     orderBy: { date: 'asc' },
   },
@@ -65,94 +53,6 @@ async function getClients(req, res, next) {
     const now = new Date();
     const filter = req.query?.filter;
 
-    // Update clients past outtake date to INACTIVE
-    const expiredClients = await prisma.client.findMany({
-      where: {
-        outtakeDate: {
-          lte: now,
-        },
-        status: "ENROLLED",
-      },
-    });
-
-    const validClients = await prisma.client.findMany({
-      where: {
-        outtakeDate: {
-          gte: now,
-        },
-        status: "ENROLLED",
-      },
-    });
-
-    await Promise.all([
-      ...expiredClients
-        .filter((client) => client.outtakeDate)
-        .map((client) => {
-          return prisma.enrollmentDates.upsert({
-            where: {
-              clientId_date_type: {
-                clientId: client.id,
-                date: client.outtakeDate,
-                type: "exit",
-              },
-            },
-            update: {
-              type: "exit",
-            },
-            create: {
-              clientId: client.id,
-              date: client.outtakeDate,
-              type: "exit",
-            },
-          });
-        }),
-
-      ...validClients
-        .filter((client) => client.intakeDate)
-        .map((client) => {
-          return prisma.enrollmentDates.upsert({
-            where: {
-              clientId_date_type: {
-                clientId: client.id,
-                date: client.intakeDate,
-                type: "enroll",
-              },
-            },
-            update: {
-              type: "enroll",
-            },
-            create: {
-              clientId: client.id,
-              date: client.intakeDate,
-              type: "enroll",
-            },
-          });
-        }),
-    ]);
-
-    await prisma.client.updateMany({
-      where: {
-        id: {
-          in: expiredClients.map((client) => client.id),
-        },
-      },
-      data: {
-        status: "INACTIVE",
-      },
-    });
-
-    await prisma.client.updateMany({
-      where: {
-        lastStayDate: {
-          lte: new Date(now.getTime() - 24 * 60 * 60 * 1000),
-        },
-        hereLastNight: true,
-      },
-      data: {
-        hereLastNight: false,
-      },
-    });
-
     let clients;
 
     if (filter === "STAYED_OVERNIGHT") {
@@ -168,13 +68,24 @@ async function getClients(req, res, next) {
         },
         include: clientInclude,
       });
-    } else {
+    } else if (filter && filter !== "ALL") {
       clients = await prisma.client.findMany({
         where: {
           status: filter && filter !== "ALL" ? filter : "ENROLLED",
         },
         include: clientInclude,
       });
+    } else if (filter === "ALL") {
+      clients = await prisma.client.findMany({
+        include: clientInclude,
+      });
+    } else {
+      clients = await prisma.client.findMany({
+        where: {
+          status: "ENROLLED",
+        },
+        include: clientInclude,
+      }); 
     }
 
     if (req.query?.filter) {
@@ -184,6 +95,83 @@ async function getClients(req, res, next) {
     return clients;
   } catch (error) {
     console.log("failed to get clients", error);
+    throw error;
+  }
+}
+
+// not counting completed or closed referrals
+async function getClientsByStatFilter(req, res, next) {
+  try {
+    const filter = req.query?.filter;
+
+    let clients;
+
+    if (filter === "URGENT") {
+      clients = await prisma.client.findMany({
+        where: {
+          referrals: {
+            some: {
+              isPriority: true,
+              status: {
+                notIn: ["COMPLETED", "CLOSED"],
+              },
+            },
+          },
+        },
+        include: clientInclude,
+      });
+    } else if (filter === "FOLLOW_UP") {
+      clients = await prisma.client.findMany({
+        where: {
+          referrals: {
+            some: {
+              followUpDate: {
+                not: null,
+                gte: new Date(),
+              },
+              status: {
+                notIn: ["COMPLETED", "CLOSED"],
+              },
+            },
+          },
+        },
+        include: clientInclude,
+      });
+    } else if (filter === "NEW") {
+      clients = await prisma.client.findMany({
+        where: {
+          createdAt: {
+            gte: new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000), // last 30 days
+          },
+          status: "ENROLLED",
+        },
+        include: clientInclude,
+      });
+    } else if (filter === "HOUSED") {
+      const oneYearAgo = new Date();
+      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+      clients = await prisma.client.findMany({
+        where: {
+          status: "HOUSED",
+          updatedAt: {
+            gte: oneYearAgo,
+          },
+        },
+        include: clientInclude,
+      });
+    } else if (filter === "ENROLLED") {
+      clients = await prisma.client.findMany({
+        where: {
+          status: "ENROLLED",
+        },
+        include: clientInclude,
+      });
+    }
+
+    return res.json(clients);
+  } catch (error) {
+    console.log("failed to get clients by stat filter", error);
     throw error;
   }
 }
@@ -330,6 +318,6 @@ async function handleUploadFile(req, res, next) {
 
 module.exports = {
   clientController: {
-    getClients, getClientStats, getClientById, createClient, updateClient, deleteClient, handleUploadFile
+    getClients, getClientsByStatFilter, getClientStats, getClientById, createClient, updateClient, deleteClient, handleUploadFile
   }
 };

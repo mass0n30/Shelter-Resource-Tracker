@@ -43,10 +43,10 @@ function DashBoardLayout() {
     if (token) {
       // gets all data 
       try {
-        setLoadingDuration(3000); 
-        setLoading(true);
         // fetching initial data
         fetchUpdatedData();
+        setLoading(true);
+
       } catch (err) {
         console.error("Error fetching updated data:", err);
       } 

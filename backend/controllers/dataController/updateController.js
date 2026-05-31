@@ -4,6 +4,99 @@ const { validationResult } = require("express-validator");
 
 const bcrypt = require("bcryptjs");
 
+// runs in cron
+// updates clients statuses based on outake and intake dates, and if they were here last night
+async function updateClientStatuses() {
+  const now = new Date();
+
+  const expiredClients = await prisma.client.findMany({
+    where: {
+      outtakeDate: {
+        lte: now,
+      },
+      status: "ENROLLED",
+    },
+  });
+
+  const validClients = await prisma.client.findMany({
+    where: {
+      outtakeDate: {
+        gte: now,
+      },
+      status: "ENROLLED",
+    },
+  });
+
+  await Promise.all([
+    ...expiredClients
+      .filter((client) => client.outtakeDate)
+      .map((client) => {
+        return prisma.enrollmentDates.upsert({
+          where: {
+            clientId_date_type: {
+              clientId: client.id,
+              date: client.outtakeDate,
+              type: "exit",
+            },
+          },
+          update: {
+            type: "exit",
+          },
+          create: {
+            clientId: client.id,
+            date: client.outtakeDate,
+            type: "exit",
+          },
+        });
+      }),
+
+    ...validClients
+      .filter((client) => client.intakeDate)
+      .map((client) => {
+        return prisma.enrollmentDates.upsert({
+          where: {
+            clientId_date_type: {
+              clientId: client.id,
+              date: client.intakeDate,
+              type: "enroll",
+            },
+          },
+          update: {
+            type: "enroll",
+          },
+          create: {
+            clientId: client.id,
+            date: client.intakeDate,
+            type: "enroll",
+          },
+        });
+      }),
+  ]);
+
+  await prisma.client.updateMany({
+    where: {
+      id: {
+        in: expiredClients.map((client) => client.id),
+      },
+    },
+    data: {
+      status: "INACTIVE",
+    },
+  });
+
+  await prisma.client.updateMany({
+    where: {
+      lastStayDate: {
+        lte: new Date(now.getTime() - 24 * 60 * 60 * 1000),
+      },
+      hereLastNight: true,
+    },
+    data: {
+      hereLastNight: false,
+    },
+  });
+}
+
 async function handleUpdateUser(req, res, next) {
 
   const errors = validationResult(req);
@@ -142,4 +235,4 @@ async function changeOwnPassword(req, res) {
   }
 }
 
-module.exports = {handleUpdateUser, handleUpdateAvatar, resetUserPassword, changeOwnPassword};
+module.exports = {handleUpdateUser, updateClientStatuses, handleUpdateAvatar, resetUserPassword, changeOwnPassword};

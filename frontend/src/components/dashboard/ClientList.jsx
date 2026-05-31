@@ -6,17 +6,23 @@ import { useNavigate } from 'react-router-dom';
 import { Combobox,ComboboxValue, ComboboxContent } from "@/components/ui/combobox";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import ClientForm from '../forms/ClientForm';
+import ClientListSkeleton from '../partials/loaderSkeleton/ClientListLoader';
 import { useOutletContext } from "react-router-dom";
 import { getClientReferralStats } from '@/lib/utils';
 
-function ClientList({className, viewedClients}) {
-    const { user, data, SetNewFetch, authRouter, authRouterForm } = useOutletContext();
-
-    const [loading, setLoading] = useState(false);
+function ClientList({className, viewedClients, loading}) {
 
   const navigate = useNavigate();
 
-  if (!viewedClients || viewedClients.length === 0) {  
+  if (loading === true || !viewedClients) {
+    return (
+      <div className={`clientList ${className} w-full flex items-center justify-center`}>
+        <ClientListSkeleton count={6} />
+      </div>
+    );
+  }
+
+  if (viewedClients.length === 0) {  
     return (
       <div className={`clientList ${className} flex items-center justify-center`}>
         <p className="text-muted-foreground">No clients found.</p>
@@ -27,14 +33,14 @@ function ClientList({className, viewedClients}) {
 
   return (
     <div className={`clientList ${className}`}>
-      <div className="grid grid-cols-1 md:grid-cols-2">
+      <div className="grid grid-cols-1 m-md gap-md md:grid-cols-2">
 
-        {viewedClients.map((client) => {
+        {viewedClients?.map((client) => {
           const clientStats = getClientReferralStats(client);
           return (
             <Button
               key={client.id}
-              className={`bg-white rounded-none text-color-foreground w-full h-auto p-0 justify-start`}
+              className={`bg-white hover:border-none rounded-lg text-color-foreground w-full h-auto p-0 justify-start border transition-shadow`}
               onClick={() => {
               navigate(`/dashboard/clients/${client.id}`);
             }}
@@ -61,7 +67,7 @@ function ClientCard({ client, clientStats }) {
     statusStyles[client.status] || "bg-gray-50 text-gray-600 border-gray-200";
 
   return (
-    <div className="flex-1 min-w-0 min-h-full bg-white border border-primaryLight p-xs sm:px-lg py-md shadow-sm hover:shadow-md hover:border-primary transition cursor-pointer">
+    <div className="flex-1 min-w-0 min-h-full rounded-lg bg-white border border-primaryLight p-xs sm:px-lg py-md shadow-sm transition cursor-pointer">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <div className="shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs sm:text-sm font-semibold text-slate-600 overflow-hidden">
@@ -138,8 +144,9 @@ import { ClientDropDownFilter } from '../partials/Dropdown';
 import { useEffect } from 'react';
 import { CalendarEmbedded } from './CalenderView';
 import { get } from 'react-hook-form';
+import { useAsyncStatus } from '../partials/Loading';
 
-function ClientToggleSection({className, data, allReferrals, allClientData, userNotes, userReferrals, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter, openForm, setOpenForm}) {
+function ClientToggleSection({className, loading, setLoading, allClientData, userNotes, userReferrals, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter, openForm, setOpenForm}) {
   // for searching by name
   const [clientId, setClientId] = useState(null);
   const [date, setDate] = useState(null);
@@ -147,37 +154,33 @@ function ClientToggleSection({className, data, allReferrals, allClientData, user
   const [calendarOpen, setCalendarOpen] = useState(false);
 
 
-  useEffect(() => {
-    if (dashStatFilter) {
-      setDashStatFilter(null);
-    }
-
-    const fetchClients = async () => {
+  const fetchClients = async (filter) => {
+    setLoading(true);
+    setViewedClients(null);
     try {
       const response = await authRouter.get("/dashboard/clients", {
         params: {
           filter: filter,
         },
       });
+
       setViewedClients(response.data.clients);
+      setFilter(filter);
+      setDashStatFilter(null); 
     } catch (error) {
       console.error("Error fetching clients:", error);
+    } finally {
+      setLoading(false);
     }
   };
-  fetchClients();
-  }, [filter]);
 
 return (
   <div className={`flex flex-col overflow-hidden ${className}`}>
-    <div className="flex flex-col border border-border p-sm md:p-lg">
-      <div className="flex items-center justify-between gap-2">
-        {/* Section date/title */}
-        <div className="flex flex-col gap-sm">
-          <p className="text-xs sm:text-sm font-semibold text-foreground">
-            Today  {new Date().toLocaleDateString()}
-          </p>
-
-          <p className="text-xs text-muted-foreground m-sm">
+    <div className="flex flex-col gap-4 border border-border p-sm md:p-lg">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        {/* Section title */}
+        <div className="min-w-0">
+          <p className="text-xs font-semibold tracking-wide text-muted">
             {filter === "STAYED_OVERNIGHT"
               ? "Clients Who Stayed Overnight"
               : filter === "ENROLLED" || dashStatFilter !== null
@@ -191,20 +194,26 @@ return (
               : filter === "HOUSED"
               ? "Housed Clients"
               : ""}
-            {dashStatFilter === "URGENT" && " with Urgent Referrals"}
-            {dashStatFilter === "FOLLOW_UP" && " with Upcoming Follow-ups"}
-            {dashStatFilter === "NEW" && " New Clients"}
+            {dashStatFilter === "URGENT" && " - Urgent Referrals"}
+            {dashStatFilter === "FOLLOW_UP" && " - Upcoming Follow-ups"}
+            {dashStatFilter === "NEW" && " - New Clients"}
+            {dashStatFilter === "HOUSED" && " - Housed Clients"}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+
+        {/* Actions */}
+        <div className="flex shrink-0 items-center gap-2 self-start sm:self-auto">
           <Dialog
             open={openForm === "client"}
             onOpenChange={(isOpen) => setOpenForm(isOpen ? "client" : null)}
           >
             <DialogTrigger asChild>
-              <Button size="sm" className="flex items-center gap-1 rounded-lg">
+              <Button
+                size="sm"
+                className="inline-flex h-9 items-center gap-2 rounded-lg px-3"
+              >
                 <Plus className="h-4 w-4" />
-                <span className="hidden xs:inline sm:inline">Add Client</span>
+                <span>Add Client</span>
               </Button>
             </DialogTrigger>
 
@@ -212,24 +221,26 @@ return (
           </Dialog>
 
           <Button
+            type="button"
             size="sm"
             variant="outline"
-            className="rounded-lg"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg p-0"
             onClick={() => setCalendarOpen((prev) => !prev)}
           >
             <CalendarDays className="h-4 w-4" />
           </Button>
         </div>
       </div>
+
       {/* Search */}
       <ClientSearch
         currentClients={viewedClients}
         setViewedClients={setViewedClients}
-        setClientId={setClientId}
-        filter={filter}
         setFilter={setFilter}
+        setDashStatFilter={setDashStatFilter}
+        setClientId={setClientId}
+        fetchClients={fetchClients}
       />
-
       {/* Actions */}
       <div className="flex items-center justify-between gap-2 mt-sm">
         <div className="flex min-w-0 items-center gap-2">
@@ -248,7 +259,7 @@ return (
             <span>Search</span>
           </Button>
 
-          <ClientDropDownFilter filter={filter} setFilter={setFilter} />
+          <ClientDropDownFilter filter={filter} fetchClients={fetchClients} />
         </div>
       </div>
     </div>
@@ -268,6 +279,7 @@ return (
     <ClientList
       className="border-t border-border max-h-none ml-1 overflow-visible lg:max-h-screen lg:overflow-y-auto"
       viewedClients={viewedClients}
+      loading={loading}
     />
   </div>
 );
