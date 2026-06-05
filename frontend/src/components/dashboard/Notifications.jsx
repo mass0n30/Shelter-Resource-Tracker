@@ -116,51 +116,6 @@ function ActionButtons({ item, navigate, setLoading, handleAction, loadingId }) 
   );
 }
 
-function RecentPostedNotes({ notes, className }) {
-  const recentPostedNotes = notes
-    ?.filter((note) => note.visibility !== "private")
-    ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    ?.slice(0, 4);
-
-  if (!recentPostedNotes?.length) return null;
-
-  return (
-    <section className={`w-full bg-yellow-100 border-t border-border px-4 py-4 ${className || ""}`}>
-      <h3 className="text-sm text-left font-semibold text-foreground">
-        <Globe className="inline h-4 w-4 text-primary mr-1" /> 
-        Recent Posted Notes
-      </h3>
-
-
-      <ul className="mt-3 flex flex-col">
-        {recentPostedNotes.map((note) => (
-          <li
-            key={note.id}
-            className="border-b border-gray-200 py-3 last:border-b-0"
-          >
-            <div className="flex flex-col gap-1">
-
-              <div className="flex justify-between">
-                <p className="text-sm text-foreground leading-relaxed">
-                  {note.content}
-                </p>
-                <span className="text-xs text-muted-foreground italic">
-                  {getDisplayTime(note.createdAt, "note")}
-                </span>
-              </div>
-              {note.author && (
-                <span className="text-xs text-muted-foreground">
-                  Posted by {note.author.firstName}{" "}
-                  {note.author.lastName}
-                </span>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
 
 function TimelineItem({
   item,
@@ -627,12 +582,7 @@ return (
       </div>
       </div>
 
-      {toggle === "reminders" && (
-        <RecentPostedNotes
-          notes={globalNotes}
-          className="border-border bg-backgroundAlt"
-        />
-      )}
+
     </div>
   );
 }

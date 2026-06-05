@@ -22,6 +22,11 @@ async function(username, password, done) {
         return done(null, false, { message: "Incorrect email" });
       }
 
+      const isDemoMode = process.env.APP_MODE === "demo";
+
+      if (isDemoMode && user.email === "guest@sheltertracker.com") {
+        return done(null, user);
+      }
       //comparing login password to hashed stored password
       const match = await bcrypt.compare(password, user.password);
       if (!match) {

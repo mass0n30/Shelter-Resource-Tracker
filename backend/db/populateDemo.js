@@ -3,10 +3,200 @@ const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
 
+const CLIENT_COUNTS = {
+  ENROLLED: 30,
+  WC: 15,
+  INACTIVE: 40,
+  HOUSED: 12,
+};
+
+const FIRST_NAMES = {
+  Male: [
+    "John", "Kevin", "Robert", "Terrance", "Marcus", "David", "James",
+    "Anthony", "Brian", "William", "Steven", "Darnell", "Eric", "Joseph",
+    "Michael", "Chris", "Nathan", "Samuel", "Victor", "Andre", "Caleb",
+    "Isaiah", "Wesley", "Derek", "Aaron", "George", "Travis", "Leon",
+    "Patrick", "Corey", "Brandon", "Luis",
+  ],
+  Female: [
+    "Maria", "Denise", "Angela", "Linda", "Patricia", "Shannon", "Tanya",
+    "Rebecca", "Melissa", "Karen", "Nicole", "Jasmine", "Erica", "Michelle",
+    "Heather", "Crystal", "Monica", "Latoya", "Brittany", "Dawn", "Amanda",
+    "Rachel", "Kendra", "Sabrina", "Olivia", "Theresa", "Carmen", "Ashley",
+    "Felicia", "Megan", "Diana", "Tamika",
+  ],
+};
+
+const LAST_NAMES = [
+  "Baker", "Lopez", "Smith", "Carter", "Green", "Reed", "Moore", "Evans",
+  "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis", "Wilson",
+  "Anderson", "Thomas", "Taylor", "Martin", "Jackson", "Thompson", "White",
+  "Harris", "Clark", "Lewis", "Robinson", "Walker", "Young", "Allen", "King",
+  "Wright", "Scott", "Torres", "Nguyen", "Hill", "Adams", "Bennett", "Brooks",
+  "Foster", "Price", "Coleman", "Simmons", "Bryant", "Perry", "Powell", "Long",
+  "Hughes", "Sanders", "Bell", "Cooper", "Richardson", "Bailey", "Morgan",
+  "Peterson", "Howard", "Gray", "Ramirez", "Ward", "Cox", "Richard", "Watson",
+  "Kelly", "Murphy",
+];
+
+const PRIORITY_NEEDS = [
+  "Housing stability",
+  "Employment and transportation",
+  "Medical follow-up",
+  "Mental health support",
+  "Substance use treatment",
+  "Legal documents",
+  "Replacement ID",
+  "Birth certificate assistance",
+  "Benefits application",
+  "Family reunification",
+  "Transportation support",
+  "Long-term case management",
+  "Dental care",
+  "Medication access",
+  "Job readiness",
+  "Income stabilization",
+  "Housing aftercare",
+  "Emergency shelter extension",
+];
+
+const ORGANIZATIONS_BY_TYPE = {
+  HOUSING: [
+    "United Way",
+    "Housing Partnerships Inc.",
+    "Thrive Alliance",
+    "Lincoln Central Neighborhood Family Center",
+  ],
+  EMPLOYMENT: [
+    "WorkOne",
+    "Goodwill Employment Services",
+    "Elwood Staffing",
+    "Express Employment Professionals",
+  ],
+  MEDICAL: [
+    "Columbus Regional Health",
+    "Windrose Health Network",
+    "Centerstone",
+    "Volunteers in Medicine",
+  ],
+  LEGAL: [
+    "Legal Aid",
+    "BMV / Document Assistance",
+    "Indiana Legal Services",
+    "Document Recovery Program",
+  ],
+  SUBSTANCE_USE: [
+    "Turning Point",
+    "Centerstone Recovery",
+    "Aspire Indiana Health",
+    "Tara Treatment Center",
+  ],
+  FINANCIAL_ASSISTANCE: [
+    "Trustee Office",
+    "Salvation Army",
+    "Township Assistance",
+    "Community Action Program",
+  ],
+  OTHER: [
+    "Community Outreach",
+    "Local Church Partner",
+    "Library Resource Desk",
+    "Case Management Team",
+  ],
+};
+
+const REFERRAL_PURPOSES = {
+  HOUSING: "Needs help identifying stable housing options and next-step placement.",
+  EMPLOYMENT: "Needs help with job search, resume support, and interview preparation.",
+  MEDICAL: "Needs follow-up for medical care, medication access, or appointment coordination.",
+  LEGAL: "Needs document replacement, ID support, or help resolving a legal barrier.",
+  SUBSTANCE_USE: "Needs treatment referral, recovery support, or program intake coordination.",
+  FINANCIAL_ASSISTANCE: "Needs benefits, trustee, or emergency financial assistance support.",
+  OTHER: "Needs general resource navigation and case management follow-up.",
+};
+
+const REFERRAL_SUMMARIES = [
+  "Initial referral created. Staff should verify contact information before next handoff.",
+  "Client is interested but needs help completing next-step paperwork.",
+  "ROI signed. Waiting for outside organization to confirm status.",
+  "Client missed one appointment. Follow-up needed before closing referral.",
+  "Case manager left voicemail and is waiting for response.",
+  "Client has appointment scheduled and needs transportation plan confirmed.",
+  "Referral is moving forward. Staff should document outcome after next meeting.",
+  "Client needs reminder because phone access is unreliable.",
+  "Referral completed and archived for historical reporting.",
+  "Referral closed after client disengaged or no longer needed service.",
+];
+
+const NOTE_TEMPLATES = [
+  {
+    title: "Housing follow-up",
+    content: "Client remains interested in housing resources. Staff should follow up on open housing referral and update timeline.",
+  },
+  {
+    title: "Document barrier",
+    content: "Client reports missing ID or birth certificate. This is blocking employment, benefits, or housing progress.",
+  },
+  {
+    title: "Employment progress",
+    content: "Client asked about job options and may need help with resume, interview clothes, or transportation.",
+  },
+  {
+    title: "Medical coordination",
+    content: "Client may need help confirming appointment time and arranging transportation to provider.",
+  },
+  {
+    title: "Evening shift check-in",
+    content: "Client was cooperative during shift. No immediate safety issues reported, but staff should continue routine check-ins.",
+  },
+  {
+    title: "Benefits discussion",
+    content: "Client asked about SNAP, Medicaid, or disability benefits. Case manager should review application status.",
+  },
+  {
+    title: "Transportation issue",
+    content: "Client has difficulty getting to appointments. Bus route, gas card, or agency ride option may be needed.",
+  },
+  {
+    title: "Family contact",
+    content: "Client mentioned possible family support. Follow up only if client wants to pursue contact or reunification.",
+  },
+  {
+    title: "Shelter plan update",
+    content: "Client needs updated plan for next steps, including referral priorities and expected follow-up dates.",
+  },
+  {
+    title: "Private staff observation",
+    content: "Staff should monitor engagement pattern and document whether client continues to participate in services.",
+    visibility: "private",
+  },
+];
+
 async function main() {
   console.log("Seeding database...");
 
-  // Clear old data in dependency-safe order
+  await clearDatabase();
+
+  const hashedPassword = await bcrypt.hash("password123", 10);
+
+  const users = await createUsers(hashedPassword);
+  const clients = await createClients();
+
+  await createEnrollmentTimeline(clients);
+  await createReferrals(clients, users);
+  await createNotes(clients, users);
+  await createNotifications();
+
+  await prisma.updateData.create({
+    data: {
+      data: `Seed completed with ${clients.length} clients, reduced active workload, archived referral history, 4 urgent cases, and 10 follow-ups.`,
+    },
+  });
+
+  console.log(`Seed completed. Created ${clients.length} clients.`);
+}
+
+async function clearDatabase() {
   await prisma.emailNotificationLog.deleteMany();
   await prisma.notification.deleteMany();
   await prisma.note.deleteMany();
@@ -15,12 +205,9 @@ async function main() {
   await prisma.client.deleteMany();
   await prisma.user.deleteMany();
   await prisma.updateData.deleteMany();
+}
 
-  const hashedPassword = await bcrypt.hash("password123", 10);
-
-  // -------------------------
-  // Users
-  // -------------------------
+async function createUsers(hashedPassword) {
   const admin = await prisma.user.create({
     data: {
       firstName: "Masson",
@@ -28,7 +215,7 @@ async function main() {
       email: "massoncorlette07@gmail.com",
       password: hashedPassword,
       role: "ADMIN",
-      avatarUrl: "https://i.pravatar.cc/150?img=12",
+      avatarUrl: makeInitialsAvatar("Masson Corlette"),
     },
   });
 
@@ -39,7 +226,7 @@ async function main() {
       email: "sarah@sheltertracker.com",
       password: hashedPassword,
       role: "MANAGER",
-      avatarUrl: "https://i.pravatar.cc/150?img=32",
+      avatarUrl: makeInitialsAvatar("Sarah Miller"),
     },
   });
 
@@ -50,499 +237,414 @@ async function main() {
       email: "james@sheltertracker.com",
       password: hashedPassword,
       role: "STAFF",
-      avatarUrl: "https://i.pravatar.cc/150?img=13",
+      avatarUrl: makeInitialsAvatar("James Walker"),
     },
   });
 
-  // -------------------------
-  // Clients
-  // -------------------------
-  const john = await prisma.client.create({
-    data: {
-      clientId: 1001,
-      firstName: "John",
-      lastName: "Baker",
-      email: "john.baker@example.com",
-      phone: "812-555-1101",
-      gender: "Male",
-      status: "ENROLLED",
-      bedLabel: "M1 Bottom",
-      intakeDate: daysAgo(45),
-      lastStayDate: daysAgo(1),
-      hereLastNight: true,
-      extensionStatus: false,
-      priorityNeed: "Housing stability",
-      avatarUrl: "https://i.pravatar.cc/150?img=3",
-    },
-  });
+  return {
+    admin,
+    manager,
+    staff,
+    all: [admin, manager, staff],
+  };
+}
 
-  const maria = await prisma.client.create({
-    data: {
-      clientId: 1002,
-      firstName: "Maria",
-      lastName: "Lopez",
-      email: "maria.lopez@example.com",
-      phone: "812-555-1102",
-      gender: "Female",
-      status: "ENROLLED",
-      bedLabel: "F2 Top",
-      intakeDate: daysAgo(21),
-      lastStayDate: daysAgo(1),
-      hereLastNight: true,
-      extensionStatus: true,
-      priorityNeed: "Employment and transportation",
-      avatarUrl: "https://i.pravatar.cc/150?img=5",
-    },
-  });
+async function createClients() {
+  const clientSpecs = [
+    ...buildClientSpecs("ENROLLED", CLIENT_COUNTS.ENROLLED),
+    ...buildClientSpecs("WC", CLIENT_COUNTS.WC),
+    ...buildClientSpecs("INACTIVE", CLIENT_COUNTS.INACTIVE),
+    ...buildClientSpecs("HOUSED", CLIENT_COUNTS.HOUSED),
+  ];
 
-  const kevin = await prisma.client.create({
-    data: {
-      clientId: 1003,
-      firstName: "Kevin",
-      lastName: "Smith",
-      email: "kevin.smith@example.com",
-      phone: "812-555-1103",
-      gender: "Male",
-      status: "WC",
-      bedLabel: "WC-M4",
-      intakeDate: daysAgo(7),
-      lastStayDate: daysAgo(1),
-      hereLastNight: true,
-      extensionStatus: false,
-      priorityNeed: "Medical follow-up",
-      avatarUrl: "https://i.pravatar.cc/150?img=8",
-    },
-  });
+  const clients = [];
 
-  const denise = await prisma.client.create({
-    data: {
-      clientId: 1004,
-      firstName: "Denise",
-      lastName: "Carter",
-      email: "denise.carter@example.com",
-      phone: "812-555-1104",
-      gender: "Female",
-      status: "INACTIVE",
-      bedLabel: null,
-      intakeDate: daysAgo(90),
-      outtakeDate: daysAgo(10),
-      lastStayDate: daysAgo(13),
-      hereLastNight: false,
-      extensionStatus: false,
-      priorityNeed: "Substance use treatment",
-      avatarUrl: "https://i.pravatar.cc/150?img=9",
-    },
-  });
+  for (const spec of clientSpecs) {
+    const client = await prisma.client.create({
+      data: spec,
+    });
 
-  const robert = await prisma.client.create({
-    data: {
-      clientId: 1005,
-      firstName: "Robert",
-      lastName: "Green",
-      email: "robert.green@example.com",
-      phone: "812-555-1105",
-      gender: "Male",
-      status: "HOUSED",
-      bedLabel: null,
-      intakeDate: daysAgo(160),
-      outtakeDate: daysAgo(20),
-      lastStayDate: daysAgo(25),
-      hereLastNight: false,
-      extensionStatus: false,
-      priorityNeed: "Housing aftercare",
-      avatarUrl: "https://i.pravatar.cc/150?img=14",
-    },
-  });
+    clients.push(client);
+  }
 
-  const angela = await prisma.client.create({
-    data: {
-      clientId: 1006,
-      firstName: "Angela",
-      lastName: "Reed",
-      email: "angela.reed@example.com",
-      phone: "812-555-1106",
-      gender: "Female",
-      status: "ENROLLED",
-      bedLabel: "F1 Bottom",
-      intakeDate: daysAgo(12),
-      lastStayDate: daysAgo(2),
-      hereLastNight: false,
-      extensionStatus: false,
-      priorityNeed: "Legal documents",
-      avatarUrl: "https://i.pravatar.cc/150?img=16",
-    },
-  });
+  return clients;
+}
 
-  const terrance = await prisma.client.create({
-    data: {
-      clientId: 1007,
-      firstName: "Terrance",
-      lastName: "Moore",
-      email: "terrance.moore@example.com",
-      phone: "812-555-1107",
-      gender: "Male",
-      status: "ENROLLED",
-      bedLabel: "M3 Top",
-      intakeDate: daysAgo(30),
-      lastStayDate: daysAgo(1),
-      hereLastNight: true,
-      extensionStatus: true,
-      priorityNeed: "Employment",
-      avatarUrl: "https://i.pravatar.cc/150?img=18",
-    },
-  });
+function buildClientSpecs(status, count) {
+  const specs = [];
 
-  const linda = await prisma.client.create({
-    data: {
-      clientId: 1008,
-      firstName: "Linda",
-      lastName: "Evans",
-      email: "linda.evans@example.com",
-      phone: "812-555-1108",
-      gender: "Female",
-      status: "WC",
-      bedLabel: "WC-F1",
-      intakeDate: daysAgo(3),
-      lastStayDate: daysAgo(1),
-      hereLastNight: true,
-      extensionStatus: false,
-      priorityNeed: "Emergency shelter and ID replacement",
-      avatarUrl: "https://i.pravatar.cc/150?img=20",
-    },
-  });
+  for (let i = 0; i < count; i += 1) {
+    const globalIndex = getStatusOffset(status) + i + 1;
+    const gender = globalIndex % 2 === 0 ? "Female" : "Male";
+    const firstName = FIRST_NAMES[gender][i % FIRST_NAMES[gender].length];
+    const lastName = LAST_NAMES[(globalIndex * 3) % LAST_NAMES.length];
+    const fullName = `${firstName} ${lastName}`;
 
+    const intakeDaysAgo = getIntakeDaysAgo(status, i);
+    const outtakeDaysAgo = getOuttakeDaysAgo(status, i, intakeDaysAgo);
+
+    const stayedRecently = status === "ENROLLED" || status === "WC";
+    const hereLastNight = stayedRecently && i % 4 !== 0;
+
+    specs.push({
+      clientId: 1000 + globalIndex,
+      firstName,
+      lastName,
+      email: `${firstName}.${lastName}.${globalIndex}@example.com`.toLowerCase(),
+      phone: `812-555-${String(1100 + globalIndex).slice(-4)}`,
+      gender,
+      status,
+      bedLabel: getBedLabel(status, gender, i),
+      intakeDate: daysAgo(intakeDaysAgo),
+      outtakeDate: outtakeDaysAgo ? daysAgo(outtakeDaysAgo) : null,
+      lastStayDate: stayedRecently
+        ? daysAgo(i % 5 === 0 ? 2 : 1)
+        : daysAgo(outtakeDaysAgo || 20),
+      hereLastNight,
+      extensionStatus: (status === "ENROLLED" || status === "WC") && i % 8 === 0,
+      priorityNeed: PRIORITY_NEEDS[(globalIndex + i) % PRIORITY_NEEDS.length],
+      avatarUrl: makeInitialsAvatar(fullName),
+    });
+  }
+
+  return specs;
+}
+
+function getStatusOffset(status) {
+  if (status === "ENROLLED") return 0;
+  if (status === "WC") return CLIENT_COUNTS.ENROLLED;
+  if (status === "INACTIVE") return CLIENT_COUNTS.ENROLLED + CLIENT_COUNTS.WC;
+  if (status === "HOUSED") {
+    return CLIENT_COUNTS.ENROLLED + CLIENT_COUNTS.WC + CLIENT_COUNTS.INACTIVE;
+  }
+
+  return 0;
+}
+
+function getIntakeDaysAgo(status, index) {
+  if (status === "ENROLLED") return 5 + index * 3;
+  if (status === "WC") return 1 + index;
+  if (status === "INACTIVE") return 45 + index * 4;
+  if (status === "HOUSED") return 90 + index * 12;
+
+  return 30;
+}
+
+function getOuttakeDaysAgo(status, index, intakeDaysAgo) {
+  if (status === "INACTIVE") {
+    return Math.max(5, intakeDaysAgo - 20 - (index % 12));
+  }
+
+  if (status === "HOUSED") {
+    return Math.max(10, intakeDaysAgo - 45 - (index % 20));
+  }
+
+  return null;
+}
+
+function getBedLabel(status, gender, index) {
+  if (status === "INACTIVE" || status === "HOUSED") return null;
+
+  const prefix = gender === "Female" ? "F" : "M";
+  const bedNumber = (index % 12) + 1;
+  const bunk = index % 2 === 0 ? "Bottom" : "Top";
+
+  if (status === "WC") return `WC-${prefix}${bedNumber}`;
+
+  return `${prefix}${bedNumber} ${bunk}`;
+}
+
+async function createEnrollmentTimeline(clients) {
+  const records = [];
+
+  clients.forEach(function (client) {
+    records.push({
+      clientId: client.id,
+      date: client.intakeDate,
+      type: "INTAKE",
+    });
+
+    if (client.status === "INACTIVE" && client.outtakeDate) {
+      records.push({
+        clientId: client.id,
+        date: client.outtakeDate,
+        type: "OUTTAKE",
+      });
+    }
+
+    if (client.status === "HOUSED" && client.outtakeDate) {
+      records.push({
+        clientId: client.id,
+        date: client.outtakeDate,
+        type: "HOUSED",
+      });
+    }
+  });
 
   await prisma.enrollmentDates.createMany({
-    data: [
-      {
-        clientId: john.id,
-        date: john.intakeDate,
-        type: "INTAKE",
-      },
-      {
-        clientId: maria.id,
-        date: maria.intakeDate,
-        type: "INTAKE",
-      },
-      {
-        clientId: kevin.id,
-        date: kevin.intakeDate,
-        type: "INTAKE",
-      },
-      {
-        clientId: denise.id,
-        date: denise.intakeDate,
-        type: "INTAKE",
-      },
-      {
-        clientId: denise.id,
-        date: denise.outtakeDate,
-        type: "OUTTAKE",
-      },
-      {
-        clientId: robert.id,
-        date: robert.intakeDate,
-        type: "INTAKE",
-      },
-      {
-        clientId: robert.id,
-        date: robert.outtakeDate,
-        type: "HOUSED",
-      },
-      {
-        clientId: angela.id,
-        date: angela.intakeDate,
-        type: "INTAKE",
-      },
-      {
-        clientId: terrance.id,
-        date: terrance.intakeDate,
-        type: "INTAKE",
-      },
-      {
-        clientId: linda.id,
-        date: linda.intakeDate,
-        type: "INTAKE",
-      },
-    ],
+    data: records,
+  });
+}
+
+async function createReferrals(clients, users) {
+  const resourceTypes = Object.keys(ORGANIZATIONS_BY_TYPE);
+  const referrals = [];
+
+  let urgentCasesCreated = 0;
+  let followUpsCreated = 0;
+
+  clients.forEach(function (client, index) {
+    const referralCount = getReferralCount(client.status, index);
+
+    for (let i = 0; i < referralCount; i += 1) {
+      const resourceType = resourceTypes[(index + i) % resourceTypes.length];
+      const status = getReferralStatus(client.status, index, i);
+      const closed = status === "CLOSED" || status === "COMPLETED";
+
+      let isPriority = false;
+      if (!closed && urgentCasesCreated < 4 && shouldCreatePriority(client, index, i)) {
+        isPriority = true;
+        urgentCasesCreated += 1;
+      }
+
+      let followUpDate = null;
+      if (!closed && followUpsCreated < 10 && shouldCreateFollowUp(client, index, i)) {
+        followUpDate = daysFromNow(getFollowUpOffset(followUpsCreated));
+        followUpsCreated += 1;
+      }
+
+      const roiSigned = closed || (index + i) % 4 !== 0;
+
+      referrals.push({
+        clientId: client.id,
+        createdById: pickUser(users.all, index + i).id,
+        organizationName: pick(ORGANIZATIONS_BY_TYPE[resourceType], index + i),
+        resourceType,
+        purpose: REFERRAL_PURPOSES[resourceType],
+        status,
+        roiSigned,
+        roiSignedAt: roiSigned ? daysAgo(1 + ((index + i) % 30)) : null,
+        followUpDate,
+        closedAt: closed ? daysAgo(2 + ((index + i) % 75)) : null,
+        isPriority,
+        summary: closed
+          ? pick(
+              [
+                "Referral completed and archived for historical reporting.",
+                "Referral closed after outcome was documented.",
+                "Client completed the resource connection successfully.",
+                "Referral closed because service was no longer needed.",
+              ],
+              index + i
+            )
+          : pick(REFERRAL_SUMMARIES, index + i),
+      });
+    }
   });
 
   await prisma.referral.createMany({
-    data: [
-      {
-        clientId: john.id,
-        createdById: manager.id,
-        organizationName: "United Way",
-        resourceType: "HOUSING",
-        purpose: "Needs help finding stable housing options.",
-        status: "PENDING",
-        roiSigned: true,
-        roiSignedAt: daysAgo(10),
-        followUpDate: daysFromNow(2),
-        isPriority: true,
-        summary: "Housing intake completed. Waiting for follow-up from housing coordinator.",
-      },
-      {
-        clientId: john.id,
-        createdById: staff.id,
-        organizationName: "Centerstone",
-        resourceType: "MEDICAL",
-        purpose: "Mental health support and medication management.",
-        status: "REFERRED",
-        roiSigned: false,
-        followUpDate: daysFromNow(5),
-        isPriority: false,
-        summary: "Client expressed interest but still needs ROI signed.",
-      },
-      {
-        clientId: maria.id,
-        createdById: manager.id,
-        organizationName: "WorkOne",
-        resourceType: "EMPLOYMENT",
-        purpose: "Resume help and job placement.",
-        status: "ENROLLED",
-        roiSigned: true,
-        roiSignedAt: daysAgo(5),
-        followUpDate: daysFromNow(7),
-        isPriority: false,
-        summary: "Client attended first appointment and has a resume workshop scheduled.",
-      },
-      {
-        clientId: kevin.id,
-        createdById: staff.id,
-        organizationName: "Columbus Regional Health",
-        resourceType: "MEDICAL",
-        purpose: "Follow-up for ongoing medical issue.",
-        status: "PENDING",
-        roiSigned: true,
-        roiSignedAt: daysAgo(2),
-        followUpDate: daysFromNow(1),
-        isPriority: true,
-        summary: "Medical follow-up is time-sensitive. Staff should confirm appointment.",
-      },
-      {
-        clientId: denise.id,
-        createdById: manager.id,
-        organizationName: "Turning Point",
-        resourceType: "SUBSTANCE_USE",
-        purpose: "Treatment program referral.",
-        status: "CLOSED",
-        roiSigned: true,
-        roiSignedAt: daysAgo(30),
-        closedAt: daysAgo(8),
-        isPriority: false,
-        summary: "Referral closed after client stopped engaging with shelter services.",
-      },
-      {
-        clientId: robert.id,
-        createdById: admin.id,
-        organizationName: "Housing Partnerships Inc.",
-        resourceType: "HOUSING",
-        purpose: "Permanent housing placement.",
-        status: "COMPLETED",
-        roiSigned: true,
-        roiSignedAt: daysAgo(60),
-        closedAt: daysAgo(20),
-        isPriority: false,
-        summary: "Client was successfully housed. Follow-up recommended after 30 days.",
-      },
-      {
-        clientId: angela.id,
-        createdById: staff.id,
-        organizationName: "Legal Aid",
-        resourceType: "LEGAL",
-        purpose: "Needs help replacing documents and resolving ID issue.",
-        status: "INQUIRED",
-        roiSigned: false,
-        followUpDate: daysFromNow(3),
-        isPriority: true,
-        summary: "Client cannot move forward with several services until documents are replaced.",
-      },
-      {
-        clientId: terrance.id,
-        createdById: manager.id,
-        organizationName: "WorkOne",
-        resourceType: "EMPLOYMENT",
-        purpose: "Job search and interview preparation.",
-        status: "REFERRED",
-        roiSigned: true,
-        roiSignedAt: daysAgo(4),
-        followUpDate: daysFromNow(4),
-        isPriority: false,
-        summary: "Client has warehouse experience and is interested in second-shift work.",
-      },
-      {
-        clientId: linda.id,
-        createdById: staff.id,
-        organizationName: "BMV / Document Assistance",
-        resourceType: "LEGAL",
-        purpose: "Replacement ID and birth certificate.",
-        status: "PENDING",
-        roiSigned: true,
-        roiSignedAt: daysAgo(1),
-        followUpDate: daysFromNow(1),
-        isPriority: true,
-        summary: "New winter contingency client. ID replacement is urgent.",
-      },
-    ],
+    data: referrals,
+  });
+}
+
+function getReferralStatus(clientStatus, clientIndex, referralIndex) {
+  if (clientStatus === "INACTIVE") {
+    return referralIndex % 2 === 0 ? "CLOSED" : "COMPLETED";
+  }
+
+  if (clientStatus === "HOUSED") {
+    return referralIndex % 3 === 0 ? "CLOSED" : "COMPLETED";
+  }
+
+  if (clientStatus === "WC") {
+    const statuses = ["COMPLETED", "CLOSED", "REFERRED", "COMPLETED"];
+    return statuses[(clientIndex + referralIndex) % statuses.length];
+  }
+
+  if (clientStatus === "ENROLLED") {
+    const statuses = [
+      "COMPLETED",
+      "CLOSED",
+      "PENDING",
+      "COMPLETED",
+      "REFERRED",
+      "COMPLETED",
+      "CLOSED",
+    ];
+
+    return statuses[(clientIndex + referralIndex) % statuses.length];
+  }
+
+  return "COMPLETED";
+}
+
+function shouldCreatePriority(client, clientIndex, referralIndex) {
+  if (client.status !== "ENROLLED" && client.status !== "WC") return false;
+
+  return referralIndex === 0 && clientIndex % 9 === 0;
+}
+
+function shouldCreateFollowUp(client, clientIndex, referralIndex) {
+  if (client.status !== "ENROLLED" && client.status !== "WC") return false;
+
+  return referralIndex === 0 && clientIndex % 4 === 0;
+}
+
+function getFollowUpOffset(count) {
+  const offsets = [-3, -2, -1, 0, 1, 2, 3, 5, 7, 10];
+  return offsets[count % offsets.length];
+}
+
+function getReferralCount(status, index) {
+  if (status === "ENROLLED") return index % 5 === 0 ? 3 : 2;
+  if (status === "WC") return index % 4 === 0 ? 3 : 2;
+  if (status === "INACTIVE") return index % 3 === 0 ? 4 : 3;
+  if (status === "HOUSED") return index % 2 === 0 ? 5 : 4;
+
+  return 1;
+}
+
+async function createNotes(clients, users) {
+  const notes = [];
+
+  let noteRemindersCreated = 0;
+
+  clients.forEach(function (client, index) {
+    const noteCount = getNoteCount(client.status, index);
+
+    for (let i = 0; i < noteCount; i += 1) {
+      const template = NOTE_TEMPLATES[(index + i) % NOTE_TEMPLATES.length];
+
+      const hasReminder =
+        noteRemindersCreated < 3 &&
+        (client.status === "ENROLLED" || client.status === "WC") &&
+        i === 0 &&
+        index % 11 === 0;
+
+      if (hasReminder) {
+        noteRemindersCreated += 1;
+      }
+
+      const isPrivate = template.visibility === "private" || (index + i) % 7 === 0;
+
+      notes.push({
+        clientId: client.id,
+        authorId: pickUser(users.all, index + i).id,
+        title: template.title,
+        content: `${template.content} (${client.firstName} ${client.lastName})`,
+        setReminder: hasReminder,
+        reminderAt: hasReminder ? daysFromNow(2 + noteRemindersCreated) : null,
+        completed: client.status === "INACTIVE" && i === noteCount - 1,
+        visibility: isPrivate ? "private" : "public",
+      });
+    }
   });
 
-  // -------------------------
-  // Notes
-  // -------------------------
+  notes.push(
+    {
+      clientId: null,
+      authorId: users.admin.id,
+      title: "Staff reminder",
+      content: "Review active referrals before morning handoff and confirm the highest-priority items only.",
+      setReminder: true,
+      reminderAt: daysFromNow(1),
+      visibility: "public",
+    },
+    {
+      clientId: null,
+      authorId: users.manager.id,
+      title: "CSV upload check",
+      content: "Verify nightly stay sheet imported correctly before using stayed overnight filter.",
+      setReminder: false,
+      visibility: "public",
+    },
+    {
+      clientId: null,
+      authorId: users.staff.id,
+      title: "Data cleanup",
+      content: "Review possible duplicate clients and unmatched CSV rows later this week.",
+      setReminder: false,
+      visibility: "private",
+    },
+    {
+      clientId: null,
+      authorId: users.manager.id,
+      title: "Archived referrals review",
+      content: "Review completed and closed referrals for reporting accuracy before monthly export.",
+      setReminder: false,
+      visibility: "public",
+    }
+  );
+
   await prisma.note.createMany({
-    data: [
-      {
-        clientId: john.id,
-        authorId: manager.id,
-        title: "Housing follow-up",
-        content: "John said he is still interested in transitional housing. Follow up with United Way this week.",
-        setReminder: true,
-        reminderAt: daysFromNow(2),
-        visibility: "public",
-      },
-      {
-        clientId: john.id,
-        authorId: staff.id,
-        title: "Mood check",
-        content: "Client seemed tired but cooperative. No major concerns during evening shift.",
-        setReminder: false,
-        visibility: "private",
-      },
-      {
-        clientId: maria.id,
-        authorId: manager.id,
-        title: "Employment progress",
-        content: "Maria attended her WorkOne appointment and wants help printing updated resume.",
-        setReminder: true,
-        reminderAt: daysFromNow(4),
-        visibility: "public",
-      },
-      {
-        clientId: kevin.id,
-        authorId: staff.id,
-        title: "Medical appointment",
-        content: "Kevin needs help confirming his appointment time. He does not have reliable phone access.",
-        setReminder: true,
-        reminderAt: daysFromNow(1),
-        visibility: "public",
-      },
-      {
-        clientId: denise.id,
-        authorId: manager.id,
-        title: "Inactive client note",
-        content: "Denise has not returned for services. Marked inactive after repeated no-shows.",
-        setReminder: false,
-        completed: true,
-        visibility: "private",
-      },
-      {
-        clientId: robert.id,
-        authorId: admin.id,
-        title: "Housed follow-up",
-        content: "Robert was housed successfully. Check in after 30 days if contact information is still valid.",
-        setReminder: true,
-        reminderAt: daysFromNow(10),
-        visibility: "public",
-      },
-      {
-        clientId: angela.id,
-        authorId: staff.id,
-        title: "Needs ID documents",
-        content: "Angela says she lost her ID and birth certificate. This is blocking job and housing applications.",
-        setReminder: true,
-        reminderAt: daysFromNow(3),
-        visibility: "public",
-      },
-      {
-        clientId: terrance.id,
-        authorId: manager.id,
-        title: "Interview prep",
-        content: "Terrance asked about interview clothes and transportation options for job interviews.",
-        setReminder: false,
-        visibility: "public",
-      },
-      {
-        clientId: linda.id,
-        authorId: staff.id,
-        title: "New WC intake",
-        content: "Linda came in through winter contingency. Needs document replacement and resource orientation.",
-        setReminder: true,
-        reminderAt: daysFromNow(1),
-        visibility: "public",
-      },
-
-      // Dashboard/global notes
-      {
-        clientId: null,
-        authorId: admin.id,
-        title: "Staff reminder",
-        content: "Remember to review priority referrals before morning handoff.",
-        setReminder: true,
-        reminderAt: daysFromNow(1),
-        visibility: "public",
-      },
-      {
-        clientId: null,
-        authorId: manager.id,
-        title: "CSV upload check",
-        content: "Verify nightly stay sheet imported correctly before using stayed overnight filter.",
-        setReminder: false,
-        visibility: "public",
-      },
-      {
-        clientId: null,
-        authorId: staff.id,
-        title: "Private dashboard note",
-        content: "Need to clean up duplicate client names later this week.",
-        setReminder: false,
-        visibility: "private",
-      },
-    ],
+    data: notes,
   });
+}
 
-  // -------------------------
-  // Notifications
-  // -------------------------
+function getNoteCount(status, index) {
+  if (status === "ENROLLED") return index % 3 === 0 ? 3 : 2;
+  if (status === "WC") return 2;
+  if (status === "INACTIVE") return index % 4 === 0 ? 2 : 1;
+  if (status === "HOUSED") return 2;
+
+  return 1;
+}
+
+async function createNotifications() {
   await prisma.notification.createMany({
     data: [
       {
         type: "CSV_UPLOAD",
         message: "Nightly stay sheet processed successfully.",
         data: {
-          processed: 8,
-          matchedClients: 6,
-          unmatchedClients: 2,
+          processed: 85,
+          matchedClients: 73,
+          unmatchedClients: 12,
         },
         read: false,
       },
       {
         type: "PRIORITY_REFERRAL",
-        message: "3 priority referrals need attention.",
+        message: "4 urgent cases need attention before next handoff.",
         data: {
-          count: 3,
+          count: 4,
         },
         read: false,
       },
       {
         type: "FOLLOW_UP",
-        message: "Several follow-ups are due soon.",
+        message: "10 follow-ups are overdue or due soon.",
         data: {
-          dueSoon: 4,
+          overdue: 4,
+          dueSoon: 6,
+        },
+        read: false,
+      },
+      {
+        type: "CLIENT_STATUS",
+        message: "Recent client status changes include housed and inactive updates.",
+        data: {
+          housedThisMonth: 7,
+          inactiveThisMonth: 11,
         },
         read: true,
       },
     ],
   });
+}
 
+function makeInitialsAvatar(name) {
+  return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(
+    name
+  )}`;
+}
 
-  await prisma.updateData.create({
-    data: {
-      data: "Initial seed completed with mock clients, referrals, notes, and notifications.",
-    },
-  });
+function pick(items, index) {
+  return items[index % items.length];
+}
 
-  console.log("Seed completed.");
+function pickUser(users, index) {
+  return users[index % users.length];
 }
 
 function daysAgo(days) {

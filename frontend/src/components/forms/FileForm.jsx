@@ -6,6 +6,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { set } from "date-fns";
+import { VisuallyHidden } from "radix-ui";
 
 function FileForm({ authRouterForm, fetchUpdatedData, setOpenForm }) {
   const [file, setFile] = useState(null);
@@ -73,10 +74,6 @@ function FileForm({ authRouterForm, fetchUpdatedData, setOpenForm }) {
       <DialogHeader>
         <DialogTitle>Upload CSV</DialogTitle>
 
-        <DialogDescription className="mt-2 flex items-center gap-2 text-sm text-muted">
-          <Upload className="w-4 h-4" />
-          Manually upload a client CSV file to update overnight stay data.
-        </DialogDescription>
       </DialogHeader>
 
       {error && <span className="text-red-500 text-sm">{error}</span>}

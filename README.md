@@ -48,9 +48,18 @@ Extra Possible Features (after making core MVP product):
   Avoid global notifications by default
 
 TO-DO GENERAL 5/28 (What to do to Finish Project):
-  - Fix Closed and Completed referrals mapping on client profiles
   - Fix loader skeleton bug (dash skeleton loads on records/profile page?)
   - Add/Check all client CRUD routes
+  - Adjust Edit Client Form (image, add extension, date picker?)
+  - Move the Profile color mapping from seeding to backend
+  - Add Toggle up on Notes
+  - Adjust Dashstats radius and spacing? (considering added graphic)
+  - Add sparkle (some sort of graphic in left banner?)
+  - Drop down line bug on Profile welcome
+  - Increase dashboard border darkness?
+  - Adjust Upload CSV form sentencing.
+  - Mobile buttons color adjust on toggles, 
+  - Add Gender in Info, fix Timeline height container
   - Add/Check all success/fetchUpdated data calls for mounts
   - Add pagination to client list (limit 50?)
   - Normalize Calendar Popovers (height issues on edit forms)
@@ -58,12 +67,16 @@ TO-DO GENERAL 5/28 (What to do to Finish Project):
   - Fix drop down arrows to close in filter dropdowns (recordsPage)
   - Google Auth sign-in not working on deployment fix?
   - Add Docs/Img avatar upload routes, look into cloudify cost?
+  - Mobile: fix client profile Banner, Records buttons, and drop down chevron down arrows spacing
+    * !! Fix Notifications Sheet doesn't toggle on Records route
   - POLISH
   - Update Loader Skeletons
+  - Add Disclaimer, About pages, ect (look back at notes)
 
   - Other
     - Run Linter 
     - Add transition animations to mobile panels (shadUI causing issues currently)
+    - Add count for notifications icon on mobile Nav (Follow up/Notes today or tomorrow, or posted notes?)
 
 
 Deployment To-Do:

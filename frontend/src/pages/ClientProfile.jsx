@@ -18,7 +18,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   Ellipsis,
   TriangleAlert,
-  ArrowLeft,
+  ArrowLeft,  
   LucideBedDouble,
   Plus,
   FilePlus,
@@ -40,6 +40,8 @@ export default function ClientProfile() {
   const { authRouter } = useOutletContext();
 
   const { error, setError, success, setSuccess, loading, setLoadingDuration, setLoading } = useAsyncStatus();
+
+  window.scrollTo(0, 0);
 
   const fetchClientData = async (success) => {
     try {
@@ -110,6 +112,8 @@ function ClientInfoSectionToggle({
   className,
 }) {
 
+  const filteredResources = clientData.referrals?.filter((referral) => referral.status !== "COMPLETED" && referral.status !== "CLOSED") || [];
+
   return (
     <div
       className={`flex min-h-0 flex-col overflow-hidden rounded-md bg-white p-4 ${className}`}
@@ -156,7 +160,7 @@ function ClientInfoSectionToggle({
         {activeSection === "resources" && (
           <Resources
             fetchClientData={fetchClientData}
-            referrals={clientData.referrals}
+            referrals={filteredResources}
             authRouter={authRouter}
           />
         )}
@@ -705,6 +709,12 @@ export function Resources({referrals, fetchClientData, authRouter, showName}) {
 
   return (
     <div className="flex flex-col bg-background p-3 sm:p-4 rounded-xl space-y-3 overflow-y-auto relative position-relative ">
+      <div className="flex items-center gap-1 xs:gap-2">
+        <NotebookText className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+        <h2 className="text-xs sm:text-sm font-semibold text-gray-800">
+          Active Referrals
+        </h2>
+      </div>
 
     {referrals?.map((resource) => {
       const config = RESOURCE_CONFIG[resource.resourceType] || {};

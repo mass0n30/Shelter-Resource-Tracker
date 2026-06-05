@@ -23,6 +23,8 @@ function Login() {
   // clear token on mount
   //localStorage.removeItem("usertoken");
 
+  const isDemo = import.meta.env.VITE_APP_MODE === "demo";
+
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setError(null);
@@ -103,6 +105,55 @@ function Login() {
     });
   };
 
+  const handleDemoLogin = async () => {
+    setUsername("guest@sheltertracker.com");
+    setPassword("password123");
+    
+    await fetch(`${import.meta.env.VITE_API_URL}/`, {
+      mode: "cors",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: "guest@sheltertracker.com", password: "password123" }),
+    }).then(async (response) => {
+    const data = await response.json();
+
+    if (data.error) {
+      setError(data.error);
+      return;
+    }
+
+    if (response.status === 401) {
+      setError("Wrong email or password");
+      return;
+    }
+
+    if (response.status > 401) {
+      setError("server error");
+      return;
+    }
+
+    localStorage.setItem("usertoken", data.token);
+
+    if (data.user?.mustChangePassword) {
+      navigate("/change-password");
+      return;
+    }
+
+    if (!data.error) {
+      navigate("/dashboard");
+      return;
+    }
+
+    if (data.error) {
+      setError(data.error);
+      return;
+    }
+
+  });
+  };
+
  return (
   <div className="min-h-screen w-full bg-primaryLight flex items-center justify-center p-md">
     <div className="w-full max-w-6xl min-h-[90vh] bg-backgroundAlt rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row">
@@ -146,17 +197,17 @@ function Login() {
             Shelter Resource Tracker
           </h1>
 
-          <p className="mt-2 max-w-[240px] text-sm text-muted">
+          <p className="mt-2 text-center text-sm text-muted">
             Bringing a supportive community together.
           </p>
         </div>
 
         <CardHeader className="px-0 pb-6 pt-0">
-          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+          <CardTitle className="text-2xl text-left font-bold tracking-tight text-foreground">
             Welcome,
           </CardTitle>
 
-          <CardDescription className="text-sm text-muted">
+          <CardDescription className="text-sm text-left text-muted">
             Sign in to continue to your account
           </CardDescription>
         </CardHeader>
@@ -222,18 +273,41 @@ function Login() {
             <Button type="submit" className="h-11 w-full rounded text-white">
               Continue
             </Button>
+            {isDemo ? (
+              <Button
+                type="button"
+                onClick={handleDemoLogin}
+                className="h-11 w-full rounded bg-primary text-white shadow-sm hover:bg-primaryDark"
+              >
+                Enter Demo Dashboard
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                className="h-11 w-full rounded border-primary/20 bg-primaryLight text-primary hover:border-primary hover:bg-primary hover:text-white"
+                onClick={() => {
+                  window.location.href =
+                    "https://shelter-resource-tracker-demo.vercel.app/";
+                }}
+              >
+                View Live Demo
+              </Button>
+            )}
 
             <div className="flex items-center gap-4 py-1">
               <div className="h-px flex-1 bg-border" />
               <span className="text-xs text-muted">or</span>
               <div className="h-px flex-1 bg-border" />
             </div>
-
-            <div className="flex justify-center">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => setError("Google sign in failed")}
-              />
+            <div className="space-y-lg">
+              <div className="flex w-full justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => setError("Google sign in failed")}
+                  className="w-full rounded"
+                />
+              </div>
             </div>
           </form>
 
@@ -244,7 +318,7 @@ function Login() {
               to="/sign-up"
               className="font-semibold text-primary hover:underline"
             >
-              Contact your administrator
+              Sign Up
             </Link>
           </div>
         </CardContent>

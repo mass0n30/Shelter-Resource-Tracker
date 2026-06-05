@@ -16,6 +16,8 @@ function RecordsPage() {
   const { user, data, authRouter, authRouterForm, fetchUpdatedData, openForm, setOpenForm } =
     useOutletContext();
 
+  window.scrollTo(0, 0);
+
   const [activeTab, setActiveTab] = useState("resources");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");

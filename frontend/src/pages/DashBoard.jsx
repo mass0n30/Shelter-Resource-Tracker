@@ -4,6 +4,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 import ClientToggleSection from '../components/dashboard/ClientList';
 import Notifications from '../components/dashboard/Notifications';
+import RecentPostedNotes from '../components/dashboard/RecentNotes';
 import NotificationsAlert from '../components/dashboard/NotificationsAlert';
 import Navbar from '../components/Navbar';
 import DashboardHero from '../components/dashboard/DashboardHero'
@@ -15,7 +16,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { CircleAlert, Users } from "lucide-react";
+import { CircleAlert, NotebookText, X } from "lucide-react";
 import { useAsyncStatus } from '../components/partials/Loading';
 
 function DashBoard() {
@@ -26,7 +27,10 @@ function DashBoard() {
   const [dashStatFilter, setDashStatFilter] = useState(null);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [showAlerts, setShowAlerts] = useState(false);
+  const [recentNotesOpen, setRecentNotesOpen] = useState(false);
   const [toggle, setToggle] = useState("reminders");
+
+  window.scrollTo(0, 0);
 
   const clients = data.clients;
 
@@ -199,7 +203,26 @@ return (
             </div>
           </aside>
         </section>
+          <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-md">
+            <div className="mb-2 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setRecentNotesOpen((prev) => !prev)}
+                className="flex h-[64px] w-[64px] items-center justify-center rounded-full border border-border bg-primary opacity-80 hover:opacity-100 text-muted shadow-md transition hover:text-foreground hover:shadow-lg"
+                aria-label={recentNotesOpen ? "Close recent notes" : "Open recent notes"}
+              >
+                {!recentNotesOpen && (
+                  <NotebookText className="h-10 w-10 text-white" />
+                )}
+              </button>
+            </div>
 
+            {recentNotesOpen && (
+              <div className="overflow-hidden rounded-lg border border-border bg-backgroundAlt shadow-lg">
+                <RecentPostedNotes notes={data.notes} setRecentNotesOpen={setRecentNotesOpen} />
+              </div>
+            )}
+          </div>
       </div>
     </main>
 

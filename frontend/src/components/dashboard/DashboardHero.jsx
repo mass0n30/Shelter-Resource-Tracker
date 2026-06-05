@@ -113,7 +113,7 @@ function HeroDashStats({ dashStats, dashStatFilter, setDashStatFilter }) {
   ];
 
   return (
-    <div className="relative z-10 mt-5 grid grid-cols-1 bg-white/[0.075] md:grid-cols-5">
+    <div className="relative md:w-[97%] md:mx-auto md:rounded-tl-lg rounded-tr-lg overflow-hidden z-10 mt-md grid grid-cols-1 bg-white/[0.075] md:grid-cols-5">
       {stats.map((stat) => (
         <HeroStatCard
           key={stat.filter}
@@ -135,7 +135,7 @@ function HeroStatCard({ stat, active, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`group flex min-h-[74px] items-center gap-3 border-r border-t border-white/10 px-5 py-3 text-left transition hover:bg-white/10 ${
+      className={`group flex min-h-[80px] rounded-none items-center gap-3 border-r border-t border-white/10 px-5 py-3 text-left transition hover:bg-white/10 ${
         active ? "bg-white/[0.12]" : ""
       }`}
     >
