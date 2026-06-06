@@ -35,6 +35,7 @@ export default {
         foreground: "var(--color-foreground)",
         muted: "var(--color-muted)",
         border: "var(--color-border)",
+        accentOrange: "var(--accent-orange)",
       },
 
       borderRadius: {

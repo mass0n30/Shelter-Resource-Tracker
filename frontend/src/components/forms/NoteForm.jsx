@@ -10,7 +10,7 @@ import { z } from "zod";
 
 const schema = z.object({
   content: z.string().min(1, "Note content is required"),
-  title: z.string().max(20, "Title too long").optional(),
+  title: z.string().max(30, "Title too long").optional(),
   setReminder: z.boolean().optional(),
   reminderAt: z.date().nullable().optional(),
 });

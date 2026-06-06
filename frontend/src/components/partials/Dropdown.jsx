@@ -146,6 +146,7 @@ export default function DropdownEditDelete({
 
 export function DropdownNoteEditDelete({ note, authRouter, fetchClientData, handleDelete }) {
   const id = note.id;
+  const [editOpen, setEditOpen] = useState(false);
 
   return (
     <div onClick={(e) => e.stopPropagation()}>
@@ -166,7 +167,7 @@ export function DropdownNoteEditDelete({ note, authRouter, fetchClientData, hand
           className="min-w-32 bg-white text-black border rounded-md shadow-lg"
         >
           {/* EDIT */}
-          <Dialog>
+          <Dialog open={editOpen} onOpenChange={setEditOpen}>
             <DialogTrigger asChild>
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 Edit

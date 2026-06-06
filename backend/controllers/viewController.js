@@ -65,6 +65,7 @@ async function getAllReferrals(req, res, next) {
 async function getAllNotes(req, res, next) {
   try {
     const notes = await prisma.note.findMany({
+      where: { visibility: "public" }, 
       include: {
         client: true,
         author: true,

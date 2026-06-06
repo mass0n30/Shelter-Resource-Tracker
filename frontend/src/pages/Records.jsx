@@ -7,14 +7,21 @@ import {
   Archive,
   SlidersHorizontal,
   X,
-  User
 } from "lucide-react";
 
 import Navbar from "../components/Navbar";
 import { Notes, Resources } from "./ClientProfile";
+
 function RecordsPage() {
-  const { user, data, authRouter, authRouterForm, fetchUpdatedData, openForm, setOpenForm } =
-    useOutletContext();
+  const {
+    user,
+    data,
+    authRouter,
+    authRouterForm,
+    fetchUpdatedData,
+    openForm,
+    setOpenForm,
+  } = useOutletContext();
 
   window.scrollTo(0, 0);
 
@@ -22,10 +29,11 @@ function RecordsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [typeFilter, setTypeFilter] = useState("ALL");
-  const [visibilityFilter, setVisibilityFilter] = useState("ALL");
+  const [notesView, setNotesView] = useState("personal");
 
   const allResources = data?.referrals || [];
   const allNotes = data?.notes || [];
+  const personalNotes = user?.notes || [];
 
   const archivedStatuses = ["CLOSED", "COMPLETED"];
 
@@ -37,13 +45,17 @@ function RecordsPage() {
     archivedStatuses.includes(resource.status)
   );
 
+  const publicNotes = useMemo(() => {
+    return allNotes.filter((note) => note.visibility === "public");
+  }, [allNotes]);
+
+  const notesToDisplay = notesView === "personal" ? personalNotes : publicNotes;
+
   const resourceTypes = useMemo(() => {
     return [
       "ALL",
       ...new Set(
-        allResources
-          .map((resource) => resource.resourceType)
-          .filter(Boolean)
+        allResources.map((resource) => resource.resourceType).filter(Boolean)
       ),
     ];
   }, [allResources]);
@@ -100,7 +112,7 @@ function RecordsPage() {
   const filteredNotes = useMemo(() => {
     const search = searchTerm.toLowerCase();
 
-    return allNotes.filter((note) => {
+    return notesToDisplay.filter((note) => {
       const clientName = note.client
         ? `${note.client.firstName} ${note.client.lastName}`.toLowerCase()
         : "";
@@ -109,19 +121,14 @@ function RecordsPage() {
         ? `${note.author.firstName} ${note.author.lastName}`.toLowerCase()
         : "";
 
-      const matchesSearch =
+      return (
         note.title?.toLowerCase().includes(search) ||
         note.content?.toLowerCase().includes(search) ||
-        note.visibility?.toLowerCase().includes(search) ||
         clientName.includes(search) ||
-        authorName.includes(search);
-
-      const matchesVisibility =
-        visibilityFilter === "ALL" || note.visibility === visibilityFilter;
-
-      return matchesSearch && matchesVisibility;
+        authorName.includes(search)
+      );
     });
-  }, [allNotes, searchTerm, visibilityFilter]);
+  }, [notesToDisplay, searchTerm]);
 
   const visibleCount =
     activeTab === "resources"
@@ -134,14 +141,10 @@ function RecordsPage() {
     setSearchTerm("");
     setStatusFilter("ALL");
     setTypeFilter("ALL");
-    setVisibilityFilter("ALL");
   };
 
   const hasFilters =
-    searchTerm ||
-    statusFilter !== "ALL" ||
-    typeFilter !== "ALL" ||
-    visibilityFilter !== "ALL";
+    searchTerm || statusFilter !== "ALL" || typeFilter !== "ALL";
 
   return (
     <>
@@ -156,7 +159,6 @@ function RecordsPage() {
 
       <main className="bg-primaryLight min-h-full px-sm md:px-md">
         <div className="mx-auto w-full p-sm md:p-md">
-          {/* Header */}
           <section className="mb-md flex flex-col items-start">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Records
@@ -168,7 +170,6 @@ function RecordsPage() {
             </p>
           </section>
 
-          {/* Subtle Stats */}
           <div className="mb-sm flex flex-wrap gap-3 text-xs text-muted">
             <span>
               Resources:{" "}
@@ -178,9 +179,16 @@ function RecordsPage() {
             </span>
 
             <span>
-              Notes:{" "}
+              Personal Notes:{" "}
               <strong className="font-medium text-foreground/80">
-                {allNotes.length}
+                {personalNotes.length}
+              </strong>
+            </span>
+
+            <span>
+              Public Notes:{" "}
+              <strong className="font-medium text-foreground/80">
+                {publicNotes.length}
               </strong>
             </span>
 
@@ -190,13 +198,10 @@ function RecordsPage() {
                 {archivedResources.length}
               </strong>
             </span>
-
           </div>
 
           <div className="grid grid-cols-1 gap-sm md:gap-md">
-            {/* Main Panel */}
             <section className="bg-background border-2 border-border-400 rounded-xl shadow-md overflow-hidden">
-              {/* Tabs */}
               <div className="flex flex-wrap gap-2 border-b border-border bg-backgroundAlt p-4">
                 <button
                   onClick={() => setActiveTab("resources")}
@@ -235,7 +240,6 @@ function RecordsPage() {
                 </button>
               </div>
 
-              {/* Filters */}
               <div className="border-b border-border bg-background p-4">
                 <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">
                   <SlidersHorizontal className="h-4 w-4 text-primary" />
@@ -288,15 +292,31 @@ function RecordsPage() {
                   )}
 
                   {activeTab === "notes" && (
-                    <select
-                      value={visibilityFilter}
-                      onChange={(e) => setVisibilityFilter(e.target.value)}
-                      className="rounded-lg border border-border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                    >
-                      <option value="ALL">All Visibility</option>
-                      <option value="public">Public</option>
-                      <option value="private">Private</option>
-                    </select>
+                    <div className="flex rounded-lg border border-border bg-white overflow-hidden">
+                      <button
+                        type="button"
+                        onClick={() => setNotesView("personal")}
+                        className={`flex-1 px-3 py-2.5 text-sm font-medium transition ${
+                          notesView === "personal"
+                            ? "bg-primary text-white"
+                            : "bg-white text-muted hover:bg-primaryLight hover:text-primary"
+                        }`}
+                      >
+                        User Notes
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setNotesView("public")}
+                        className={`flex-1 px-3 py-2.5 text-sm font-medium transition ${
+                          notesView === "public"
+                            ? "bg-primary text-white"
+                            : "bg-white text-muted hover:bg-primaryLight hover:text-primary"
+                        }`}
+                      >
+                        Public
+                      </button>
+                    </div>
                   )}
 
                   {hasFilters && (
@@ -312,7 +332,6 @@ function RecordsPage() {
                 </div>
               </div>
 
-              {/* Count */}
               <div className="flex items-center justify-between border-b border-border bg-backgroundAlt px-4 py-3">
                 <p className="text-sm text-muted">
                   <span className="font-semibold text-foreground">
@@ -321,12 +340,11 @@ function RecordsPage() {
                   {activeTab === "resources"
                     ? "resources found"
                     : activeTab === "notes"
-                    ? "notes found"
+                    ? `${notesView} notes found`
                     : "archived resources found"}
                 </p>
               </div>
 
-              {/* Content */}
               <div className="p-4 max-h-[calc(120vh-500px)] flex-1 overflow-y-auto">
                 {activeTab === "resources" && (
                   <Resources
@@ -363,17 +381,5 @@ function RecordsPage() {
   );
 }
 
-function SummaryCard({ label, value }) {
-  return (
-    <div className="rounded-lg border border-border/60 bg-background px-3 py-2 shadow-none">
-      <p className="text-[11px] font-medium uppercase tracking-wide text-muted">
-        {label}
-      </p>
-      <p className="mt-0.5 text-sm font-semibold text-foreground/80">
-        {value}
-      </p>
-    </div>
-  );
-}
 
 export default RecordsPage;

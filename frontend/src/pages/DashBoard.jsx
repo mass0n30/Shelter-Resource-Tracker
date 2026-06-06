@@ -184,8 +184,8 @@ return (
             setLoading={setLoading}
           />
 
-          <aside className="hidden min-w-0 lg:block h-[calc(120vh)]">
-            <div className="flex h-full overflow-hidden">
+          <aside className="hidden min-w-0 lg:block h-[calc(130vh)] h-full">
+            <div className="flex h-full min-h-[calc(130vh)] overflow-hidden">
               <Notifications
                 className="flex flex-1 h-full flex-col border border-border bg-background shadow-sm"
                 userNotes={user.notes}

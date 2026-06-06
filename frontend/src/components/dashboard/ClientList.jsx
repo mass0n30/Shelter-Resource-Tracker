@@ -33,14 +33,14 @@ function ClientList({className, viewedClients, loading}) {
 
   return (
     <div className={`clientList ${className}`}>
-      <div className="grid grid-cols-1 m-md gap-md md:grid-cols-2">
+      <div className="grid grid-cols-1 m-md gap-sm md:grid-cols-2">
 
         {viewedClients?.map((client) => {
           const clientStats = getClientReferralStats(client);
           return (
             <Button
               key={client.id}
-              className={`bg-white hover:border-none rounded-lg text-color-foreground w-full h-auto p-0 justify-start border transition-shadow`}
+              className={`bg-white hover:border-none hover:bg-white rounded-lg text-color-foreground w-full h-auto p-0 justify-start border transition-shadow`}
               onClick={() => {
               navigate(`/dashboard/clients/${client.id}`);
             }}
@@ -101,10 +101,10 @@ function ClientCard({ client, clientStats }) {
         </span>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+      <div className="mt-sm flex flex-wrap items-center gap-2 text-xs sm:text-sm">
         {clientStats?.totalReferrals >= 0 && (
           <div className="inline-flex items-center gap-1 rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] sm:text-xs text-gray-700">
-            <span>Resources</span>
+            <span>Active Resources</span>
             <span className="font-semibold">{clientStats.totalReferrals}</span>
           </div>
         )}

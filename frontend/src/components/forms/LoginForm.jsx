@@ -156,7 +156,7 @@ function Login() {
 
  return (
   <div className="min-h-screen w-full bg-primaryLight flex items-center justify-center p-md">
-    <div className="w-full max-w-6xl min-h-[90vh] bg-backgroundAlt rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row">
+    <div className="w-full min-h-[100vh] bg-backgroundAlt rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row">
       <div className="hidden md:flex flex-1 relative bg-secondary">
         <img
           src="/HouseDesign.png"
@@ -207,7 +207,7 @@ function Login() {
             Welcome,
           </CardTitle>
 
-          <CardDescription className="text-sm text-left text-muted">
+          <CardDescription className="border-b pb-sm border-border text-sm text-left text-muted">
             Sign in to continue to your account
           </CardDescription>
         </CardHeader>
@@ -270,7 +270,7 @@ function Login() {
               </button>
             </div>
 
-            <Button type="submit" className="h-11 w-full rounded text-white">
+            <Button type="submit" className="h-11 w-full rounded text-white hover:brightness-110 bg-primary shadow-sm">
               Continue
             </Button>
             {isDemo ? (
@@ -285,7 +285,7 @@ function Login() {
               <Button
                 type="button"
                 variant="outline"
-                className="h-11 w-full rounded border-primary/20 bg-primaryLight text-primary hover:border-primary hover:bg-primary hover:text-white"
+                className="h-11 w-full rounded border-primary/20 bg-primaryLight text-primary hover:border-accentOrange hover:bg-accentOrange hover:text-white"
                 onClick={() => {
                   window.location.href =
                     "https://shelter-resource-tracker-demo.vercel.app/";

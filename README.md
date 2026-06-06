@@ -48,11 +48,12 @@ Extra Possible Features (after making core MVP product):
   Avoid global notifications by default
 
 TO-DO GENERAL 5/28 (What to do to Finish Project):
+  - Either improve performance for fethcing UpdateDate upon updating notes/resources or finish adding Loader logic
   - Fix loader skeleton bug (dash skeleton loads on records/profile page?)
   - Add/Check all client CRUD routes
   - Adjust Edit Client Form (image, add extension, date picker?)
+  - Check and possibly adjust Timeline History design
   - Move the Profile color mapping from seeding to backend
-  - Add Toggle up on Notes
   - Adjust Dashstats radius and spacing? (considering added graphic)
   - Add sparkle (some sort of graphic in left banner?)
   - Drop down line bug on Profile welcome
@@ -77,6 +78,7 @@ TO-DO GENERAL 5/28 (What to do to Finish Project):
     - Run Linter 
     - Add transition animations to mobile panels (shadUI causing issues currently)
     - Add count for notifications icon on mobile Nav (Follow up/Notes today or tomorrow, or posted notes?)
+    - Give better design for Email reminders 
 
 
 Deployment To-Do:

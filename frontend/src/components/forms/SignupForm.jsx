@@ -81,7 +81,7 @@ function SignUp() {
 
   return (
   <div className="min-h-screen w-full bg-primaryLight flex items-center justify-center p-md">
-    <div className="w-full max-w-6xl min-h-[90vh] bg-backgroundAlt rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row">
+    <div className="w-full min-h-[100vh] bg-backgroundAlt rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row">
       <div className="hidden md:flex flex-1 relative bg-secondary">
         <img
           src="/HouseDesign.png"
@@ -128,11 +128,11 @@ function SignUp() {
         </div>
 
         <CardHeader className="px-0 pb-6 pt-0">
-          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+          <CardTitle className="text-2xl font-bold text-left tracking-tight text-foreground">
             Create account
           </CardTitle>
 
-          <CardDescription className="text-sm text-muted">
+          <CardDescription className="border-b pb-sm border-border text-sm text-left text-muted">
             Create your account to get started.
           </CardDescription>
         </CardHeader>

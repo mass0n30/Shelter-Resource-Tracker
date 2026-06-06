@@ -82,15 +82,14 @@ export function getClientReferralStats(client) {
     return {};
   }
 
-  // counting in even completed and closed referrals to give a full picture of client's referral history
-  const totalReferrals = client.referrals.length;
-
   // Filter out completed and closed referrals to focus on active ones for badges
   const activeReferrals = client.referrals.filter(
     (referral) =>
       referral.status !== "COMPLETED" &&
       referral.status !== "CLOSED"
   );
+
+  const totalReferrals = activeReferrals.length;
 
   const urgentReferrals = activeReferrals.filter(
     (referral) => referral.isPriority

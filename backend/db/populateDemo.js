@@ -131,43 +131,53 @@ const REFERRAL_SUMMARIES = [
 const NOTE_TEMPLATES = [
   {
     title: "Housing follow-up",
-    content: "Client remains interested in housing resources. Staff should follow up on open housing referral and update timeline.",
+    content:
+      "Client remains interested in housing resources. Staff should follow up on open housing referral and update timeline.",
   },
   {
     title: "Document barrier",
-    content: "Client reports missing ID or birth certificate. This is blocking employment, benefits, or housing progress.",
+    content:
+      "Client reports missing ID or birth certificate. This is blocking employment, benefits, or housing progress.",
   },
   {
     title: "Employment progress",
-    content: "Client asked about job options and may need help with resume, interview clothes, or transportation.",
+    content:
+      "Client asked about job options and may need help with resume, interview clothes, or transportation.",
   },
   {
     title: "Medical coordination",
-    content: "Client may need help confirming appointment time and arranging transportation to provider.",
+    content:
+      "Client may need help confirming appointment time and arranging transportation to provider.",
   },
   {
     title: "Evening shift check-in",
-    content: "Client was cooperative during shift. No immediate safety issues reported, but staff should continue routine check-ins.",
+    content:
+      "Client was cooperative during shift. No immediate safety issues reported, but staff should continue routine check-ins.",
   },
   {
     title: "Benefits discussion",
-    content: "Client asked about SNAP, Medicaid, or disability benefits. Case manager should review application status.",
+    content:
+      "Client asked about SNAP, Medicaid, or disability benefits. Case manager should review application status.",
   },
   {
     title: "Transportation issue",
-    content: "Client has difficulty getting to appointments. Bus route, gas card, or agency ride option may be needed.",
+    content:
+      "Client has difficulty getting to appointments. Bus route, gas card, or agency ride option may be needed.",
   },
   {
     title: "Family contact",
-    content: "Client mentioned possible family support. Follow up only if client wants to pursue contact or reunification.",
+    content:
+      "Client mentioned possible family support. Follow up only if client wants to pursue contact or reunification.",
   },
   {
     title: "Shelter plan update",
-    content: "Client needs updated plan for next steps, including referral priorities and expected follow-up dates.",
+    content:
+      "Client needs updated plan for next steps, including referral priorities and expected follow-up dates.",
   },
   {
     title: "Private staff observation",
-    content: "Staff should monitor engagement pattern and document whether client continues to participate in services.",
+    content:
+      "Staff should monitor engagement pattern and document whether client continues to participate in services.",
     visibility: "private",
   },
 ];
@@ -189,7 +199,7 @@ async function main() {
 
   await prisma.updateData.create({
     data: {
-      data: `Seed completed with ${clients.length} clients, reduced active workload, archived referral history, 4 urgent cases, and 10 follow-ups.`,
+      data: `Seed completed with ${clients.length} clients, reduced notes, archived referral history, 4 urgent cases, 16 referral follow-ups, and 4 note reminders.`,
     },
   });
 
@@ -208,14 +218,14 @@ async function clearDatabase() {
 }
 
 async function createUsers(hashedPassword) {
-  const admin = await prisma.user.create({
+  const guest = await prisma.user.create({
     data: {
-      firstName: "Masson",
-      lastName: "Corlette",
-      email: "massoncorlette07@gmail.com",
+      firstName: "Guest",
+      lastName: "Account",
+      email: "guest@sheltertracker.com",
       password: hashedPassword,
       role: "ADMIN",
-      avatarUrl: makeInitialsAvatar("Masson Corlette"),
+      avatarUrl: makeInitialsAvatar("Guest Account"),
     },
   });
 
@@ -242,10 +252,10 @@ async function createUsers(hashedPassword) {
   });
 
   return {
-    admin,
+    guest,
     manager,
     staff,
-    all: [admin, manager, staff],
+    all: [guest, manager, staff],
   };
 }
 
@@ -392,6 +402,7 @@ async function createReferrals(clients, users) {
 
   let urgentCasesCreated = 0;
   let followUpsCreated = 0;
+  const targetFollowUps = 16;
 
   clients.forEach(function (client, index) {
     const referralCount = getReferralCount(client.status, index);
@@ -408,8 +419,10 @@ async function createReferrals(clients, users) {
       }
 
       let followUpDate = null;
-      if (!closed && followUpsCreated < 10 && shouldCreateFollowUp(client, index, i)) {
-        followUpDate = daysFromNow(getFollowUpOffset(followUpsCreated));
+      if (!closed && followUpsCreated < targetFollowUps && shouldCreateFollowUp(client, index, i)) {
+        const offset = getFollowUpOffset(followUpsCreated);
+        const time = getFollowUpTime(followUpsCreated);
+        followUpDate = daysFromNowAt(offset, time.hour, time.minute);
         followUpsCreated += 1;
       }
 
@@ -457,19 +470,19 @@ function getReferralStatus(clientStatus, clientIndex, referralIndex) {
   }
 
   if (clientStatus === "WC") {
-    const statuses = ["COMPLETED", "CLOSED", "REFERRED", "COMPLETED"];
+    const statuses = ["REFERRED", "PENDING", "COMPLETED", "CLOSED", "REFERRED"];
     return statuses[(clientIndex + referralIndex) % statuses.length];
   }
 
   if (clientStatus === "ENROLLED") {
     const statuses = [
-      "COMPLETED",
-      "CLOSED",
       "PENDING",
-      "COMPLETED",
       "REFERRED",
       "COMPLETED",
+      "PENDING",
       "CLOSED",
+      "REFERRED",
+      "PENDING",
     ];
 
     return statuses[(clientIndex + referralIndex) % statuses.length];
@@ -487,12 +500,33 @@ function shouldCreatePriority(client, clientIndex, referralIndex) {
 function shouldCreateFollowUp(client, clientIndex, referralIndex) {
   if (client.status !== "ENROLLED" && client.status !== "WC") return false;
 
-  return referralIndex === 0 && clientIndex % 4 === 0;
+  return referralIndex === 0 || (clientIndex + referralIndex) % 5 === 0;
 }
 
 function getFollowUpOffset(count) {
-  const offsets = [-3, -2, -1, 0, 1, 2, 3, 5, 7, 10];
+  const offsets = [
+    -5, -3, -1, 0,
+    1, 2, 3, 5,
+    7, 9, 10, 12,
+    14, 18, 21, 28,
+  ];
+
   return offsets[count % offsets.length];
+}
+
+function getFollowUpTime(count) {
+  const times = [
+    { hour: 8, minute: 30 },
+    { hour: 9, minute: 0 },
+    { hour: 10, minute: 15 },
+    { hour: 11, minute: 45 },
+    { hour: 13, minute: 0 },
+    { hour: 14, minute: 30 },
+    { hour: 15, minute: 15 },
+    { hour: 16, minute: 0 },
+  ];
+
+  return times[count % times.length];
 }
 
 function getReferralCount(status, index) {
@@ -508,6 +542,7 @@ async function createNotes(clients, users) {
   const notes = [];
 
   let noteRemindersCreated = 0;
+  const targetNoteReminders = 4;
 
   clients.forEach(function (client, index) {
     const noteCount = getNoteCount(client.status, index);
@@ -516,24 +551,32 @@ async function createNotes(clients, users) {
       const template = NOTE_TEMPLATES[(index + i) % NOTE_TEMPLATES.length];
 
       const hasReminder =
-        noteRemindersCreated < 3 &&
+        noteRemindersCreated < targetNoteReminders &&
         (client.status === "ENROLLED" || client.status === "WC") &&
         i === 0 &&
-        index % 11 === 0;
+        index % 7 === 0;
+
+      const reminderAt = hasReminder
+        ? daysFromNowAt(
+            getNoteReminderOffset(noteRemindersCreated),
+            getNoteReminderHour(noteRemindersCreated),
+            0
+          )
+        : null;
 
       if (hasReminder) {
         noteRemindersCreated += 1;
       }
 
-      const isPrivate = template.visibility === "private" || (index + i) % 7 === 0;
+      const isPrivate = template.visibility === "private" || (index + i) % 6 === 0;
 
       notes.push({
         clientId: client.id,
         authorId: pickUser(users.all, index + i).id,
         title: template.title,
-        content: `${template.content} (${client.firstName} ${client.lastName})`,
+        content: template.content,
         setReminder: hasReminder,
-        reminderAt: hasReminder ? daysFromNow(2 + noteRemindersCreated) : null,
+        reminderAt,
         completed: client.status === "INACTIVE" && i === noteCount - 1,
         visibility: isPrivate ? "private" : "public",
       });
@@ -543,36 +586,33 @@ async function createNotes(clients, users) {
   notes.push(
     {
       clientId: null,
-      authorId: users.admin.id,
-      title: "Staff reminder",
-      content: "Review active referrals before morning handoff and confirm the highest-priority items only.",
+      authorId: users.guest.id,
+      title: "Morning handoff priority review",
+      content:
+        "Review active referrals before morning handoff and confirm the highest-priority items only.",
       setReminder: true,
-      reminderAt: daysFromNow(1),
+      reminderAt: daysFromNowAt(1, 8, 30),
       visibility: "public",
     },
     {
       clientId: null,
       authorId: users.manager.id,
-      title: "CSV upload check",
-      content: "Verify nightly stay sheet imported correctly before using stayed overnight filter.",
+      title: "Nightly CSV import verification",
+      content:
+        "Verify nightly stay sheet imported correctly before using stayed overnight filter.",
       setReminder: false,
+      reminderAt: null,
       visibility: "public",
     },
     {
       clientId: null,
       authorId: users.staff.id,
-      title: "Data cleanup",
-      content: "Review possible duplicate clients and unmatched CSV rows later this week.",
+      title: "Duplicate client cleanup pass",
+      content:
+        "Review possible duplicate clients and unmatched CSV rows later this week.",
       setReminder: false,
+      reminderAt: null,
       visibility: "private",
-    },
-    {
-      clientId: null,
-      authorId: users.manager.id,
-      title: "Archived referrals review",
-      content: "Review completed and closed referrals for reporting accuracy before monthly export.",
-      setReminder: false,
-      visibility: "public",
     }
   );
 
@@ -582,12 +622,22 @@ async function createNotes(clients, users) {
 }
 
 function getNoteCount(status, index) {
-  if (status === "ENROLLED") return index % 3 === 0 ? 3 : 2;
-  if (status === "WC") return 2;
-  if (status === "INACTIVE") return index % 4 === 0 ? 2 : 1;
-  if (status === "HOUSED") return 2;
+  if (status === "ENROLLED") return index % 3 === 0 ? 1 : 0;
+  if (status === "WC") return index % 5 === 0 ? 1 : 0;
+  if (status === "INACTIVE") return index % 12 === 0 ? 1 : 0;
+  if (status === "HOUSED") return index % 6 === 0 ? 1 : 0;
 
-  return 1;
+  return 0;
+}
+
+function getNoteReminderOffset(count) {
+  const offsets = [-1, 0, 2, 5];
+  return offsets[count % offsets.length];
+}
+
+function getNoteReminderHour(count) {
+  const hours = [8, 10, 13, 15];
+  return hours[count % hours.length];
 }
 
 async function createNotifications() {
@@ -613,10 +663,10 @@ async function createNotifications() {
       },
       {
         type: "FOLLOW_UP",
-        message: "10 follow-ups are overdue or due soon.",
+        message: "16 referral follow-ups are overdue or due soon.",
         data: {
           overdue: 4,
-          dueSoon: 6,
+          dueSoon: 12,
         },
         read: false,
       },
@@ -656,6 +706,12 @@ function daysAgo(days) {
 function daysFromNow(days) {
   const date = new Date();
   date.setDate(date.getDate() + days);
+  return date;
+}
+
+function daysFromNowAt(days, hour, minute = 0) {
+  const date = daysFromNow(days);
+  date.setHours(hour, minute, 0, 0);
   return date;
 }
 
