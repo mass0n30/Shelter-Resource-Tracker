@@ -12,7 +12,7 @@ const schema = z.object({
   organizationName: z.string().min(1, "Organization required").max(255),
   resourceType: z.string().min(1, "Resource type required"),
   purpose: z.string().optional(),
-  status: z.string().optional(),
+  status: z.string().min(1, "Status required"),
   roiSigned: z.boolean().optional(),
   followUpDate: z.date().nullable().optional(),
   isPriority: z.boolean().optional(),

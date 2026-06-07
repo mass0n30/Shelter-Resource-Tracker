@@ -223,7 +223,7 @@ function Navbar({
             </div>
 
             {/* User */}
-            <div className="flex min-w-[180px] border-b border-primary items-center justify-end">
+            <div className="flex min-w-[180px] border-primary items-center justify-end">
               <UserDropdown user={user} />
             </div>
           </div>

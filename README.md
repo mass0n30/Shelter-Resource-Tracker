@@ -56,7 +56,6 @@ TO-DO GENERAL 5/28 (What to do to Finish Project):
   - Move the Profile color mapping from seeding to backend
   - Adjust Dashstats radius and spacing? (considering added graphic)
   - Add sparkle (some sort of graphic in left banner?)
-  - Drop down line bug on Profile welcome
   - Increase dashboard border darkness?
   - Adjust Upload CSV form sentencing.
   - Mobile buttons color adjust on toggles, 
@@ -66,7 +65,6 @@ TO-DO GENERAL 5/28 (What to do to Finish Project):
   - Normalize Calendar Popovers (height issues on edit forms)
   - Polish forms (buttons, bg-color, add z-index-9999, ect)
   - Fix drop down arrows to close in filter dropdowns (recordsPage)
-  - Google Auth sign-in not working on deployment fix?
   - Add Docs/Img avatar upload routes, look into cloudify cost?
   - Mobile: fix client profile Banner, Records buttons, and drop down chevron down arrows spacing
     * !! Fix Notifications Sheet doesn't toggle on Records route

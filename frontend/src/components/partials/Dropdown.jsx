@@ -14,7 +14,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription} f
 import { Ellipsis } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown, Settings, LogOut } from "lucide-react";
+import { ChevronDown, Settings, LogOut, Loader2 } from "lucide-react";
 
 export function UserDropdown({ user }) {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ export function UserDropdown({ user }) {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex w-full sm:w-auto items-center border-b  rounded-none border-primary justify-between gap-3 bg-white px-4 py-3 text-xs font-semibold text-foreground transition hover:bg-primaryLight hover:text-primary"
+          className="flex w-full sm:w-auto items-center rounded-none justify-between gap-3 bg-white px-4 py-2 text-xs font-semibold text-foreground transition hover:bg-primaryLight hover:text-primary"
         >
           <div className="flex items-center gap-3">
             {user?.avatar ? (
@@ -83,8 +83,35 @@ export default function DropdownEditDelete({
   authRouter,
   fetchClientData,
   handleDelete,
+  loadingId,
+  setLoadingId,
+  setSuccess,
+  setError,
+  setUpdateMessage,
+  openForm,
+  setOpenForm,
 }) {
-  const [editOpen, setEditOpen] = useState(false);
+  const id = resource.id;
+  const formKey = `resource-${id}`;
+  const isOpen = openForm === formKey;
+  const isLoading = loadingId === id;
+
+  const handleEditSuccess = async () => {
+    try {
+      setLoadingId?.(id);
+
+      await fetchClientData();
+
+      setUpdateMessage?.("edit");
+      setSuccess?.(true);
+      setOpenForm(null);
+    } catch (err) {
+      console.error(err);
+      setError?.(true);
+    } finally {
+      setLoadingId?.(null);
+    }
+  };
 
   return (
     <div onClick={(e) => e.stopPropagation()}>
@@ -92,10 +119,15 @@ export default function DropdownEditDelete({
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="bg-white text-foreground border rounded-lg px-3 py-1 shadow-sm hover:shadow-md transition"
+            disabled={isLoading}
+            className="bg-white text-foreground border rounded-lg px-3 py-1 shadow-sm hover:shadow-md transition disabled:opacity-60 disabled:cursor-not-allowed"
             onClick={(e) => e.stopPropagation()}
           >
-            <Ellipsis className="h-4 w-4" />
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Ellipsis className="h-4 w-4" />
+            )}
           </button>
         </DropdownMenuTrigger>
 
@@ -105,27 +137,40 @@ export default function DropdownEditDelete({
           className="min-w-32 bg-white text-black border rounded-md shadow-lg"
         >
           <DropdownMenuItem
+            disabled={isLoading}
             onSelect={(e) => {
               e.preventDefault();
-              setEditOpen(true);
+              setOpenForm(formKey);
             }}
           >
             Edit
           </DropdownMenuItem>
 
           <DropdownMenuItem
+            disabled={isLoading}
             onSelect={(e) => {
+              e.preventDefault();
               e.stopPropagation();
-              handleDelete(e, resource.id);
+              handleDelete(e, id);
             }}
-            className="text-red-500 focus:text-red-500"
+            className="text-red-500 focus:text-red-500 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Delete
+            {isLoading ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Deleting
+              </span>
+            ) : (
+              "Delete"
+            )}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => setOpenForm(open ? formKey : null)}
+      >
         <DialogContent className="z-[200] bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
           <VisuallyHidden>
             <DialogTitle>Edit Resource</DialogTitle>
@@ -135,8 +180,9 @@ export default function DropdownEditDelete({
             authRouter={authRouter}
             clientId={resource.clientId}
             resourceData={resource}
-            fetchClientData={fetchClientData}
-            setOpenForm={setEditOpen}
+            fetchClientData={handleEditSuccess}
+            fetchUpdatedData={handleEditSuccess}
+            setOpenForm={setOpenForm}
           />
         </DialogContent>
       </Dialog>
@@ -144,9 +190,40 @@ export default function DropdownEditDelete({
   );
 }
 
-export function DropdownNoteEditDelete({ note, authRouter, fetchClientData, handleDelete }) {
+export function DropdownNoteEditDelete({
+  note,
+  authRouter,
+  fetchClientData,
+  handleDelete,
+  loadingId,
+  setLoadingId,
+  setSuccess,
+  setError,
+  setUpdateMessage,
+  openForm,
+  setOpenForm,
+}) {
   const id = note.id;
-  const [editOpen, setEditOpen] = useState(false);
+  const formKey = `note-${id}`;
+  const isOpen = openForm === formKey;
+  const isLoading = loadingId === id;
+
+  const handleEditSuccess = async () => {
+    try {
+      setLoadingId?.(id);
+
+      await fetchClientData();
+
+      setUpdateMessage?.("edit");
+      setSuccess?.(true);
+      setOpenForm(null);
+    } catch (err) {
+      console.error(err);
+      setError?.(true);
+    } finally {
+      setLoadingId?.(null);
+    }
+  };
 
   return (
     <div onClick={(e) => e.stopPropagation()}>
@@ -154,10 +231,15 @@ export function DropdownNoteEditDelete({ note, authRouter, fetchClientData, hand
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="bg-white text-foreground border rounded-lg px-3 py-1 shadow-sm hover:shadow-md transition"
+            disabled={isLoading}
+            className="bg-white text-foreground border rounded-lg px-3 py-1 shadow-sm hover:shadow-md transition disabled:opacity-60 disabled:cursor-not-allowed"
             onClick={(e) => e.stopPropagation()}
           >
-            <Ellipsis className="h-4 w-4" />
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Ellipsis className="h-4 w-4" />
+            )}
           </button>
         </DropdownMenuTrigger>
 
@@ -166,35 +248,55 @@ export function DropdownNoteEditDelete({ note, authRouter, fetchClientData, hand
           sideOffset={6}
           className="min-w-32 bg-white text-black border rounded-md shadow-lg"
         >
-          {/* EDIT */}
-          <Dialog open={editOpen} onOpenChange={setEditOpen}>
-            <DialogTrigger asChild>
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                Edit
-              </DropdownMenuItem>
-            </DialogTrigger>
-
-            <DialogContent>
-              <DialogTitle></DialogTitle>
-
-              <NoteForm
-                authRouter={authRouter}
-                clientId={note.clientId}
-                noteData={note}
-                fetchClientData={fetchClientData}
-              />
-            </DialogContent>
-          </Dialog>
-
-          {/* DELETE */}
           <DropdownMenuItem
-            onSelect={(e) => handleDelete(e, id)}
-            className="text-red-500 focus:text-red-500"
+            disabled={isLoading}
+            onSelect={(e) => {
+              e.preventDefault();
+              setOpenForm(formKey);
+            }}
           >
-            Delete
+            Edit
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            disabled={isLoading}
+            onSelect={(e) => {
+              e.preventDefault();
+              handleDelete(e, id);
+            }}
+            className="text-red-500 focus:text-red-500 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {isLoading ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Deleting
+              </span>
+            ) : (
+              "Delete"
+            )}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => setOpenForm(open ? formKey : null)}
+      >
+        <DialogContent className="bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
+          <VisuallyHidden>
+            <DialogTitle>Edit Note</DialogTitle>
+          </VisuallyHidden>
+
+          <NoteForm
+            authRouter={authRouter}
+            clientId={note.clientId}
+            noteData={note}
+            fetchClientData={handleEditSuccess}
+            fetchUpdatedData={handleEditSuccess}
+            setOpenForm={setOpenForm}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import {
   Search,
@@ -23,7 +23,6 @@ function RecordsPage() {
     setOpenForm,
   } = useOutletContext();
 
-  window.scrollTo(0, 0);
 
   const [activeTab, setActiveTab] = useState("resources");
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,6 +33,10 @@ function RecordsPage() {
   const allResources = data?.referrals || [];
   const allNotes = data?.notes || [];
   const personalNotes = user?.notes || [];
+
+  useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
 
   const archivedStatuses = ["CLOSED", "COMPLETED"];
 
@@ -361,6 +364,7 @@ function RecordsPage() {
                     fetchClientData={fetchUpdatedData}
                     authRouter={authRouter}
                     showName={true}
+                    currentUser={user}
                   />
                 )}
 

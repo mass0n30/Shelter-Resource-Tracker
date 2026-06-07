@@ -1,5 +1,6 @@
 const Router = require("express");
 const { prisma } = require("../../db/prismaClient.js");
+const { getNotes } = require("./noteController.js");
 
 // getting all referrals made by all admin users 
 const clientInclude = {
@@ -176,6 +177,8 @@ async function getClientsByStatFilter(req, res, next) {
   }
 }
 
+const { noteController } = require("./noteController.js");
+
 async function getClientById(req, res, next) {
 
   try {
@@ -184,12 +187,13 @@ async function getClientById(req, res, next) {
       include: clientInclude,
     });
 
+    const notes = await noteController.getClientNotes(req, res, next);
 
     if (!client) {
       return res.status(404).json({ message: "Client not found" });
     }
 
-    return res.json(client);
+    return res.json({ client, notes });
 
   } catch (error) {
     console.error("Error fetching client:", error);

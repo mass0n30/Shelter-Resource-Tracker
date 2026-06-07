@@ -28,20 +28,25 @@ import {
   Calendar1Icon,
   History,
   FolderSearch,
+  CircleAlert,
+  Loader2
 } from "lucide-react";
 import { RESOURCE_CONFIG , getClientReferralStats} from "../lib/utils";
 
 export default function ClientProfile() {
   const { clientId } = useParams();
   const [clientData, setClientData] = useState(null);
+  const [openForm, setOpenForm] = useState(null);
   const [clientStats, setClientStats] = useState(null);
   const [activeSection, setActiveSection] = useState("resources");
 
-  const { authRouter } = useOutletContext();
+  const { authRouter, user } = useOutletContext();
 
   const { error, setError, success, setSuccess, loading, setLoadingDuration, setLoading } = useAsyncStatus();
 
-  window.scrollTo(0, 0);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []); 
 
   const fetchClientData = async (success) => {
     try {
@@ -76,14 +81,17 @@ export default function ClientProfile() {
   return (
     <div className="flex-1 flex w-full flex-col overflow-hidden bg-background">
       <Banner
-        clientData={clientData}
+        clientData={clientData.client}
         authRouter={authRouter}
         fetchClientData={fetchClientData}
+        openForm={openForm}
+        setOpenForm={setOpenForm}
         className="shrink-0 w-full bg-backgroundAlt min-h-[120px] border-b"
       />
 
       <div className="mx-auto grid min-h-0 w-full max-w-7xl flex-1 grid-cols-1 gap-4 overflow-hidden p-4 md:grid-cols-4">
         <ClientInfoSectionToggle
+          user={user}
           clientData={clientData}
           authRouter={authRouter}
           fetchClientData={fetchClientData}
@@ -93,7 +101,7 @@ export default function ClientProfile() {
         />
 
         <Information
-          clientData={clientData}
+          clientData={clientData.client}
           fetchUpdatedData={fetchClientData}
           authRouter={authRouter}
           className="min-h-0 max-h-[calc(140vh-200px)] overflow-y-auto md:col-span-1"
@@ -110,9 +118,10 @@ function ClientInfoSectionToggle({
   activeSection,
   setActiveSection,
   className,
+  user
 }) {
 
-  const filteredResources = clientData.referrals?.filter((referral) => referral.status !== "COMPLETED" && referral.status !== "CLOSED") || [];
+  const filteredResources = clientData.client.referrals?.filter((referral) => referral.status !== "COMPLETED" && referral.status !== "CLOSED") || [];
 
   return (
     <div
@@ -170,6 +179,7 @@ function ClientInfoSectionToggle({
             fetchClientData={fetchClientData}
             notes={clientData.notes}
             authRouter={authRouter}
+            currentUser={user}
           />
         )}
 
@@ -178,7 +188,7 @@ function ClientInfoSectionToggle({
             fetchClientData={fetchClientData}
             clientId={clientData.id}
             authRouter={authRouter}
-            clientData={clientData}
+            clientData={clientData.client}
           />
         )}
       </div>
@@ -186,7 +196,8 @@ function ClientInfoSectionToggle({
   );
 }
 
-function Banner({ clientData, className, authRouter, fetchClientData }) {
+function Banner({ clientData, className, authRouter, fetchClientData, openForm, setOpenForm }) {
+
   return (
     <div className={`flex items-center justify-center ${className}`}>
       <div className="max-w-7xl flex-1 flex items-center justify-between gap-4 px-4">
@@ -245,7 +256,7 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
 
         <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 md:min-w-[350px]">
           {/* RESOURCE */}
-          <Dialog>
+          <Dialog open={openForm === "resource"} onOpenChange={(open) => setOpenForm(open ? "resource" : null)}>
             <DialogTrigger asChild>
               <button
                 type="button"
@@ -256,7 +267,8 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
               </button>
             </DialogTrigger>
 
-            <DialogContent className="bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
+            <DialogContent
+             className="bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
               <VisuallyHidden>
                 <DialogTitle>{`Create Resource for ${clientData.firstName} ${clientData.lastName}`}</DialogTitle>
               </VisuallyHidden>
@@ -265,12 +277,13 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
                 authRouter={authRouter}
                 clientId={clientData.id}
                 fetchClientData={fetchClientData}
+                setOpenForm={setOpenForm}
               />
             </DialogContent>
           </Dialog>
 
           {/* NOTE */}
-          <Dialog>
+          <Dialog open={openForm === "note"} onOpenChange={(open) => setOpenForm(open ? "note" : null)}>
             <DialogTrigger asChild>
               <button
                 type="button"
@@ -290,6 +303,7 @@ function Banner({ clientData, className, authRouter, fetchClientData }) {
                 authRouter={authRouter}
                 clientId={clientData.id}
                 fetchUpdatedData={fetchClientData}
+                setOpenForm={setOpenForm}
               />
             </DialogContent>
           </Dialog>
@@ -497,44 +511,97 @@ function StatCard({ label, value, icon: Icon }) {
 
 import { Lock, Globe2, CheckCircle2, SquareUserRound } from "lucide-react";
 
-export function Notes({ notes, fetchClientData, authRouter, showName }) {
+export function Notes({
+  notes,
+  fetchClientData,
+  authRouter,
+  showName,
+  currentUser,
+}) {
   const [showCompleted, setShowCompleted] = useState(false);
+  const [loadingId, setLoadingId] = useState(null);
+  const [updateMessage, setUpdateMessage] = useState("");
+  const [openForm, setOpenForm] = useState(null);
 
-  const handleDelete = async (e, noteId) => {
+  const { success, setSuccess, loading, setLoading, error, setError } =
+    useAsyncStatus({
+      loadingDuration: 2000,
+      successDuration: 3000,
+    });
+
+  const handleDelete = async (e, noteId, authorId) => {
     e.stopPropagation();
 
+    if (authorId !== currentUser?.id) return;
+
     try {
+      setLoadingId(noteId);
+      setLoading(true);
+
       await authRouter.post(`/dashboard/notes/${noteId}/delete`);
       await fetchClientData();
+
+      setUpdateMessage("delete");
+      setSuccess(true);
     } catch (err) {
       console.error(err);
+      setError(true);
+    } finally {
+      setLoadingId(null);
     }
   };
 
-  const handleToggleCompleted = async (e, noteId) => {
+  const handleToggleCompleted = async (e, noteId, authorId) => {
     e.stopPropagation();
+
+    if (authorId !== currentUser?.id) return;
 
     try {
+      setLoadingId(noteId);
+      setLoading(true);
+
       await authRouter.post(`/dashboard/notes/${noteId}/completed`);
       await fetchClientData();
+
+      setUpdateMessage("complete");
+      setSuccess(true);
     } catch (err) {
       console.error(err);
+      setError(true);
+    } finally {
+      setLoadingId(null);
     }
   };
 
-  const handleToggleVisibility = async (e, noteId, currentVisibility) => {
+  const handleToggleVisibility = async (
+    e,
+    noteId,
+    currentVisibility,
+    authorId
+  ) => {
     e.stopPropagation();
+
+    if (authorId !== currentUser?.id) return;
 
     const newVisibility = currentVisibility === "public" ? "private" : "public";
 
     try {
+      setLoadingId(noteId);
+      setLoading(true);
+
       await authRouter.post(`/dashboard/notes/${noteId}/visibility`, {
         visibility: newVisibility,
       });
 
       await fetchClientData();
+
+      setUpdateMessage(newVisibility === "private" ? "private" : "public");
+      setSuccess(true);
     } catch (err) {
       console.error(err);
+      setError(true);
+    } finally {
+      setLoadingId(null);
     }
   };
 
@@ -542,173 +609,316 @@ export function Notes({ notes, fetchClientData, authRouter, showName }) {
     ? notes
     : notes?.filter((note) => !note.completed);
 
-return (
-  <div className="bg-background h-full p-2 xs:p-3 sm:p-4 rounded-xl space-y-2 sm:space-y-3">
-    <div className="flex items-center justify-between gap-2">
-      <div className="flex items-center gap-1 xs:gap-2">
-        <NotebookText className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
-        <h2 className="text-xs sm:text-sm font-semibold text-gray-800">
-          Case Notes
-        </h2>
+  return (
+    <div className="relative bg-background h-full p-2 xs:p-3 sm:p-4 rounded-xl space-y-2 sm:space-y-3">
+      <div
+        className={`pointer-events-none absolute right-3 top-3 z-20 flex items-center gap-1 rounded-md border border-primary/20 bg-white/95 px-3 py-1.5 text-[10px] xs:text-xs font-medium text-primary shadow-sm transition-all duration-300 ease-out ${
+          success
+            ? "translate-y-0 opacity-100 scale-100"
+            : "-translate-y-2 opacity-0 scale-95"
+        }`}
+      >
+        <CircleAlert className="h-3 w-3 xs:h-4 xs:w-4" />
+
+        <span className="hidden xs:inline">
+          {updateMessage === "delete"
+            ? "Deleted"
+            : updateMessage === "private"
+            ? "Marked Private"
+            : updateMessage === "public"
+            ? "Marked Public"
+            : updateMessage === "complete"
+            ? "Marked Completed"
+            : updateMessage === "edit"
+            ? "Updated"
+            : "Updated"}
+        </span>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setShowCompleted(!showCompleted)}
-        className="text-[10px] xs:text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-md border bg-white hover:bg-gray-50 text-gray-700"
-      >
-        {showCompleted ? "Hide Completed" : "Show Completed"}
-      </button>
-    </div>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1 xs:gap-2">
+          <NotebookText className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+          <h2 className="text-xs sm:text-sm font-semibold text-gray-800">
+            Case Notes
+          </h2>
+        </div>
 
-    {notes?.length === 0 && (
-      <p className="text-xs sm:text-sm text-muted-foreground">
-        No notes available
-      </p>
-    )}
-
-    {filteredNotes?.map((note) => {
-      const isCompleted = note.completed;
-      const isPublic = note.visibility === "private" ? false : true;
-
-      return (
-        <div
-          key={note.id}
-          className={`relative bg-white border border-border rounded-xl p-3 sm:p-4 pb-12 sm:pb-14 pr-12 sm:pr-14 shadow-sm hover:shadow-md transition ${
-            isCompleted ? "opacity-70" : ""
-          }`}
+        <button
+          type="button"
+          onClick={() => setShowCompleted(!showCompleted)}
+          className="text-[10px] xs:text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-md border bg-white hover:bg-gray-50 text-gray-700"
         >
-          <div className="min-w-0 w-full flex flex-col items-start gap-2 sm:gap-3">
-            <div className="w-full flex flex-wrap items-center gap-1 xs:gap-2 text-[10px] xs:text-xs sm:text-sm text-muted-foreground">
-              <span className="font-medium text-gray-700">
-                {note.author?.firstName} {note.author?.lastName}
-              </span>
+          {showCompleted ? "Hide Completed" : "Show Completed"}
+        </button>
+      </div>
 
-              <span className="text-gray-300">•</span>
+      {notes?.length === 0 && (
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          No notes available
+        </p>
+      )}
 
-              <span>{new Date(note.createdAt).toLocaleDateString()}</span>
+      {filteredNotes?.map((note) => {
+        const isCompleted = note.completed;
+        const isPublic = note.visibility !== "private";
+        const isOwnNote = note.authorId === currentUser?.id;
+        const isCurrentNoteLoading = loadingId === note.id;
 
+        return (
+          <div
+            key={note.id}
+            className={`relative bg-white border border-border rounded-xl p-3 sm:p-4 pb-12 sm:pb-14 pr-12 sm:pr-14 shadow-sm hover:shadow-md transition ${
+              isCompleted ? "opacity-70" : ""
+            } ${isCurrentNoteLoading ? "opacity-60 pointer-events-none" : ""}`}
+          >
+            {isCurrentNoteLoading && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/50">
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              </div>
+            )}
+
+            <div className="min-w-0 w-full flex flex-col items-start gap-2 sm:gap-3">
+              <div className="w-full flex flex-wrap items-center gap-1 xs:gap-2 text-[10px] xs:text-xs sm:text-sm text-muted-foreground">
+                <span className="font-medium text-gray-700">
+                  {note.author?.firstName} {note.author?.lastName}
+                </span>
+
+                <span className="text-gray-300">•</span>
+
+                <span>{new Date(note.createdAt).toLocaleDateString()}</span>
+
+                {isOwnNote ? (
+                  <button
+                    type="button"
+                    disabled={isCurrentNoteLoading}
+                    onClick={(e) =>
+                      handleToggleVisibility(
+                        e,
+                        note.id,
+                        note.visibility,
+                        note.authorId
+                      )
+                    }
+                    className={`inline-flex items-center gap-1 rounded-full border px-1.5 sm:px-2 py-0.5 text-[10px] xs:text-xs font-medium disabled:cursor-not-allowed ${
+                      isPublic
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : "bg-slate-50 text-slate-700 border-slate-200"
+                    }`}
+                  >
+                    {isCurrentNoteLoading ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : isPublic ? (
+                      <Globe2 className="w-3 h-3" />
+                    ) : (
+                      <Lock className="w-3 h-3" />
+                    )}
+
+                    {isCurrentNoteLoading
+                      ? "Saving"
+                      : isPublic
+                      ? "Public"
+                      : "Private"}
+                  </button>
+                ) : (
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full border px-1.5 sm:px-2 py-0.5 text-[10px] xs:text-xs font-medium ${
+                      isPublic
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : "bg-slate-50 text-slate-700 border-slate-200"
+                    }`}
+                  >
+                    {isPublic ? (
+                      <Globe2 className="w-3 h-3" />
+                    ) : (
+                      <Lock className="w-3 h-3" />
+                    )}
+
+                    {isPublic ? "Public" : "Private"}
+                  </span>
+                )}
+              </div>
+
+              <div className="w-full text-left space-y-1.5 sm:space-y-2">
+                <h3
+                  className={`text-sm text-left sm:text-base md:text-lg font-semibold tracking-tight text-gray-950 ${
+                    isCompleted ? "line-through text-gray-500" : ""
+                  }`}
+                >
+                  {note?.title || ""}
+                </h3>
+
+                <div
+                  className={`rounded-lg border border-gray-200 bg-gray-50 px-2 sm:px-3 py-2 sm:py-2.5 ${
+                    isCompleted ? "line-through text-gray-500" : ""
+                  }`}
+                >
+                  {note.content === "" || note.content == null ? (
+                    <p className="text-xs sm:text-sm italic text-gray-400">
+                      <i>No Content</i>
+                    </p>
+                  ) : (
+                    <p className="text-xs sm:text-sm md:text-md leading-relaxed text-gray-700 whitespace-pre-wrap">
+                      {note.content}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {note.setReminder && note.reminderDate && (
+                <div className="inline-flex items-center gap-1 sm:gap-2 text-[10px] xs:text-xs sm:text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-1.5 sm:px-2 py-1">
+                  <Calendar className="w-3 h-3" />
+                  <span>
+                    Reminder:{" "}
+                    {new Date(note.reminderDate).toLocaleDateString("en-US", {
+                      timeZone: "UTC",
+                    })}
+                  </span>
+                </div>
+              )}
+
+              {showName && note.client && (
+                <p className="absolute bottom-3 left-3 sm:left-4 text-[10px] xs:text-xs sm:text-sm text-muted flex items-center gap-1">
+                  <SquareUserRound className="w-3 h-3" />
+                  {note.client.firstName} {note.client.lastName}
+                </p>
+              )}
+            </div>
+
+            {isOwnNote && (
+              <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20">
+                <DropdownNoteEditDelete
+                  note={note}
+                  authRouter={authRouter}
+                  fetchClientData={fetchClientData}
+                  handleDelete={(e, noteId) =>
+                    handleDelete(e, noteId, note.authorId)
+                  }
+                  loadingId={loadingId}
+                  setLoadingId={setLoadingId}
+                  setSuccess={setSuccess}
+                  setError={setError}
+                  setUpdateMessage={setUpdateMessage}
+                  openForm={openForm}
+                  setOpenForm={setOpenForm}
+                />
+              </div>
+            )}
+
+            {isOwnNote && (
               <button
                 type="button"
+                disabled={isCurrentNoteLoading}
                 onClick={(e) =>
-                  handleToggleVisibility(e, note.id, note.visibility)
+                  handleToggleCompleted(e, note.id, note.authorId)
                 }
-                className={`inline-flex items-center gap-1 rounded-full border px-1.5 sm:px-2 py-0.5 text-[10px] xs:text-xs font-medium ${
-                  isPublic
+                className={`absolute bottom-3 right-3 inline-flex items-center gap-1 text-[10px] xs:text-xs sm:text-sm px-2 sm:px-2.5 py-1 rounded-md border font-medium disabled:cursor-not-allowed ${
+                  isCompleted
                     ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                    : "bg-slate-50 text-slate-700 border-slate-200"
+                    : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
                 }`}
               >
-                {isPublic ? (
-                  <Globe2 className="w-3 h-3" />
+                {isCurrentNoteLoading ? (
+                  <>
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Updating
+                  </>
+                ) : isCompleted ? (
+                  <>
+                    <CheckCircle2 className="w-3 h-3" />
+                    Completed
+                  </>
                 ) : (
-                  <Lock className="w-3 h-3" />
+                  "Mark Completed"
                 )}
-                {isPublic ? "Public" : "Private"}
               </button>
-            </div>
-
-            <div className="w-full text-left space-y-1.5 sm:space-y-2">
-              <h3
-                className={`text-sm text-left sm:text-base md:text-lg font-semibold tracking-tight text-gray-950 ${
-                  isCompleted ? "line-through text-gray-500" : ""
-                }`}
-              >
-                {note?.title || ""}
-              </h3>
-
-              <div
-                className={`rounded-lg border border-gray-200 bg-gray-50 px-2 sm:px-3 py-2 sm:py-2.5 ${
-                  isCompleted ? "line-through text-gray-500" : ""
-                }`}
-              >
-                {note.content == "" || note.content == null ? (
-                  <p className="text-xs sm:text-sm italic text-gray-400">
-                    <i>No Content</i>
-                  </p>
-                ) : (
-                  <p className="text-xs sm:text-sm md:text-md leading-relaxed text-gray-700 whitespace-pre-wrap">
-                    {note.content}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {note.setReminder && note.reminderDate && (
-              <div className="inline-flex items-center gap-1 sm:gap-2 text-[10px] xs:text-xs sm:text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-1.5 sm:px-2 py-1">
-                <Calendar className="w-3 h-3" />
-                <span>
-                  Reminder:{" "}
-                  {new Date(note.reminderDate).toLocaleDateString("en-US", {
-                    timeZone: "UTC",
-                  })}
-                </span>
-              </div>
-            )}
-
-            {showName && note.client && (
-              <p className="absolute bottom-3 left-3 sm:left-4 text-[10px] xs:text-xs sm:text-sm text-muted flex items-center gap-1">
-                <SquareUserRound className="w-3 h-3" />
-                {note.client.firstName} {note.client.lastName}
-              </p>
             )}
           </div>
-
-          <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
-            <DropdownNoteEditDelete
-              note={note}
-              authRouter={authRouter}
-              fetchClientData={fetchClientData}
-              handleDelete={handleDelete}
-            />
-          </div>
-
-          <button
-            type="button"
-            onClick={(e) => handleToggleCompleted(e, note.id)}
-            className={`absolute bottom-3 right-3 inline-flex items-center gap-1 text-[10px] xs:text-xs sm:text-sm px-2 sm:px-2.5 py-1 rounded-md border font-medium ${
-              isCompleted
-                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
-            }`}
-          >
-            {isCompleted && <CheckCircle2 className="w-3 h-3" />}
-            {isCompleted ? "Completed" : "Mark Completed"}
-          </button>
-        </div>
-      );
-    })}
-  </div>
-);
+        );
+      })}
+    </div>
+  );
 }
 
-export function Resources({referrals, fetchClientData, authRouter, showName}) {
+export function Resources({ referrals, fetchClientData, authRouter, showName }) {
   const [toggleKey, setToggleKey] = useState(null);
+  const [loadingId, setLoadingId] = useState(null);
+  const [updateMessage, setUpdateMessage] = useState("");
+  const [openForm, setOpenForm] = useState(null);
 
+  const { success, setSuccess, loading, setLoading, error, setError } =
+    useAsyncStatus({
+      loadingDuration: 2000,
+      successDuration: 3000,
+    });
 
   const handleDelete = async (e, id) => {
-    setToggleKey(null);
     e.stopPropagation();
+    setToggleKey(null);
 
     try {
+      setLoadingId(id);
+      setLoading(true);
+
       await authRouter.delete(`/dashboard/referrals/${id}`);
       await fetchClientData();
+
+      setUpdateMessage("delete");
+      setSuccess(true);
     } catch (err) {
       console.error(err);
+      setError(true);
+    } finally {
+      setLoadingId(null);
     }
   };
 
-  const updateStatus = async (referralId, newStatus) => {
+  const updateStatus = async (e, referralId, newStatus) => {
+    e.stopPropagation();
+
     try {
-      await authRouter.patch(`/dashboard/referrals/${referralId}/status`, { status: newStatus });
-      await fetchClientData(); 
+      setLoadingId(referralId);
+      setLoading(true);
+
+      await authRouter.patch(`/dashboard/referrals/${referralId}/status`, {
+        status: newStatus,
+      });
+
+      await fetchClientData();
+
+      setUpdateMessage(newStatus.toLowerCase());
+      setSuccess(true);
     } catch (error) {
       console.error("Error updating status:", error);
+      setError(true);
+    } finally {
+      setLoadingId(null);
     }
   };
 
   return (
-    <div className="flex flex-col bg-background p-3 sm:p-4 rounded-xl space-y-3 overflow-y-auto relative position-relative ">
+    <div className="relative flex flex-col bg-background p-3 sm:p-4 rounded-xl space-y-3 overflow-y-auto">
+      <div
+        className={`pointer-events-none absolute right-3 top-3 z-20 flex items-center gap-1 rounded-md border border-primary/20 bg-white/95 px-3 py-1.5 text-[10px] xs:text-xs font-medium text-primary shadow-sm transition-all duration-300 ease-out ${
+          success
+            ? "translate-y-0 opacity-100 scale-100"
+            : "-translate-y-2 opacity-0 scale-95"
+        }`}
+      >
+        <CircleAlert className="h-3 w-3 xs:h-4 xs:w-4" />
+
+        <span className="hidden xs:inline">
+          {updateMessage === "delete"
+            ? "Deleted"
+            : updateMessage === "closed"
+            ? "Referral Closed"
+            : updateMessage === "completed"
+            ? "Referral Completed"
+            : updateMessage === "edit"
+            ? "Referral Updated"
+            : "Updated"}
+        </span>
+      </div>
+
       <div className="flex items-center gap-1 xs:gap-2">
         <NotebookText className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
         <h2 className="text-xs sm:text-sm font-semibold text-gray-800">
@@ -716,238 +926,296 @@ export function Resources({referrals, fetchClientData, authRouter, showName}) {
         </h2>
       </div>
 
-    {referrals?.map((resource) => {
-      const config = RESOURCE_CONFIG[resource.resourceType] || {};
-      const Icon = config.icon;
-      const now = new Date();
-      const exp = resource?.followUpDate ? new Date(resource.followUpDate) < now : null;
+      {referrals?.map((resource) => {
+        const config = RESOURCE_CONFIG[resource.resourceType] || {};
+        const Icon = config.icon;
+        const now = new Date();
+        const exp = resource?.followUpDate
+          ? new Date(resource.followUpDate) < now
+          : null;
 
-    return (
-      <div
-        key={resource.id}
-        onClick={() => setToggleKey(resource.id === toggleKey ? null : resource.id)}
-        className="bg-white text-foreground border rounded-lg p-4 shadow-sm hover:shadow-md transition"
-      >
-        
-        {/* TOP ROW */}
-        <div className="pb-sm flex items-start justify-between gap-2">
-          <div className="flex flex-col items-start gap-xs">
-            <div className="flex items-center gap-sm">
-            <h3 className="font-semibold text-sm sm:text-base">
-              {resource.organizationName}
-            </h3>
-            {resource.isPriority && (
-              <span className="flex gap-xs items-center text-red-600 font-medium text-xs sm:text-md">
-                <TriangleAlert className="w-md" />
-               <div className="hidden sm:block">
-                Priority
-               </div>
-              </span>
+        const isCurrentResourceLoading = loadingId === resource.id;
+
+        return (
+          <div
+            key={resource.id}
+            onClick={() => {
+              if (isCurrentResourceLoading) return;
+
+              setToggleKey(resource.id === toggleKey ? null : resource.id);
+            }}
+            className={`relative bg-white text-foreground border rounded-lg p-4 shadow-sm hover:shadow-md transition ${
+              isCurrentResourceLoading ? "opacity-60 pointer-events-none" : ""
+            }`}
+          >
+            {isCurrentResourceLoading && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/50">
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              </div>
             )}
-            </div>
-            <p className="color text-xs sm:text-sm text-muted flex items-center gap-1">
-              {Icon && <Icon className=" w-3 h-3" />}
-              {config.label || resource.resourceType}
-            </p>
-            {showName && (
-              <p className="text-xs sm:text-sm text-muted flex items-center gap-1">
-                <SquareUserRound className="w-3 h-3" />
-                {resource.client.firstName} {resource.client.lastName}
-              </p>
-            )}
-          </div>
 
+            {/* TOP ROW */}
+            <div className="pb-sm flex items-start justify-between gap-2">
+              <div className="flex flex-col items-start gap-xs">
+                <div className="flex items-center gap-sm">
+                  <h3 className="font-semibold text-sm sm:text-base">
+                    {resource.organizationName}
+                  </h3>
 
-          {/* STATUS */}
-          <div className="flex flex-col-reverse sm:flex-row items-end gap-sm">
-            <span
-              className={`text-[10px] sm:text-xs px-2 py-1 rounded-full font-medium ${
-                resource.status === "INQUIRED"
-                  ? "bg-gray-100 text-gray-700"
-                  : resource.status === "REFERRED"
-                  ? "bg-blue-100 text-blue-700"
-                  : resource.status === "PENDING"
-                  ? "bg-yellow-100 text-yellow-700"
-                  : resource.status === "ENROLLED"
-                  ? "bg-green-100 text-green-700"
-                  : resource.status === "COMPLETED"
-                  ? "bg-purple-100 text-purple-700"
-                  : "bg-red-100 text-red-700"
-              }`}
-            >
-              {resource.status}
-            </span>
-              <DropdownEditDelete
-                resource={resource}
-                authRouter={authRouter}
-                fetchClientData={fetchClientData}
-                handleDelete={handleDelete}
-              />
-          </div>
-        </div>
-
-        {resource.id === toggleKey && (
-          <div className="flex flex-col pt-lg border-t-2 border-gray-300 items-center gap-2 mt-1">
-            <div className="flex-1 w-full flex justify-between items-center gap-1 text-xs text-muted-foreground">
-              <div className="flex flex-col sm:flex-row justify-start items-center gap-1">
-                <span className="font-medium text-gray-700">
-                  Assigned:{" "} 
-                </span>
-                {resource.createdAt && (
-                  <span className="flex items-center gap-1">
-                    <span className="font-medium text-gray-700 ">
-                      {new Date(resource.createdAt).toLocaleDateString()}
+                  {resource.isPriority && (
+                    <span className="flex gap-xs items-center text-red-600 font-medium text-xs sm:text-md">
+                      <TriangleAlert className="w-md" />
+                      <div className="hidden sm:block">Priority</div>
                     </span>
-                  </span>
+                  )}
+                </div>
+
+                <p className="color text-xs sm:text-sm text-muted flex items-center gap-1">
+                  {Icon && <Icon className="w-3 h-3" />}
+                  {config.label || resource.resourceType}
+                </p>
+
+                {showName && (
+                  <p className="text-xs sm:text-sm text-muted flex items-center gap-1">
+                    <SquareUserRound className="w-3 h-3" />
+                    {resource.client.firstName} {resource.client.lastName}
+                  </p>
                 )}
               </div>
 
-              <div className="flex flex-col sm:flex-row justify-start items-center gap-1">
-                <span className="font-medium text-gray-700">
-                  Assigned By:{" "}
+              {/* STATUS */}
+              <div className="flex flex-col-reverse sm:flex-row items-end gap-sm">
+                <span
+                  className={`text-[10px] sm:text-xs px-2 py-1 rounded-full font-medium ${
+                    resource.status === "INQUIRED"
+                      ? "bg-gray-100 text-gray-700"
+                      : resource.status === "REFERRED"
+                      ? "bg-blue-100 text-blue-700"
+                      : resource.status === "PENDING"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : resource.status === "ENROLLED"
+                      ? "bg-green-100 text-green-700"
+                      : resource.status === "COMPLETED"
+                      ? "bg-purple-100 text-purple-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {resource.status}
                 </span>
-                {resource?.createdBy?.firstName && (
-                  <span className="flex items-center gap-1">
-                    <span className="font-medium text-gray-700">
-                      {resource.createdBy.firstName} {resource.createdBy?.lastName}
-                    </span>
-                  </span>
-                )}
+
+                <div className="relative z-20">
+                  <DropdownEditDelete
+                    resource={resource}
+                    authRouter={authRouter}
+                    fetchClientData={fetchClientData}
+                    handleDelete={handleDelete}
+                    loadingId={loadingId}
+                    setLoadingId={setLoadingId}
+                    setSuccess={setSuccess}
+                    setError={setError}
+                    setUpdateMessage={setUpdateMessage}
+                    openForm={openForm}
+                    setOpenForm={setOpenForm}
+                  />
+                </div>
               </div>
             </div>
-            <div className="flex-1 w-full flex justify-between items-center border-2 border-primary bg-blue-100 p-xs rounded-xs gap-1 text-xs text-muted-foreground">
-              {resource.followUpDate && (
-                <span className="flex border w-full justify-between items-center gap-1">
-                  <div className={`flex items-center gap-1 ${exp ? "text-red-600" : "text-gray-700"}`}>
-                    <Calendar1Icon className="w-3 h-3" />
-                    <span className="hidden sm:block">Next Follow-up</span>
+
+            {resource.id === toggleKey && (
+              <div className="flex flex-col pt-lg border-t-2 border-gray-300 items-center gap-2 mt-1">
+                <div className="flex-1 w-full flex justify-between items-center gap-1 text-xs text-muted-foreground">
+                  <div className="flex flex-col sm:flex-row justify-start items-center gap-1">
                     <span className="font-medium text-gray-700">
-                    <span className="font-medium text-gray-700">
-                      {new Date(resource.followUpDate).toLocaleDateString("en-US", {
-                        timeZone: "UTC",
-                      })}
+                      Assigned:{" "}
                     </span>
-                    </span>
+
+                    {resource.createdAt && (
+                      <span className="flex items-center gap-1">
+                        <span className="font-medium text-gray-700">
+                          {new Date(resource.createdAt).toLocaleDateString()}
+                        </span>
+                      </span>
+                    )}
                   </div>
-                
-                {exp && <span className="flex ml-1 items-center text-red-600 font-medium text-xs sm:text-md"><i>Expired</i></span>}
-                </span>
-              )}
-            </div>
-            <div className="flex-3 w-full flex flex-col justify-start items-center gap-md text-xs text-muted-foreground">
-              {/* PURPOSE */}
-              {resource.purpose && (
-                <div className="flex-1 w-full flex flex-wrap flex-col justify-start items-start border-gray-300 pt-2">
-                  <span className="font-medium text-gray-700">
-                    Purpose
-                  </span>
-                  <p className="mt-1 flex flex-wrap text-xs text-muted-foreground italic">
-                    {resource.purpose}
-                  </p>
+
+                  <div className="flex flex-col sm:flex-row justify-start items-center gap-1">
+                    <span className="font-medium text-gray-700">
+                      Assigned By:{" "}
+                    </span>
+
+                    {resource?.createdBy?.firstName && (
+                      <span className="flex items-center gap-1">
+                        <span className="font-medium text-gray-700">
+                          {resource.createdBy.firstName}{" "}
+                          {resource.createdBy?.lastName}
+                        </span>
+                      </span>
+                    )}
+                  </div>
                 </div>
-              )}
 
-              {/* SUMMARY */}
-              {resource.summary && (
-                <div className="flex-1 w-full flex flex-wrap flex-col justify-start items-start border p-sm rounded-xs bg-gray-100 border-gray-300 pt-2">
-                  <span className="font-medium text-gray-700">
-                    Note
-                  </span>
-                  <p className="mt-1 flex flex-wrap text-xs text-muted-foreground italic">
-                    {resource.summary}
-                  </p>
+                <div className="flex-1 w-full flex justify-between items-center border-2 border-primary bg-blue-100 p-xs rounded-xs gap-1 text-xs text-muted-foreground">
+                  {resource.followUpDate && (
+                    <span className="flex border w-full justify-between items-center gap-1">
+                      <div
+                        className={`flex items-center gap-1 ${
+                          exp ? "text-red-600" : "text-gray-700"
+                        }`}
+                      >
+                        <Calendar1Icon className="w-3 h-3" />
+                        <span className="hidden sm:block">
+                          Next Follow-up
+                        </span>
+
+                        <span className="font-medium text-gray-700">
+                          {new Date(resource.followUpDate).toLocaleDateString(
+                            "en-US",
+                            {
+                              timeZone: "UTC",
+                            }
+                          )}
+                        </span>
+                      </div>
+
+                      {exp && (
+                        <span className="flex ml-1 items-center text-red-600 font-medium text-xs sm:text-md">
+                          <i>Expired</i>
+                        </span>
+                      )}
+                    </span>
+                  )}
                 </div>
-              )}
 
-              {/* FOOTER */}
-              <div className="w-full mt-3 flex flex-col gap-sm flex-wrap items-start justify-start sm:text-xs text-muted-foreground">
-                <span className="text-md font-medium text-gray-700">
-                  Update Status
-                </span>
+                <div className="flex-3 w-full flex flex-col justify-start items-center gap-md text-xs text-muted-foreground">
+                  {/* PURPOSE */}
+                  {resource.purpose && (
+                    <div className="flex-1 w-full flex flex-wrap flex-col justify-start items-start border-gray-300 pt-2">
+                      <span className="font-medium text-gray-700">
+                        Purpose
+                      </span>
+                      <p className="mt-1 flex flex-wrap text-xs text-muted-foreground italic">
+                        {resource.purpose}
+                      </p>
+                    </div>
+                  )}
 
-                <div className="flex flex-wrap gap-1 sm:gap-2">
+                  {/* SUMMARY */}
+                  {resource.summary && (
+                    <div className="flex-1 w-full flex flex-wrap flex-col justify-start items-start border p-sm rounded-xs bg-gray-100 border-gray-300 pt-2">
+                      <span className="font-medium text-gray-700">Note</span>
+                      <p className="mt-1 flex flex-wrap text-xs text-muted-foreground italic">
+                        {resource.summary}
+                      </p>
+                    </div>
+                  )}
 
-                  <Button
-                    size="sm"
-                    className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium
-                      ${resource.status === "INQUIRED"
-                        ? "bg-gray-100 text-gray-700 ring-1 ring-gray-300"
-                        : "bg-gray-50 text-gray-600 hover:bg-gray-100"}
-                    `}
-                    onClick={() => updateStatus(resource.id, "INQUIRED")}
-                  >
-                    Inquired
-                  </Button>
+                  {/* FOOTER */}
+                  <div className="w-full mt-3 flex flex-col gap-sm flex-wrap items-start justify-start sm:text-xs text-muted-foreground">
+                    <span className="text-md font-medium text-gray-700 flex items-center gap-2">
+                      Update Status
+                      {isCurrentResourceLoading && (
+                        <Loader2 className="w-3 h-3 animate-spin text-primary" />
+                      )}
+                    </span>
 
-                  <Button
-                    size="sm"
-                    className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium
-                      ${resource.status === "REFERRED"
-                        ? "bg-blue-100 text-blue-700 ring-1 ring-blue-300"
-                        : "bg-blue-50 text-blue-600 hover:bg-blue-100"}
-                    `}
-                    onClick={() => updateStatus(resource.id, "REFERRED")}
-                  >
-                    Referred
-                  </Button>
+                    <div className="flex flex-wrap gap-1 sm:gap-2">
+                      <Button
+                        size="sm"
+                        disabled={isCurrentResourceLoading}
+                        className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium disabled:opacity-60 disabled:cursor-not-allowed ${
+                          resource.status === "INQUIRED"
+                            ? "bg-gray-100 text-gray-700 ring-1 ring-gray-300"
+                            : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                        }`}
+                        onClick={(e) =>
+                          updateStatus(e, resource.id, "INQUIRED")
+                        }
+                      >
+                        Inquired
+                      </Button>
 
-                  <Button
-                    size="sm"
-                    className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium
-                      ${resource.status === "PENDING"
-                        ? "bg-yellow-100 text-yellow-700 ring-1 ring-yellow-300"
-                        : "bg-yellow-50 text-yellow-700 hover:bg-yellow-100"}
-                    `}
-                    onClick={() => updateStatus(resource.id, "PENDING")}
-                  >
-                    Pending
-                  </Button>
+                      <Button
+                        size="sm"
+                        disabled={isCurrentResourceLoading}
+                        className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium disabled:opacity-60 disabled:cursor-not-allowed ${
+                          resource.status === "REFERRED"
+                            ? "bg-blue-100 text-blue-700 ring-1 ring-blue-300"
+                            : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                        }`}
+                        onClick={(e) =>
+                          updateStatus(e, resource.id, "REFERRED")
+                        }
+                      >
+                        Referred
+                      </Button>
 
-                  <Button
-                    size="sm"
-                    className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium
-                      ${resource.status === "ENROLLED"
-                        ? "bg-green-100 text-green-700 ring-1 ring-green-300"
-                        : "bg-green-50 text-green-700 hover:bg-green-100"}
-                    `}
-                    onClick={() => updateStatus(resource.id, "ENROLLED")}
-                  >
-                    Enrolled
-                  </Button>
+                      <Button
+                        size="sm"
+                        disabled={isCurrentResourceLoading}
+                        className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium disabled:opacity-60 disabled:cursor-not-allowed ${
+                          resource.status === "PENDING"
+                            ? "bg-yellow-100 text-yellow-700 ring-1 ring-yellow-300"
+                            : "bg-yellow-50 text-yellow-700 hover:bg-yellow-100"
+                        }`}
+                        onClick={(e) =>
+                          updateStatus(e, resource.id, "PENDING")
+                        }
+                      >
+                        Pending
+                      </Button>
 
-                  <Button
-                    size="sm"
-                    className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium
-                      ${resource.status === "COMPLETED"
-                        ? "bg-purple-100 text-purple-700 ring-1 ring-purple-300"
-                        : "bg-purple-50 text-purple-700 hover:bg-purple-100"}
-                    `}
-                    onClick={() => updateStatus(resource.id, "COMPLETED")}
-                  >
-                    Completed
-                  </Button>
+                      <Button
+                        size="sm"
+                        disabled={isCurrentResourceLoading}
+                        className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium disabled:opacity-60 disabled:cursor-not-allowed ${
+                          resource.status === "ENROLLED"
+                            ? "bg-green-100 text-green-700 ring-1 ring-green-300"
+                            : "bg-green-50 text-green-700 hover:bg-green-100"
+                        }`}
+                        onClick={(e) =>
+                          updateStatus(e, resource.id, "ENROLLED")
+                        }
+                      >
+                        Enrolled
+                      </Button>
 
-                  <Button
-                    size="sm"
-                    className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium
-                      ${resource.status === "CLOSED"
-                        ? "bg-red-100 text-red-700 ring-1 ring-red-300"
-                        : "bg-red-50 text-red-700 hover:bg-red-100"}
-                    `}
-                    onClick={() => updateStatus(resource.id, "CLOSED")}
-                  >
-                    Closed
-                  </Button>
+                      <Button
+                        size="sm"
+                        disabled={isCurrentResourceLoading}
+                        className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium disabled:opacity-60 disabled:cursor-not-allowed ${
+                          resource.status === "COMPLETED"
+                            ? "bg-purple-100 text-purple-700 ring-1 ring-purple-300"
+                            : "bg-purple-50 text-purple-700 hover:bg-purple-100"
+                        }`}
+                        onClick={(e) =>
+                          updateStatus(e, resource.id, "COMPLETED")
+                        }
+                      >
+                        Completed
+                      </Button>
 
+                      <Button
+                        size="sm"
+                        disabled={isCurrentResourceLoading}
+                        className={`text-[10px] sm:text-xs px-2 py-1 sm:px-3 sm:py-1.5 rounded-full font-medium disabled:opacity-60 disabled:cursor-not-allowed ${
+                          resource.status === "CLOSED"
+                            ? "bg-red-100 text-red-700 ring-1 ring-red-300"
+                            : "bg-red-50 text-red-700 hover:bg-red-100"
+                        }`}
+                        onClick={(e) =>
+                          updateStatus(e, resource.id, "CLOSED")
+                        }
+                      >
+                        Closed
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
-        )}
-
-      </div>
-    );
-  })}
+        );
+      })}
     </div>
   );
 }

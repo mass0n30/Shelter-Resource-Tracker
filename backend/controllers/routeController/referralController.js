@@ -5,28 +5,36 @@ async function createReferral(req, res, next) {
     const newReferral = await prisma.referral.create({
       data: {
         clientId: parseInt(req.params.clientId),
-        createdById: req.user.id, 
+        createdById: req.user.id,
         organizationName: req.body.organizationName,
         resourceType: req.body.resourceType,
         purpose: req.body.purpose,
         status: req.body.status,
-        followUpDate: new Date(req.body.followUpDate),
-        isPriority: req.body.priority,
+        followUpDate: req.body.followUpDate
+          ? new Date(req.body.followUpDate)
+          : null,
+        roiSigned: req.body.roiSigned ?? false,
+        isPriority: req.body.isPriority ?? false,
         summary: req.body.summary,
-        
       },
     });
-    return res.status(201).json(newReferral, { message: "Referral Created Successfully" });
+
+    return res.status(201).json({
+      message: "Referral Created Successfully",
+      referral: newReferral,
+    });
   } catch (error) {
-    console.log('failed to create referral', error);
-    return res.status(400).json({ errors:error });
+    console.log("failed to create referral", error);
+    return res.status(400).json({ errors: error });
   }
-};
+}
 
 async function updateReferral(req, res, next) {
   try {
     const updatedReferral = await prisma.referral.update({
-      where: { id: parseInt(req.params.referralId) },
+      where: {
+        id: parseInt(req.params.referralId),
+      },
       data: {
         organizationName: req.body.organizationName,
         resourceType: req.body.resourceType,
@@ -35,19 +43,19 @@ async function updateReferral(req, res, next) {
         followUpDate: req.body.followUpDate
           ? new Date(req.body.followUpDate)
           : null,
-        isPriority: req.body.isPriority,
+        roiSigned: req.body.roiSigned ?? false,
+        isPriority: req.body.isPriority ?? false,
         summary: req.body.summary,
       },
     });
 
     return res.status(200).json({
-      data: updatedReferral,
       message: "Referral Updated Successfully",
+      referral: updatedReferral,
     });
-
   } catch (error) {
     console.log("failed to update referral", error);
-    return res.status(400).json({ error });
+    return res.status(400).json({ errors: error });
   }
 }
 

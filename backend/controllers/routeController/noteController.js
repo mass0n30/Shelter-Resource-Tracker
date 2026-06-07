@@ -2,17 +2,33 @@ const { prisma } = require("../../db/prismaClient.js");
 
 async function getClientNotes(req, res, next) {
   try {
-    const notes = await prisma.note.findMany({
-      where: { clientId: parseInt(req.params.clientId) },
-      orderBy: { createdAt: 'desc' },
-    });
-    return res.status(200).json(notes);
-  } catch (error) {
-    console.log('failed to get notes');
-    return res.status(400).json({ errors:error });
-  }
-};
+    const clientId = Number(req.params.clientId);
 
+    const notes = await prisma.note.findMany({
+      where: {
+        clientId,
+        OR: [
+          { visibility: "public" },
+          {
+            visibility: "private",
+            authorId: req.user.id,
+          },
+        ],
+      },
+      include: {
+        client: true,
+        author: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return notes;
+  } catch (err) {
+    next(err);
+  }
+}
 async function createNote(req, res, next) {
   try {
     await prisma.note.create({
