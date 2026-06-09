@@ -30,7 +30,9 @@ function DashBoard() {
   const [recentNotesOpen, setRecentNotesOpen] = useState(false);
   const [toggle, setToggle] = useState("reminders");
 
-  window.scrollTo(0, 0);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const clients = data.clients;
 
@@ -208,10 +210,12 @@ return (
               <button
                 type="button"
                 onClick={() => setRecentNotesOpen((prev) => !prev)}
-                className="flex h-[64px] w-[64px] items-center justify-center rounded-full border border-border bg-primary opacity-80 hover:opacity-100 text-muted shadow-md transition hover:text-foreground hover:shadow-lg"
+                className="flex h-[64px] w-[64px] items-center justify-center rounded-full border border-border bg-primary text-white opacity-80 shadow-md transition hover:opacity-100 hover:shadow-lg"
                 aria-label={recentNotesOpen ? "Close recent notes" : "Open recent notes"}
               >
-                {!recentNotesOpen && (
+                {recentNotesOpen ? (
+                  <X className="h-9 w-9 text-white" />
+                ) : (
                   <NotebookText className="h-10 w-10 text-white" />
                 )}
               </button>
@@ -219,7 +223,7 @@ return (
 
             {recentNotesOpen && (
               <div className="overflow-hidden rounded-lg border border-border bg-backgroundAlt shadow-lg">
-                <RecentPostedNotes notes={data.notes} setRecentNotesOpen={setRecentNotesOpen} />
+                <RecentPostedNotes notes={data.notes} />
               </div>
             )}
           </div>
@@ -227,12 +231,12 @@ return (
     </main>
 
     <Sheet open={notificationsOpen} className="transition-all duration-300 ease-in-out" onOpenChange={setNotificationsOpen}>
-      <SheetContent side="right" className="w-full transition-all duration-300 ease-in-out bg-background p-0 lg:hidden">
-        <SheetHeader className="border-b border-border px-4 py-4 text-left">
-          <SheetTitle>Reminders</SheetTitle>
+      <SheetContent side="right" className="w-full transition-all duration-300 ease-in-out bg-white p-0 lg:hidden">
+        <SheetHeader className="border-b border-border p-0 text-left">
+          <SheetTitle></SheetTitle>
         </SheetHeader>
 
-        <div className="h-[calc(100vh)] overflow-y-auto p-3">
+        <div className="h-[calc(100vh)] overflow-y-auto p-3 pt-0">
           <Notifications
             className="min-h-0 border-0 shadow-none"
             userNotes={user.notes}

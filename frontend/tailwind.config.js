@@ -25,6 +25,7 @@ export default {
       },
       colors: {
         primary: "var(--color-primary)",
+        primaryGlow: "var(--glow-primary)",
         primaryDark: "var(--color-primary-dark)",
         primaryLight: "var(--color-primary-light)",
         secondary: "var(--color-secondary)",
@@ -36,6 +37,11 @@ export default {
         muted: "var(--color-muted)",
         border: "var(--color-border)",
         accentOrange: "var(--accent-orange)",
+
+      },
+
+      boxShadow: {
+        primaryGlow: "var(--glow-primary)",
       },
 
       borderRadius: {

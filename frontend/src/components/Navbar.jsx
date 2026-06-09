@@ -125,8 +125,11 @@ function Navbar({
               </SheetContent>
             </Sheet>
 
-            <h1 className="absolute left-1/2 -translate-x-1/2 text-[15px] font-bold tracking-[-0.02em] text-slate-950">
-              Dashboard
+            <h1 className="absolute left-1/2 -translate-x-1/2 text-[15px] font-bold tracking-[0.02em] text-slate-950">
+              <span className="text-slate-700">
+                Dashboard
+              </span>
+              <span className="text-primary"> Overview</span>
             </h1>
 
             <Button

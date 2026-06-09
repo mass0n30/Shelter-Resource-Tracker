@@ -72,7 +72,7 @@ export const getDisplayTime = (date, type) => {
   } else if (type === "note") {
     if (diffDays === 0) return "Today";
     if (diffDays === -1) return "Yesterday";
-    if (diffDays <= -7 && diffDays >= -30) return `${Math.abs(diffDays)} days ago`;
+    if ( diffDays >= -30) return `${Math.abs(diffDays)} days ago`;
   }
   return itemDate.toLocaleDateString();
 };

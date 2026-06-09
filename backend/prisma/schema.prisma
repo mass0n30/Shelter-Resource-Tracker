@@ -83,7 +83,7 @@ model User {
 // Additional fields will be added (phone/address/ ect)
 model Client {
   id        Int          @id @default(autoincrement())
-  clientId  Int?         @unique
+  clientId  Int?         
   firstName String
   lastName  String
   email     String?   @unique

@@ -4,7 +4,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Notebook, RotateCcw, Save } from "lucide-react";
+import { Notebook, RotateCcw, Save, Check } from "lucide-react";
 import CalendarPopover from "../partials/Calender";
 import { z } from "zod";
 
@@ -139,29 +139,75 @@ export default function NoteForm({
           onChange={(e) => updateField("content", e.target.value)}
           className="min-h-[120px] w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
         />
-
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="flex items-center justify-between rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground">
-            <span>Set Reminder</span>
+          <label
+            className={`flex cursor-pointer items-center justify-between rounded-lg border px-4 py-3 text-sm transition ${
+              formData.setReminder
+                ? "border-primary bg-primaryLight/70 text-foreground shadow-sm"
+                : "border-border bg-white text-foreground hover:border-primary/40 hover:bg-primaryLight/40"
+            }`}
+          >
+            <div className="flex flex-col">
+              <span className="font-medium">Set Reminder</span>
+              <span className="text-[12px] text-muted md:text-sm">
+                Add a follow-up date
+              </span>
+            </div>
+
             <input
               type="checkbox"
               checked={formData.setReminder}
               onChange={(e) => updateField("setReminder", e.target.checked)}
+              className="sr-only"
             />
+
+            <span
+              className={`flex h-7 w-7 items-center justify-center rounded-md border-2 transition ${
+                formData.setReminder
+                  ? "border-primary bg-primary"
+                  : "border-border bg-white"
+              }`}
+            >
+              {formData.setReminder && <Check className="h-4 w-4 text-white" />}
+            </span>
           </label>
 
-          <label className="flex items-center justify-between rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground">
-            <span>Publish Note</span>
+          <label
+            className={`flex cursor-pointer items-center justify-between rounded-lg border px-4 py-3 text-sm transition ${
+              formData.visibility === "public"
+                ? "border-primary bg-primaryLight/70 text-foreground shadow-sm"
+                : "border-border bg-white text-foreground hover:border-primary/40 hover:bg-primaryLight/40"
+            }`}
+          >
+            <div className="flex flex-col">
+              <span className="font-medium">Publish Note</span>
+              <span className="text-[12px] text-muted md:text-sm">
+                Visible to the team
+              </span>
+            </div>
+
             <input
               type="checkbox"
               checked={formData.visibility === "public"}
               onChange={(e) =>
                 updateField("visibility", e.target.checked ? "public" : "private")
               }
+              className="sr-only"
             />
+
+            <span
+              className={`flex h-7 w-7 items-center justify-center rounded-md border-2 transition ${
+                formData.visibility === "public"
+                  ? "border-primary bg-primary"
+                  : "border-border bg-white"
+              }`}
+            >
+              {formData.visibility === "public" && (
+                <Check className="h-4 w-4 text-white" />
+              )}
+            </span>
           </label>
         </div>
-
         {formData.setReminder && (
           <div className="rounded-md border border-border bg-white px-3 py-2">
             <CalendarPopover date={date} setDate={setDate} single={true} />
@@ -172,7 +218,7 @@ export default function NoteForm({
           <button
             type="button"
             onClick={resetForm}
-            className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted transition hover:bg-primaryLight hover:text-primary"
+            className="inline-flex text-white items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted transition hover:bg-primaryLight hover:text-primary"
           >
             <RotateCcw className="h-4 w-4" />
             Reset
@@ -180,7 +226,7 @@ export default function NoteForm({
 
           <button
             type="submit"
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primaryDark"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition hover:shadow-primaryGlow"
           >
             <Save className="h-4 w-4" />
             {isEdit ? "Update Note" : "Create Note"}

@@ -28,7 +28,7 @@ export default function CalendarPopover({ date, setDate, single }) {
         <Button
           variant="outline"
           data-empty={!date}
-          className="bg-background text-foreground justify-start text-left font-normal data-[empty=true]:text-muted-foreground hover:bg-primary"
+          className="bg-background text-foreground justify-start text-left font-normal data-[empty=true]:text-muted-foreground hover:bg-primaryLight"
         >
           {date?.from && date?.to ? (
             `${format(date.from, "PPP")} - ${format(date.to, "PPP")}`

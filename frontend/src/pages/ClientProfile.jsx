@@ -49,10 +49,13 @@ export default function ClientProfile() {
   }, []); 
 
   const fetchClientData = async (success) => {
+    setLoading(true);
+
     try {
       const response = await authRouter.get(`/dashboard/clients/${clientId}`);
-      console.log("Fetched client data:", response.data);
+
       const getClientStats = getClientReferralStats(response.data);
+
       setClientData(response.data);
       setClientStats(getClientStats);
 
@@ -61,17 +64,14 @@ export default function ClientProfile() {
       }
     } catch (error) {
       console.error("Error fetching client data:", error);
-    } 
+    } finally {
+      setLoading(false);
+    }
   };
 
   // fetching upon mount
   useEffect(() => {
-    try {
-      setLoading(true);
-      fetchClientData();
-    } catch (err) {
-      console.error("Error fetching client data:", err);
-    } 
+    fetchClientData();
   }, [clientId]);
 
   if (!clientData || loading) {
@@ -104,6 +104,8 @@ export default function ClientProfile() {
           clientData={clientData.client}
           fetchUpdatedData={fetchClientData}
           authRouter={authRouter}
+          setOpenForm={setOpenForm}
+          openForm={openForm}
           className="min-h-0 max-h-[calc(140vh-200px)] overflow-y-auto md:col-span-1"
         />
       </div>
@@ -196,24 +198,31 @@ function ClientInfoSectionToggle({
   );
 }
 
-function Banner({ clientData, className, authRouter, fetchClientData, openForm, setOpenForm }) {
-
+function Banner({
+  clientData,
+  className,
+  authRouter,
+  fetchClientData,
+  openForm,
+  setOpenForm,
+}) {
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      <div className="max-w-7xl flex-1 flex items-center justify-between gap-4 px-4">
-        <div className="min-w-0 flex items-center gap-4">
-          
+      <div className="flex w-full max-w-7xl flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
+        {/* LEFT SIDE */}
+        <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-center md:gap-4">
           <button
             type="button"
             onClick={() => window.history.back()}
-            className="inline-flex items-center gap-2 rounded-md px-2 py-1 text-xs font-medium text-muted transition bg-transparent hover:bg-primaryLight hover:text-primary"
+            className="inline-flex w-fit items-center gap-2 rounded-md bg-transparent px-2 py-1 text-xs font-medium text-muted transition hover:bg-primaryLight hover:text-primary"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            Back to Dashboard
+            <span className="hidden xs:inline sm:inline">Back to Dashboard</span>
+            <span className="sm:hidden">Back</span>
           </button>
 
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primaryLight text-sm font-semibold text-primary sm:h-12 sm:w-12">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primaryLight text-sm font-semibold text-primary sm:h-14 sm:w-14">
               {clientData?.avatarUrl ? (
                 <img
                   src={clientData.avatarUrl}
@@ -228,18 +237,18 @@ function Banner({ clientData, className, authRouter, fetchClientData, openForm, 
               )}
             </div>
 
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="truncate text-base font-semibold text-foreground/90 sm:text-lg">
+            <div className="min-w-0 flex-1">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <h1 className="max-w-[180px] truncate text-base font-semibold text-foreground/90 sm:max-w-none sm:text-lg">
                   {clientData.firstName} {clientData.lastName}
                 </h1>
 
-                <span className="rounded-full bg-backgroundAlt px-2 py-0.5 text-[11px] font-medium text-muted border border-border">
+                <span className="shrink-0 rounded-full border border-border bg-backgroundAlt px-2 py-0.5 text-[11px] font-medium text-muted">
                   {clientData.status}
                 </span>
               </div>
 
-              <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted">
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
                 <span className="inline-flex items-center gap-1">
                   <LucideBedDouble className="h-3.5 w-3.5" />
                   {clientData.bedLabel || "No bed"}
@@ -254,21 +263,24 @@ function Banner({ clientData, className, authRouter, fetchClientData, openForm, 
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 md:min-w-[350px]">
+        {/* RIGHT SIDE ACTIONS */}
+        <div className="grid w-full grid-cols-2 gap-2 md:flex md:w-auto md:min-w-[300px] md:items-center">
           {/* RESOURCE */}
-          <Dialog open={openForm === "resource"} onOpenChange={(open) => setOpenForm(open ? "resource" : null)}>
+          <Dialog
+            open={openForm === "resource"}
+            onOpenChange={(open) => setOpenForm(open ? "resource" : null)}
+          >
             <DialogTrigger asChild>
               <button
                 type="button"
-                className="inline-flex flex-1 items-center justify-center md:justify-start gap-2 rounded-md bg-white px-4 py-3 text-sm font-medium text-muted transition hover:bg-primaryLight hover:text-primary"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-white px-4 py-3 text-sm font-medium text-muted transition hover:bg-primaryLight hover:text-primary md:justify-start"
               >
                 <Plus className="h-4 w-4" />
                 Resource
               </button>
             </DialogTrigger>
 
-            <DialogContent
-             className="bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
+            <DialogContent className="w-[calc(100vw-2rem)] max-w-md rounded-lg border bg-background p-6 text-foreground shadow-lg">
               <VisuallyHidden>
                 <DialogTitle>{`Create Resource for ${clientData.firstName} ${clientData.lastName}`}</DialogTitle>
               </VisuallyHidden>
@@ -283,18 +295,21 @@ function Banner({ clientData, className, authRouter, fetchClientData, openForm, 
           </Dialog>
 
           {/* NOTE */}
-          <Dialog open={openForm === "note"} onOpenChange={(open) => setOpenForm(open ? "note" : null)}>
+          <Dialog
+            open={openForm === "note"}
+            onOpenChange={(open) => setOpenForm(open ? "note" : null)}
+          >
             <DialogTrigger asChild>
               <button
                 type="button"
-                className="inline-flex flex-1 items-center justify-center md:justify-start gap-2 rounded-md bg-white px-4 py-3 text-sm font-medium text-muted transition hover:bg-primaryLight hover:text-primary"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-white px-4 py-3 text-sm font-medium text-muted transition hover:bg-primaryLight hover:text-primary md:justify-start"
               >
                 <FilePlus className="h-4 w-4" />
                 Note
               </button>
             </DialogTrigger>
 
-            <DialogContent className="bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
+            <DialogContent className="w-[calc(100vw-2rem)] max-w-md rounded-lg border bg-background p-6 text-foreground shadow-lg">
               <VisuallyHidden>
                 <DialogTitle>{`Create Note for ${clientData.firstName} ${clientData.lastName}`}</DialogTitle>
               </VisuallyHidden>
@@ -312,6 +327,7 @@ function Banner({ clientData, className, authRouter, fetchClientData, openForm, 
     </div>
   );
 }
+
 
 import TimelineHistory from "@/components/partials/Timeline";
 
@@ -331,8 +347,15 @@ import {
   UserRound,
 } from "lucide-react";
 
-function Information({ clientData, className, authRouter, fetchClientData }) {
-  const formatDate = (date) =>
+  function Information({
+    clientData,
+    className,
+    authRouter,
+    fetchUpdatedData,
+    setOpenForm,
+    openForm
+  }) {  
+    const formatDate = (date) =>
     date ? new Date(date).toLocaleDateString() : "N/A";
 
   const items = [
@@ -377,7 +400,7 @@ function Information({ clientData, className, authRouter, fetchClientData }) {
             </h2>
           </div>
 
-        <Dialog>
+        <Dialog open={openForm === "client"} onOpenChange={(open) => setOpenForm(open ? "client" : null)}>
           <DialogTrigger asChild>
             <button
               type="button"
@@ -395,9 +418,9 @@ function Information({ clientData, className, authRouter, fetchClientData }) {
 
             <ClientForm
               authRouter={authRouter}
-              clientId={clientData.id}
-              fetchClientData={fetchClientData}
               clientData={clientData}
+              fetchUpdatedData={fetchUpdatedData}
+              setOpenForm={setOpenForm}
             />
           </DialogContent>
         </Dialog>
@@ -958,7 +981,7 @@ export function Resources({ referrals, fetchClientData, authRouter, showName }) 
             <div className="pb-sm flex items-start justify-between gap-2">
               <div className="flex flex-col items-start gap-xs">
                 <div className="flex items-center gap-sm">
-                  <h3 className="font-semibold text-sm sm:text-base">
+                  <h3 className="font-semibold text-left text-sm sm:text-base">
                     {resource.organizationName}
                   </h3>
 

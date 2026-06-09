@@ -82,25 +82,25 @@ export default function TimelineHistory({ clientData }) {
   const timelineItems = GetTimeLineHistoryItems(clientData);
 
   return (
-    <div className=" h-full bg-background p-6 text-card-foreground shadow-sm">
-      <div className="mb-8 flex items-start justify-between gap-3">
-        <div>
-          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-xl bg-primaryLight text-primary">
+    <div className="h-full bg-background p-3 text-card-foreground shadow-sm sm:p-4 md:p-6">
+      <div className="mb-5 flex items-start justify-between gap-3 sm:mb-8">
+        <div className="min-w-0">
+          <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primaryLight text-primary sm:h-10 sm:w-10">
             <SquareChartGantt size={20} />
           </div>
 
-          <h2 className="text-lg text-left font-semibold">
+          <h2 className="text-left text-base font-semibold sm:text-lg">
             Timeline History
           </h2>
 
-          <p className="mt-1 text-sm text-muted">
+          <p className="mt-1 max-w-prose text-sm leading-relaxed text-muted">
             Enrollment, exits, referrals, and follow-ups for this client.
           </p>
         </div>
       </div>
 
       {timelineItems.length === 0 ? (
-        <div className="rounded-xl border border-dashed bg-muted/30 p-6 text-center">
+        <div className="rounded-xl border border-dashed bg-muted/30 p-4 text-center sm:p-6">
           <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-primaryLight text-primary">
             <History size={18} />
           </div>
@@ -112,7 +112,7 @@ export default function TimelineHistory({ clientData }) {
           </p>
         </div>
       ) : (
-        <div className="space-y-6 h-full overflow-y-auto pr-2">
+        <div className="h-full space-y-4 overflow-y-auto pr-1 sm:space-y-6 sm:pr-2">
           {timelineItems.map((item, index) => (
             <TimelineItem
               key={`${item.type}-${item.date}-${index}`}
@@ -130,39 +130,43 @@ function TimelineItem({ item, isLast }) {
   const Icon = getTimelineIcon(item);
 
   return (
-    <div className="relative flex gap-3">
+    <div className="relative flex gap-2 sm:gap-3">
       {!isLast && (
-        <div className="absolute left-[15px] top-8 h-[calc(100%+1.25rem)] w-px bg-border" />
+        <div className="absolute left-[13px] top-8 h-[calc(100%+1rem)] w-px bg-border sm:left-[15px] sm:h-[calc(100%+1.25rem)]" />
       )}
 
       <div
-        className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primaryLight shadow-sm ring-4 ring-background ${getTimelineIconColor(item.color)}`}
+        className={`relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primaryLight shadow-sm ring-4 ring-background sm:h-8 sm:w-8 ${getTimelineIconColor(
+          item.color
+        )}`}
       >
-        <Icon size={15} strokeWidth={2.4} />
+        <Icon size={14} strokeWidth={2.4} />
       </div>
 
       <div className="min-w-0 flex-1 rounded-lg border bg-backgroundAlt px-3 py-3 transition">
-        <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <p className="font-semibold leading-snug text-foreground">
-              {item.title}
+        <div className="flex min-w-0 flex-col gap-2">
+          <div className="min-w-0">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <p className="min-w-0 break-words text-sm font-semibold leading-snug text-foreground sm:text-base">
+                {item.title}
+              </p>
+
+              {item.type && (
+                <span className="inline-flex shrink-0 items-center rounded-full border bg-background px-2 py-0.5 text-[10px] font-medium text-muted-foreground sm:text-[11px]">
+                  {formatStatus(item.type)}
+                </span>
+              )}
+            </div>
+
+            <p className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground">
+              <Clock size={13} />
+              {formatTimelineDateOnly(item.date)}
             </p>
-
-            {item.type && (
-              <span className="inline-flex items-center rounded-full border bg-background px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                {formatStatus(item.type)}
-              </span>
-            )}
           </div>
-
-          <p className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground sm:text-sm">
-            <Clock size={13} />
-            {formatTimelineDateOnly(item.date)}
-          </p>
         </div>
 
         {item.description && (
-          <p className="mt-2 border-l-2 border-border pl-3 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-2 break-words border-l-2 border-border pl-3 text-xs leading-relaxed text-muted-foreground sm:text-sm">
             {item.description}
           </p>
         )}

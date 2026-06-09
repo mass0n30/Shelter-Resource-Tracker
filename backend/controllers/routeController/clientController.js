@@ -215,6 +215,7 @@ async function createClient(req, res, next) {
         gender: req.body?.gender || null,
         bedLabel: req.body?.bedLabel || null,
         status: req.body?.status || "ENROLLED",
+        avatarUrl: makeInitialsAvatar(`${firstName} ${lastName}`),
         // BELOW AS OPTIONAL FIELDS ?
         // phone: req.body.phone,
         // address: req.body.address,
@@ -236,6 +237,12 @@ async function createClient(req, res, next) {
     return res.status(400).json({ errors:error });
   }
 };
+
+function makeInitialsAvatar(name) {
+  return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(
+    name
+  )}`;
+}
 
 async function updateClient(req, res, next) {
   try {

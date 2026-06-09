@@ -1,6 +1,6 @@
 
 import { Button } from '../partials/Button';
-import { ClockAlert, Plus, CalendarDays, UserSearch, ChevronDown, BedDouble } from 'lucide-react';
+import { ClockAlert, Plus, CalendarDays, UserSearch, SmilePlus, ChevronDown, BedDouble } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Combobox,ComboboxValue, ComboboxContent } from "@/components/ui/combobox";
@@ -67,7 +67,7 @@ function ClientCard({ client, clientStats }) {
     statusStyles[client.status] || "bg-gray-50 text-gray-600 border-gray-200";
 
   return (
-    <div className="flex-1 min-w-0 min-h-full rounded-lg bg-white border border-primaryLight p-xs sm:px-lg py-md shadow-sm transition cursor-pointer">
+    <div className="flex-1 min-w-0 min-h-full rounded-lg bg-white border border-primaryLight py-md px-sm sm:px-lg py-md shadow-sm transition cursor-pointer">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <div className="shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-xs sm:text-sm font-semibold text-slate-600 overflow-hidden">
@@ -146,17 +146,17 @@ import { CalendarEmbedded } from './CalenderView';
 import { get } from 'react-hook-form';
 import { useAsyncStatus } from '../partials/Loading';
 
-function ClientToggleSection({className, loading, setLoading, allClientData, userNotes, userReferrals, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter, openForm, setOpenForm}) {
+function ClientToggleSection({className, allClientData, userNotes, userReferrals, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter, openForm, setOpenForm}) {
   // for searching by name
   const [clientId, setClientId] = useState(null);
   const [date, setDate] = useState(null);
   const [filter, setFilter] = useState("ENROLLED");
   const [calendarOpen, setCalendarOpen] = useState(false);
 
+  const {success, setSuccess, loading, setLoading} = useAsyncStatus();
 
   const fetchClients = async (filter) => {
     setLoading(true);
-    setViewedClients(null);
     try {
       const response = await authRouter.get("/dashboard/clients", {
         params: {
@@ -177,6 +177,7 @@ function ClientToggleSection({className, loading, setLoading, allClientData, use
 return (
   <div className={`flex flex-col overflow-hidden ${className}`}>
     <div className="flex flex-col gap-4 border border-border p-sm md:p-lg">
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {/* Section title */}
         <div className="min-w-0">
@@ -217,7 +218,7 @@ return (
               </Button>
             </DialogTrigger>
 
-            <ClientForm authRouter={authRouter} />
+            <ClientForm authRouter={authRouter} setOpenForm={setOpenForm} fetchUpdatedData={() => fetchClients(filter)} setSuccess={setSuccess} />
           </Dialog>
 
           <Button
@@ -274,8 +275,14 @@ return (
         />
       </div>
     )}
-
-
+      { success && (
+        <div className="rounded-md bg-green-50 p-4">
+          <div className="flex items-center gap-2 text-green-700 text-sm">
+            <SmilePlus className="h-4 w-4" />
+            <span>{success}</span>
+          </div>
+        </div>
+      )}
     <ClientList
       className="border-t border-border max-h-none ml-1 overflow-visible lg:max-h-screen lg:overflow-y-auto"
       viewedClients={viewedClients}

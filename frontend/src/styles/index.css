@@ -12,6 +12,10 @@
   :root {
     /* COLORS */
     --color-primary: #1d4ed8;
+    --glow-primary: 
+      0 0 0 1px rgba(29, 78, 216, 0.14),
+      0 8px 24px rgba(29, 78, 216, 0.22),
+      0 0 36px rgba(29, 78, 216, 0.18);
     --color-primary-dark: #071a5f;
     --color-primary-light:  #e8f2fc;
     --color-secondary: #dbeafe;

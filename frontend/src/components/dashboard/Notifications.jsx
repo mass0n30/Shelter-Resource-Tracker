@@ -415,7 +415,7 @@ return (
       </span>
     </div>
 
-    <div className="flex flex-col p-4 overflow-hidden flex-1 min-h-0">
+    <div className="flex flex-col sm:p-md overflow-hidden flex-1 min-h-0">
       <div className="flex items-center justify-between mb-sm gap-sm">
         <div className="flex-1 items-start text-left gap-sm">
           <h3 className={`text-md font-semibold `}>

@@ -9,7 +9,8 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import CalendarPopover from "../partials/Calender";
 import { z } from "zod";
-import { RotateCcw, Save, Trash2, Upload, UserRound } from "lucide-react";
+import { RotateCcw, Save, Trash2, Upload, UserRound, SmilePlus, ChevronDown } from "lucide-react";
+import { redirect, useNavigate } from "react-router-dom";
 
 const schema = z.object({
   firstName: z
@@ -60,6 +61,7 @@ export default function ClientForm({
   lastName,
   fetchUpdatedData,
   setOpenForm,
+  setSuccess,
 }) {
   const today = new Date();
   const next60 = new Date(today.getTime() + 60 * 24 * 60 * 60 * 1000);
@@ -69,6 +71,7 @@ export default function ClientForm({
   const [error, setError] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
+  const navigate = useNavigate();
 
   const [date, setDate] = useState({
     from: today,
@@ -231,12 +234,16 @@ export default function ClientForm({
         }
       }
 
-      if (fetchUpdatedData) {
-        await fetchUpdatedData();
-      }
-
       if (setOpenForm) {
         setOpenForm(null);
+      }
+
+      if (setSuccess) {
+        setSuccess(isEdit ? "Client updated successfully!" : "Client created successfully!");
+      }
+
+      if (fetchUpdatedData) {
+        await fetchUpdatedData();
       }
     } catch (error) {
       console.error(
@@ -272,6 +279,8 @@ export default function ClientForm({
     } catch (error) {
       console.error("Error deleting client:", error.response?.data || error.message);
       setError("Something went wrong while deleting the client.");
+    } finally {
+      navigate("/dashboard");
     }
   };
 
@@ -297,8 +306,8 @@ export default function ClientForm({
       <form onSubmit={handleSubmit} className="grid w-full gap-4 py-4">
         <FieldGroup>
           <Field>
-            <div className="flex items-center gap-4 rounded-md border border-border bg-white px-3 py-3">
-              <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border bg-muted">
+            <div className="flex items-center justify-center gap-4 rounded-md border border-border bg-white px-3 py-3">
+              <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border bg-background">
                 {avatarPreview ? (
                   <img
                     src={avatarPreview}
@@ -306,11 +315,11 @@ export default function ClientForm({
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <UserRound className="h-6 w-6 text-muted-foreground" />
+                  <SmilePlus className="h-6 w-6 text-muted" />
                 )}
               </div>
 
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white transition hover:bg-primaryDark">
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-md bg-primary hover:shadow-primaryGlow px-3 py-2 text-sm font-medium text-white transition">
                 <Upload className="h-4 w-4" />
                 Upload Image
                 <input
@@ -351,30 +360,37 @@ export default function ClientForm({
           </Field>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field>
+          <Field>
+            <div className="relative">
               <select
                 value={formData.gender}
                 onChange={(e) => updateField("gender", e.target.value)}
-                className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="w-full appearance-none rounded-md border border-border bg-white px-3 py-2 pr-10 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
               >
                 <option value="">Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
               </select>
-            </Field>
 
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            </div>
+          </Field>
             <Field>
-              <select
-                value={formData.status}
-                onChange={(e) => updateField("status", e.target.value)}
-                className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              >
-                <option value="">Select Status</option>
-                <option value="ENROLLED">Enrolled</option>
-                <option value="WC">Winter Contingency</option>
-                <option value="INACTIVE">Inactive</option>
-                <option value="HOUSED">Housed</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={formData.status}
+                  onChange={(e) => updateField("status", e.target.value)}
+                  className="w-full appearance-none rounded-md border border-border bg-white px-3 py-2 pr-10 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                >
+                  <option value="">Select Status</option>
+                  <option value="ENROLLED">Enrolled</option>
+                  <option value="WC">Winter Contingency</option>
+                  <option value="INACTIVE">Inactive</option>
+                  <option value="HOUSED">Housed</option>
+                </select>
+
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+              </div>
             </Field>
           </div>
 
@@ -397,6 +413,7 @@ export default function ClientForm({
           </Field>
 
           <div className="rounded-md border border-border bg-white px-3 py-2">
+            <span className="mb-2 block text-sm text-muted text-center">Intake & Outtake Dates</span>
             <CalendarPopover date={date} setDate={setDate} />
           </div>
         </FieldGroup>
@@ -415,11 +432,11 @@ export default function ClientForm({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex w-full justify-between items-center gap-2">
             <button
               type="button"
               onClick={resetForm}
-              className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted transition hover:bg-primaryLight hover:text-primary"
+              className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition hover:bg-primaryLight hover:text-primary"
             >
               <RotateCcw className="h-4 w-4" />
               Reset
@@ -427,7 +444,7 @@ export default function ClientForm({
 
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-primaryDark"
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition hover:shadow-primaryGlow"
             >
               <Save className="h-4 w-4" />
               {isEdit ? "Update Client" : "Create Client"}

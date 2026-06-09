@@ -22,6 +22,7 @@ async function handleCreateUser(req, res, next) {
         firstName: req.body.firstname,
         lastName: req.body.lastname,
         password: hashedPassword,
+        avatarUrl: makeInitialsAvatar(`${req.body.firstname} ${req.body.lastname}`),
         role: req.body?.role || "MANAGER" 
       }
    });
@@ -38,5 +39,11 @@ async function handleCreateUser(req, res, next) {
     });
   }
 };
+
+function makeInitialsAvatar(name) {
+  return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(
+    name
+  )}`;
+}
 
 module.exports = { handleCreateUser };

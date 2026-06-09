@@ -9,7 +9,7 @@ clientRouter.post('/', controller.clientController.createClient);
 
 clientRouter.get('/:clientId', controller.clientController.getClientById);
 
-clientRouter.put('/:clientId',controller.clientController.updateClient);
+clientRouter.patch('/:clientId',controller.clientController.updateClient);
 
 clientRouter.delete('/:clientId', controller.clientController.deleteClient);
 
