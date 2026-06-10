@@ -36,16 +36,16 @@ async function updateClientStatuses() {
             clientId_date_type: {
               clientId: client.id,
               date: client.outtakeDate,
-              type: "exit",
+              type: "OUTAKE",
             },
           },
           update: {
-            type: "exit",
+            type: "OUTAKE",
           },
           create: {
-            clientId: client.id,
-            date: client.outtakeDate,
-            type: "exit",
+              clientId: client.id,
+              date: client.outtakeDate,
+              type: "OUTAKE",
           },
         });
       }),
@@ -58,19 +58,19 @@ async function updateClientStatuses() {
             clientId_date_type: {
               clientId: client.id,
               date: client.intakeDate,
-              type: "enroll",
+              type: "INTAKE",
             },
           },
           update: {
-            type: "enroll",
+            type: "INTAKE",
           },
           create: {
-            clientId: client.id,
-            date: client.intakeDate,
-            type: "enroll",
+              clientId: client.id,
+              date: client.intakeDate,
+              type: "INTAKE",
           },
         });
-      }),
+      }), 
   ]);
 
   await prisma.client.updateMany({

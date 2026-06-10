@@ -309,7 +309,7 @@ function Banner({
               </button>
             </DialogTrigger>
 
-            <DialogContent className="w-[calc(100vw-2rem)] max-w-md rounded-lg border bg-background p-6 text-foreground shadow-lg">
+            <DialogContent className="!w-[calc(100vw-2rem)] !max-w-[500px] rounded-lg border bg-background p-6 text-foreground shadow-lg">
               <VisuallyHidden>
                 <DialogTitle>{`Create Note for ${clientData.firstName} ${clientData.lastName}`}</DialogTitle>
               </VisuallyHidden>
@@ -497,11 +497,11 @@ function InfoCard({ label, value, icon: Icon, compact = false }) {
           <Icon className="h-4 w-4" />
         </div>
 
-        <div className="min-w-0">
+        <div className="min-w-0 ">
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted">
             {label}
           </p>
-          <p className="mt-1 truncate text-sm font-medium text-foreground/85">
+          <p className={`mt-1 ${value == 'HOUSED' ? 'text-orange-600 font-bold' : ''} truncate text-sm font-medium text-foreground/85`}>
             {value}
           </p>
         </div>

@@ -76,7 +76,7 @@ function HeroDashStats({ dashStats, dashStatFilter, setDashStatFilter }) {
       subLabel: "Needs Attention",
       filter: "URGENT", 
       icon: AlertTriangle,
-      iconClassName: "text-amber-300",
+      iconClassName: "text-red-400",
     },
     {
       data: dashStats?.followUps ?? 0,
@@ -84,7 +84,7 @@ function HeroDashStats({ dashStats, dashStatFilter, setDashStatFilter }) {
       subLabel: "Awaiting Response",
       filter: "FOLLOW_UP",
       icon: ClipboardList,
-      iconClassName: "text-blue-100",
+      iconClassName: "text-blue-400",
     },
     {
       data: dashStats?.totalClients ?? 0,
@@ -92,7 +92,7 @@ function HeroDashStats({ dashStats, dashStatFilter, setDashStatFilter }) {
       subLabel: "Enrolled",
       filter: "ENROLLED",
       icon: Users,
-      iconClassName: "text-blue-100",
+      iconClassName: "text-green-300",
     },
     {
       data: dashStats?.newClients ?? 0,
@@ -100,7 +100,7 @@ function HeroDashStats({ dashStats, dashStatFilter, setDashStatFilter }) {
       subLabel: "Last 30 Days",
       filter: "NEW",
       icon: Clock,
-      iconClassName: "text-blue-100",
+      iconClassName: "text-yellow-300",
     },
     {
       data: dashStats?.housedClients ?? 0,
@@ -108,12 +108,12 @@ function HeroDashStats({ dashStats, dashStatFilter, setDashStatFilter }) {
       subLabel: "Past Year",
       filter: "HOUSED",
       icon: House,
-      iconClassName: "text-blue-100",
+      iconClassName: "text-orange-300",
     },
   ];
 
   return (
-    <div className="relative md:w-[97%] md:mx-auto md:rounded-tl-lg rounded-tr-lg overflow-hidden z-10 mt-md grid grid-cols-1 bg-white/[0.075] md:grid-cols-5">
+    <div className="relative shadow-lg shadow-primaryGlow md:w-[97%] md:mx-auto rounded-tl-lg rounded-tr-lg overflow-hidden z-10 mt-md grid grid-cols-1 bg-white/[0.075] md:grid-cols-5">
       {stats.map((stat) => (
         <HeroStatCard
           key={stat.filter}
@@ -136,33 +136,33 @@ function HeroStatCard({ stat, active, onClick }) {
       type="button"
       onClick={onClick}
       className={`group flex min-h-[80px] rounded-none items-center gap-3 border-r border-t border-white/10 px-5 py-3 text-left transition hover:bg-white/10 ${
-        active ? "bg-white/[0.12]" : ""
+        active ? "bg-primaryDark" : ""
       }`}
     >
       <div
         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition ${
-          active ? "bg-white/25" : "bg-white/15"
+          active ? "bg-white/15" : "bg-white/35"
         }`}
       >
         <Icon
           className={`h-4 w-4 ${
-            active ? "text-white" : stat.iconClassName
+            active ? stat.iconClassName : "text-white"
           }`}
         />
       </div>
 
-      <div className="flex min-w-0 flex-col">
-        <div className="text-[24px] font-bold leading-none tracking-[-0.04em] text-white">
+      <div className="flex min-w-0  gap-sm items-center justify-center">
+        <div className="text-[24px] min-w-[28px] lg:text-xl font-bold leading-none tracking-[-0.04em] text-white">
           {stat.data}
         </div>
-
-        <div className="mt-1 truncate text-[12px] font-semibold leading-tight text-blue-100/90">
-          {stat.label}
-        </div>
-
-        <div className="hidden sm:block truncate text-[10px] font-medium leading-tight text-blue-200/65">
-          {stat.subLabel}
-        </div>
+        <div>
+          <div className="mt-1 truncate text-[12px] lg:text-sm font-bold leading-tight text-blue-100/90">
+            {stat.label}
+          </div>
+          <div className="truncate text-[10px] lg:text-xs font-medium leading-tight text-blue-200/65">
+            {stat.subLabel}
+          </div> 
+      </div>
       </div>
     </button>
   );

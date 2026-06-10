@@ -1,5 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import Notifications from "../components/dashboard/Notifications";
 import {
   Search,
   FolderSearch,
@@ -29,6 +31,8 @@ function RecordsPage() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [typeFilter, setTypeFilter] = useState("ALL");
   const [notesView, setNotesView] = useState("personal");
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [toggle, setToggle] = useState("reminders");
 
   const allResources = data?.referrals || [];
   const allNotes = data?.notes || [];
@@ -157,10 +161,12 @@ function RecordsPage() {
         authRouterForm={authRouterForm}
         openForm={openForm}
         setOpenForm={setOpenForm}
+        notificationsOpen={notificationsOpen}
+        setNotificationsOpen={setNotificationsOpen}
         user={user}
       />
 
-      <main className="bg-primaryLight min-h-full px-sm md:px-md">
+      <main className="bg-background min-h-full px-sm md:px-md">
         <div className="mx-auto w-full p-sm md:p-md">
           <section className="mb-md flex flex-col items-start">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
@@ -205,10 +211,10 @@ function RecordsPage() {
 
           <div className="grid grid-cols-1 gap-sm md:gap-md">
             <section className="bg-background border-2 border-border-400 rounded-xl shadow-md overflow-hidden">
-              <div className="flex flex-wrap gap-2 border-b border-border bg-backgroundAlt p-4">
+              <div className="flex flex-wrap gap-2 border-b border-border bg-backgroundAlt p-sm sm:p-md">
                 <button
                   onClick={() => setActiveTab("resources")}
-                  className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
+                  className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-xs sm:text-sm font-semibold transition ${
                     activeTab === "resources"
                       ? "bg-primary text-white shadow-sm"
                       : "bg-white text-muted border border-border hover:bg-primaryLight hover:text-primary"
@@ -220,7 +226,7 @@ function RecordsPage() {
 
                 <button
                   onClick={() => setActiveTab("notes")}
-                  className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
+                  className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-xs sm:text-sm font-semibold transition ${
                     activeTab === "notes"
                       ? "bg-primary text-white shadow-sm"
                       : "bg-white text-muted border border-border hover:bg-primaryLight hover:text-primary"
@@ -232,7 +238,7 @@ function RecordsPage() {
 
                 <button
                   onClick={() => setActiveTab("archived")}
-                  className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition ${
+                  className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-xs sm:text-sm font-semibold transition ${
                     activeTab === "archived"
                       ? "bg-primary text-white shadow-sm"
                       : "bg-white text-muted border border-border hover:bg-primaryLight hover:text-primary"
@@ -381,6 +387,30 @@ function RecordsPage() {
           </div>
         </div>
       </main>
+    <Sheet open={notificationsOpen} className="transition-all duration-300 ease-in-out" onOpenChange={setNotificationsOpen}>
+      <SheetContent side="right" className="w-full transition-all duration-300 ease-in-out bg-white p-0 lg:hidden">
+        <SheetHeader className="border-b border-border p-0 text-left">
+          <SheetTitle></SheetTitle>
+        </SheetHeader>
+
+        <div className="h-[calc(100vh)] overflow-y-auto p-3 pt-0">
+          <Notifications
+            className="min-h-0 border-0 shadow-none"
+            userNotes={user.notes}
+            currentUser={user}
+            userReferrals={user.referrals}
+            globalNotes={data.notes}
+            fetchUpdatedData={fetchUpdatedData}
+            authRouter={authRouter}
+            authRouterForm={authRouterForm}
+            toggle={toggle}
+            setToggle={setToggle}
+            openForm={openForm}
+            setOpenForm={setOpenForm}
+          />
+        </div>
+      </SheetContent>
+    </Sheet>
     </>
   );
 }

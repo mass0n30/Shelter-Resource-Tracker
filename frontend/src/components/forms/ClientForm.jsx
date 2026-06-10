@@ -63,19 +63,25 @@ export default function ClientForm({
   setOpenForm,
   setSuccess,
 }) {
-  const today = new Date();
-  const next60 = new Date(today.getTime() + 60 * 24 * 60 * 60 * 1000);
-
   const isEdit = !!clientData;
 
+  // getting most recent Enrollment date
+  const recentEnrollmentDate = clientData?.EnrollmentDates.filter((d) => d.type === "INTAKE")?.[0]?.date;
+  const baseDate =
+    isEdit && recentEnrollmentDate
+      ? new Date(recentEnrollmentDate)
+      : new Date();
+
+  const next90 = new Date(baseDate.getTime() + 90 * 24 * 60 * 60 * 1000);
+  const today = new Date();
   const [error, setError] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
   const navigate = useNavigate();
 
   const [date, setDate] = useState({
-    from: today,
-    to: next60,
+    from: isEdit ? baseDate : today,
+    to: next90,
   });
 
   const [formData, setFormData] = useState({
@@ -289,7 +295,7 @@ export default function ClientForm({
       <DialogHeader>
         <DialogTitle>{isEdit ? "Edit Client" : "Create Client"}</DialogTitle>
 
-        <DialogDescription className="mt-2 flex items-center gap-2 text-sm text-muted">
+        <DialogDescription className="mt-2 flex w-full justify-center items-center gap-2 text-sm text-muted">
           <UserRound className="h-4 w-4" />
           {isEdit
             ? "Update this client's profile information."

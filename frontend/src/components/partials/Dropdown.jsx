@@ -155,12 +155,7 @@ export default function DropdownEditDelete({
             }}
             className="text-red-500 focus:text-red-500 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {isLoading ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="h-3 w-3 animate-spin" />
-                Deleting
-              </span>
-            ) : (
+            { (
               "Delete"
             )}
           </DropdownMenuItem>

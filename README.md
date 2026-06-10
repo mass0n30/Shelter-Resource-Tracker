@@ -48,13 +48,10 @@ Extra Possible Features (after making core MVP product):
   Avoid global notifications by default
 
 TO-DO GENERAL 5/28 (What to do to Finish Project):
-  - Either improve performance for fethcing UpdateDate upon updating notes/resources or finish adding Loader logic
+  - Add additional Information option on Create/Edit client forms?
+  - Disclosure, About Me pages, and Footers?
   - Fix loader skeleton bug (dash skeleton loads on records/profile page?)
   - Add/Check all client CRUD routes
-  - Adjust Edit Client Form (image, add extension, date picker?)
-  - Check and possibly adjust Timeline History design
-  - Move the Profile color mapping from seeding to backend
-  - Adjust Dashstats radius and spacing? (considering added graphic)
   - Add sparkle (some sort of graphic in left banner?)
   - Increase dashboard border darkness?
   - Adjust Upload CSV form sentencing.
@@ -63,7 +60,6 @@ TO-DO GENERAL 5/28 (What to do to Finish Project):
   - Add/Check all success/fetchUpdated data calls for mounts
   - Add pagination to client list (limit 50?)
   - Normalize Calendar Popovers (height issues on edit forms)
-  - Polish forms (buttons, bg-color, add z-index-9999, ect)
   - Fix drop down arrows to close in filter dropdowns (recordsPage)
   - Add Docs/Img avatar upload routes, look into cloudify cost?
   - Mobile: fix client profile Banner, Records buttons, and drop down chevron down arrows spacing

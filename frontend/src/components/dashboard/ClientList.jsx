@@ -1,6 +1,6 @@
 
 import { Button } from '../partials/Button';
-import { ClockAlert, Plus, CalendarDays, UserSearch, SmilePlus, ChevronDown, BedDouble } from 'lucide-react';
+import { ClockAlert, Plus, CalendarDays, UserSearch, SmilePlus, House, Snowflake, ChevronDown, BedDouble } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Combobox,ComboboxValue, ComboboxContent } from "@/components/ui/combobox";
@@ -60,7 +60,7 @@ function ClientCard({ client, clientStats }) {
     INACTIVE: "bg-slate-100 text-slate-600 border-slate-200",
     WC: "bg-blue-50 text-blue-700 border-blue-200",
     STAYED_OVERNIGHT: "bg-indigo-50 text-indigo-700 border-indigo-200",
-    HOUSED: "bg-green-50 text-green-700 border-green-200",
+    HOUSED: "bg-orange-50 text-orange-600 border-orange-200",
   };
 
   const currentStatusStyle =
@@ -97,6 +97,10 @@ function ClientCard({ client, clientStats }) {
         <span
           className={`shrink-0 inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] sm:text-xs font-medium ${currentStatusStyle}`}
         >
+          {client?.status === "ENROLLED" && <BedDouble className="h-3.5 w-3.5 mr-1" />}
+          {client?.status === "STAYED_OVERNIGHT" && <ClockAlert className="h-3.5 w-3.5 mr-1" />}
+          {client?.status === "HOUSED" && <House className="h-3.5 w-3.5 mr-1" />}
+          {client?.status === "WC" && <Snowflake className="h-3.5 w-3.5 mr-1" />}
           {client?.status}
         </span>
       </div>
@@ -165,7 +169,9 @@ function ClientToggleSection({className, allClientData, userNotes, userReferrals
       });
 
       setViewedClients(response.data.clients);
-      setFilter(filter);
+      if (filter) {
+        setFilter(filter);
+      }
       setDashStatFilter(null); 
     } catch (error) {
       console.error("Error fetching clients:", error);

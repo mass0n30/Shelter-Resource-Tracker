@@ -280,6 +280,16 @@ async function createClients() {
   return clients;
 }
 
+function addDays(dateValue, days) {
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    throw new Error(`Invalid date value: ${dateValue}`);
+  }
+
+  return new Date(date.getTime() + days * 24 * 60 * 60 * 1000);
+}
+
 function buildClientSpecs(status, count) {
   const specs = [];
 
@@ -291,7 +301,13 @@ function buildClientSpecs(status, count) {
     const fullName = `${firstName} ${lastName}`;
 
     const intakeDaysAgo = getIntakeDaysAgo(status, i);
-    const outtakeDaysAgo = getOuttakeDaysAgo(status, i, intakeDaysAgo);
+    const intakeDate = daysAgo(intakeDaysAgo);
+
+    const createdAt = new Date(intakeDate);
+    createdAt.setDate(createdAt.getDate() - 1);
+
+    const outtakeDate = new Date(intakeDate);
+    outtakeDate.setDate(outtakeDate.getDate() + 90);
 
     const stayedRecently = status === "ENROLLED" || status === "WC";
     const hereLastNight = stayedRecently && i % 4 !== 0;
@@ -305,11 +321,12 @@ function buildClientSpecs(status, count) {
       gender,
       status,
       bedLabel: getBedLabel(status, gender, i),
-      intakeDate: daysAgo(intakeDaysAgo),
-      outtakeDate: outtakeDaysAgo ? daysAgo(outtakeDaysAgo) : null,
+      createdAt,
+      intakeDate,
+      outtakeDate,
       lastStayDate: stayedRecently
         ? daysAgo(i % 5 === 0 ? 2 : 1)
-        : daysAgo(outtakeDaysAgo || 20),
+        : daysAgo(20),
       hereLastNight,
       extensionStatus: (status === "ENROLLED" || status === "WC") && i % 8 === 0,
       priorityNeed: PRIORITY_NEEDS[(globalIndex + i) % PRIORITY_NEEDS.length],

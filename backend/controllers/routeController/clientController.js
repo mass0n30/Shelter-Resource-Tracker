@@ -251,10 +251,12 @@ async function updateClient(req, res, next) {
       data: { 
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        intakeDate: req.body?.intakeDate || new Date(), // "2023-05-21" pass in that format from client side
+        intakeDate: req.body?.intakeDate, // "2023-05-21" pass in that format from client side
+        outtakeDate: req.body?.outtakeDate || req.body?.intakeDate + 90 || null, // default to 90 days after intake if outtake not provided
         priorityNeed: req.body.priorityNeed,
         gender: req.body.gender,
         bedLabel: req.body.bedLabel,
+        status: req.body?.status,
         // phone: req.body.phone,
         // address: req.body.address,
         // city: req.body.city,

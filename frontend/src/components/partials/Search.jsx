@@ -9,7 +9,7 @@ export function ClientSearch({ currentClients, setViewedClients, setClientId, fe
       setViewedClients(storedClients);
       setClientId(null);
       setDashStatFilter(null);
-      setFilter(null);
+      setFilter("ENROLLED");
       return;
     }
 

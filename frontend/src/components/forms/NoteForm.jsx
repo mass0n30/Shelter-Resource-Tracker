@@ -108,7 +108,7 @@ export default function NoteForm({
   };
 
   return (
-    <div className="bg-background rounded-lg w-full max-w-md">
+    <div className="bg-background rounded-lg w-full ">
       <DialogHeader>
         <DialogTitle>{isEdit ? "Edit Note" : "Create Note"}</DialogTitle>
 
@@ -149,7 +149,7 @@ export default function NoteForm({
           >
             <div className="flex flex-col">
               <span className="font-medium">Set Reminder</span>
-              <span className="text-[12px] text-muted md:text-sm">
+              <span className="text-[12px] text-muted">
                 Add a follow-up date
               </span>
             </div>
@@ -181,7 +181,7 @@ export default function NoteForm({
           >
             <div className="flex flex-col">
               <span className="font-medium">Publish Note</span>
-              <span className="text-[12px] text-muted md:text-sm">
+              <span className="text-[12px] text-muted">
                 Visible to the team
               </span>
             </div>

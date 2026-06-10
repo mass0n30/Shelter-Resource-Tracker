@@ -52,7 +52,7 @@ async function getAllReferrals(req, res, next) {
         client: true,
         createdBy: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { updatedAt: 'desc' },
 
     });
     return referrals;
