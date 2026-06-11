@@ -9,6 +9,7 @@ import {
   Archive,
   SlidersHorizontal,
   X,
+  ChevronDown
 } from "lucide-react";
 
 import Navbar from "../components/Navbar";
@@ -274,10 +275,11 @@ function RecordsPage() {
                   {(activeTab === "resources" ||
                     activeTab === "archived") && (
                     <>
+                    <div className="relative">
                       <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="rounded-lg border border-border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        className="w-full appearance-none rounded-lg border border-border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                       >
                         <option value="ALL">All Statuses</option>
                         <option value="INQUIRED">Inquired</option>
@@ -285,18 +287,23 @@ function RecordsPage() {
                         <option value="PENDING">Pending</option>
                         <option value="ENROLLED">Enrolled</option>
                       </select>
+                      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
 
-                      <select
-                        value={typeFilter}
-                        onChange={(e) => setTypeFilter(e.target.value)}
-                        className="rounded-lg border border-border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                      >
-                        {resourceTypes.map((type) => (
-                          <option key={type} value={type}>
-                            {type === "ALL" ? "All Types" : type}
-                          </option>
-                        ))}
-                      </select>
+                      </div>
+                      <div className="relative">
+                        <select
+                          value={typeFilter}
+                          onChange={(e) => setTypeFilter(e.target.value)}
+                          className="w-full appearance-none rounded-lg border border-border bg-white px-3 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        >
+                          {resourceTypes.map((type) => (
+                            <option key={type} value={type}>
+                              {type === "ALL" ? "All Types" : type}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                      </div>
                     </>
                   )}
 

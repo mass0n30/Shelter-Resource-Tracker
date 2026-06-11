@@ -88,6 +88,8 @@ model Client {
   lastName  String
   email     String?   @unique
   phone     String?
+  dob       DateTime?
+  age       Int?
   gender    String?
   status    ClientStatus @default(ENROLLED)
   bedLabel  String?

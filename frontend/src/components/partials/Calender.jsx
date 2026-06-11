@@ -28,7 +28,7 @@ export default function CalendarPopover({ date, setDate, single }) {
         <Button
           variant="outline"
           data-empty={!date}
-          className="bg-background text-foreground justify-start text-left font-normal data-[empty=true]:text-muted-foreground hover:bg-primaryLight"
+          className="bg-background active:bg-primaryLight text-foreground justify-start text-left font-normal data-[empty=true]:text-muted-foreground hover:bg-primaryLight"
         >
           {date?.from && date?.to ? (
             `${format(date.from, "PPP")} - ${format(date.to, "PPP")}`
@@ -42,7 +42,7 @@ export default function CalendarPopover({ date, setDate, single }) {
 
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="z-[9999] bg-background w-auto p-0">
+      <PopoverContent side="top" className="z-[9999] bg-background w-auto p-0">
           <Calendar
             mode={single ? "single" : "range"}
             selected={date}

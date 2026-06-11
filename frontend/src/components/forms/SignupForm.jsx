@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { HeartHandshake } from "lucide-react";
 
 function SignUp() {
   const [user, setUser] = useState({
@@ -80,158 +81,169 @@ function SignUp() {
   };
 
   return (
-  <div className="min-h-screen w-full bg-primaryLight flex items-center justify-center p-md">
-    <div className="w-full min-h-[100vh] bg-backgroundAlt rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row">
-      <div className="hidden md:flex flex-1 relative bg-secondary">
-        <img
-          src="/HouseDesign.png"
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+    <div className="min-h-screen w-full bg-primaryLight flex items-center justify-center p-md">
+      <div className="w-full min-h-[100vh] bg-backgroundAlt rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row">
+        <div className="md:flex flex-1 relative bg-secondary">
+          <img
+            src="/HouseDesign.png"
+            alt=""
+            className="absolute opacity-70 inset-0 h-full w-full object-cover"
+          />
 
-        <div className="relative z-10 flex h-full w-full flex-col justify-between p-lg">
-          <div>
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary text-primary">
-              <span className="text-xl font-bold">⌂</span>
+          <div className="relative z-10 flex h-full w-full flex-col justify-between p-lg">
+            <div>
+              <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
+                <HeartHandshake className="h-4 w-4 md:h-6 md:w-6" />
+              </div>
+
+              <h1 className="text-xl font-bold text-slate-700 tracking-[-0.035em]">
+                Shelter Resource Tracker
+              </h1>
+
+              <p className="m-2 text-sm text-center text-slate-600 italic">
+                Bringing a supportive community together.
+              </p>
             </div>
 
-            <h1 className="text-xl font-bold text-foreground">
-              Shelter Resource Tracker
-            </h1>
-
-            <p className="mt-1 text-sm text-center text-muted">
-              Bringing a supportive community together.
-            </p>
-          </div>
-
-          <div className="rounded-lg border border-white/70 bg-white/80 p-md shadow-sm backdrop-blur">
-            <p className="text-sm text-muted text-center">
-              Secure. Private. Built for shelters and service providers.
-            </p>
+            <div className="rounded-lg border border-white/70 bg-white/80 p-sm sm:p-md shadow-sm backdrop-blur">
+              <p className="text-xs sm:text-sm text-muted text-center">
+                Secure. Private. Built for shelters and service providers.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex-1 flex flex-col justify-center bg-backgroundAlt px-lg py-lg sm:px-10 md:px-16">
-        <div className="mb-8 flex flex-col items-center text-center md:hidden">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary text-primary">
-            <span className="text-xl font-bold">⌂</span>
-          </div>
+        <div className="flex-1 flex flex-col justify-center bg-backgroundAlt px-lg py-lg sm:px-10 md:px-16">
+          <CardHeader className="px-0 pb-6 pt-0">
+            <CardTitle className="text-xl md:text-2xl font-bold text-left tracking-tight text-foreground">
+              Create account
+            </CardTitle>
 
-          <h1 className="text-lg font-bold text-foreground">
-            Shelter Resource Tracker
-          </h1>
+            <CardDescription className="border-b pb-sm border-border text-sm text-left text-muted">
+              Create your account to get started.
+            </CardDescription>
+          </CardHeader>
 
-          <p className="mt-2 max-w-[240px] text-sm text-muted">
-            Bringing a supportive community together.
+          <CardContent className="px-0">
+            {error && (
+              <span className="mb-4 block text-center text-sm text-destructive">
+                Error was encountered: {error}
+              </span>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="firstname"
+                    className="text-xs font-semibold text-foreground"
+                  >
+                    First name
+                  </Label>
+
+                  <Input
+                    id="firstname"
+                    placeholder="First name"
+                    onChange={(e) => updateInfo(e.target.value, "fname")}
+                    className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="lastname"
+                    className="text-xs font-semibold text-foreground"
+                  >
+                    Last name
+                  </Label>
+
+                  <Input
+                    id="lastname"
+                    placeholder="Last name"
+                    onChange={(e) => updateInfo(e.target.value, "lname")}
+                    className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  htmlFor="email"
+                  className="text-xs font-semibold text-foreground"
+                >
+                  Email address
+                </Label>
+
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  onChange={(e) => updateInfo(e.target.value, "email")}
+                  className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  htmlFor="password"
+                  className="text-xs font-semibold text-foreground"
+                >
+                  Password
+                </Label>
+
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Create a password"
+                  onChange={(e) => updateInfo(e.target.value, "password")}
+                  className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  htmlFor="passwordconfirm"
+                  className="text-xs font-semibold text-foreground"
+                >
+                  Repeat password
+                </Label>
+
+                <Input
+                  id="passwordconfirm"
+                  type="password"
+                  placeholder="Repeat your password"
+                  onChange={(e) =>
+                    updateInfo(e.target.value, "passwordconfirm")
+                  }
+                  className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="h-11 w-full rounded bg-primary text-white shadow-sm hover:brightness-110"
+              >
+                Create account
+              </Button>
+            </form>
+
+            <div className="mt-8 flex items-center justify-center gap-1 text-center text-sm text-muted">
+              <span>Already have an account?</span>
+
+              <Link to="/" className="font-semibold text-primary hover:underline">
+                Login
+              </Link>
+            </div>
+          </CardContent>
+
+          <p className="text-[10px] sm:text-xs mt-6 text-muted">
+            Authorized staff access only. Client information should be handled
+            according to organizational privacy and data security policies.
           </p>
         </div>
-
-        <CardHeader className="px-0 pb-6 pt-0">
-          <CardTitle className="text-2xl font-bold text-left tracking-tight text-foreground">
-            Create account
-          </CardTitle>
-
-          <CardDescription className="border-b pb-sm border-border text-sm text-left text-muted">
-            Create your account to get started.
-          </CardDescription>
-        </CardHeader>
-
-        <CardContent className="px-0">
-          {error && (
-            <span className="mb-4 block text-center text-sm text-destructive">
-              Error was encountered: {error}
-            </span>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="firstname" className="text-xs font-semibold text-foreground">
-                  First name
-                </Label>
-
-                <Input
-                  id="firstname"
-                  placeholder="First name"
-                  onChange={(e) => updateInfo(e.target.value, "fname")}
-                  className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="lastname" className="text-xs font-semibold text-foreground">
-                  Last name
-                </Label>
-
-                <Input
-                  id="lastname"
-                  placeholder="Last name"
-                  onChange={(e) => updateInfo(e.target.value, "lname")}
-                  className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-xs font-semibold text-foreground">
-                Email address
-              </Label>
-
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                onChange={(e) => updateInfo(e.target.value, "email")}
-                className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-xs font-semibold text-foreground">
-                Password
-              </Label>
-
-              <Input
-                id="password"
-                type="password"
-                placeholder="Create a password"
-                onChange={(e) => updateInfo(e.target.value, "password")}
-                className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="passwordconfirm" className="text-xs font-semibold text-foreground">
-                Repeat password
-              </Label>
-
-              <Input
-                id="passwordconfirm"
-                type="password"
-                placeholder="Repeat your password"
-                onChange={(e) => updateInfo(e.target.value, "passwordconfirm")}
-                className="h-11 rounded border-border bg-white text-sm shadow-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-primary"
-              />
-            </div>
-
-            <Button type="submit" className="h-11 w-full rounded text-white">
-              Create account
-            </Button>
-          </form>
-
-          <div className="mt-6 flex items-center justify-center gap-1 text-center text-sm text-muted">
-            <span>Already have an account?</span>
-
-            <Link to="/" className="font-semibold text-primary hover:underline">
-              Login
-            </Link>
-          </div>
-        </CardContent>
       </div>
     </div>
-  </div>
-);
+  );
 }
 
 export default SignUp;

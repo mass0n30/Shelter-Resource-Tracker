@@ -461,3 +461,116 @@ export default function ClientForm({
     </DialogContent>
   );
 }
+
+function ClientFormAdditional({
+  authRouter,
+  clientData,
+  fetchUpdatedData,
+  setOpenForm,
+  setSuccess,
+}) {
+
+  const [formData, setFormData] = useState({
+    dob: clientData.dob || "",
+    age: clientData.age || clientData.dob ? Math.floor((new Date() - new Date(clientData.dob)) / (365.25 * 24 * 60 * 60 * 1000)) : "",
+    phone: clientData.phone || "",
+    email: clientData.email || "",
+  });
+
+  const updateField = (key, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  }
+
+  const handleEdit = (e) => {
+    e.preventDefault();
+
+
+    authRouter
+      .patch(`/dashboard/clients/${clientData.id}/additional`, formData)
+      .then(() => {
+        if (setOpenForm) {
+          setOpenForm(null);
+        }
+
+        if (setSuccess) {
+          setSuccess("Client updated successfully!");
+        }
+
+        if (fetchUpdatedData) {
+          fetchUpdatedData();
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating client:", error.response?.data || error.message);
+        alert("Something went wrong while updating the client.");
+      });
+  };
+
+  return (
+    <DialogContent className="bg-background rounded-lg shadow-lg w-full max-w-md">
+      <DialogHeader>
+        <DialogTitle>Edit Additional Client Info</DialogTitle>
+
+        <DialogDescription className="mt-2 flex w-full justify-center items-center gap-2 text-sm text-muted">
+          <UserRound className="h-4 w-4" />
+          Update this client&apos;s additional profile information.
+        </DialogDescription>
+      </DialogHeader>
+
+      <form onSubmit={handleEdit} className="grid w-full gap-4 py-4">
+        <FieldGroup>
+          <Field>
+            <Input
+              value={formData?.dob || ""}
+              onChange={(e) => updateField("dob", e.target.value)}
+              placeholder="DOB (MM/DD/YYYY)"
+              className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </Field>
+
+          <Field>
+            <Input
+              value={formData?.age || ""}
+              onChange={(e) => updateField("age", e.target.value)}
+              placeholder="Age"
+              className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </Field>
+
+          <Field>
+            <Input
+              value={formData?.phone || ""}
+              onChange={(e) => updateField("phone", e.target.value)}
+              placeholder="Phone Number"
+              className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </Field>
+
+          <Field>
+            <Input
+              value={formData?.email || ""}
+              onChange={(e) => updateField("email", e.target.value)}
+              placeholder="Email Address"
+              className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            />
+          </Field>
+        </FieldGroup>                             
+
+        <div className="mt-4 flex w-full justify-end items-center gap-2">
+          <button
+            type="submit"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition hover:shadow-primaryGlow"
+          >
+            <Save className="h-4 w-4" />
+            Update Client
+          </button>
+        </div>
+      </form>
+    </DialogContent>
+  );
+}
+
+export { ClientForm, ClientFormAdditional };

@@ -11,6 +11,8 @@ clientRouter.get('/:clientId', controller.clientController.getClientById);
 
 clientRouter.patch('/:clientId',controller.clientController.updateClient);
 
+clientRouter.patch('/:clientId/additional', controller.clientController.updateClientAdditional);
+
 clientRouter.delete('/:clientId', controller.clientController.deleteClient);
 
 module.exports = { clientRouter };

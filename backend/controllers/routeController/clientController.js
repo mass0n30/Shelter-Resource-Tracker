@@ -270,6 +270,23 @@ async function updateClient(req, res, next) {
   }
 };
 
+async function updateClientAdditional(req, res, next) {
+  try {
+    const updatedClient = await prisma.client.update({
+      where: { id: parseInt(req.params.clientId) },
+      data: {
+        phone: req.body?.phone,
+        dob: req.body?.dob ? new Date(req.body.dob) : null, // "1998-05-21" pass in that format from client side
+        email: req.body?.email,
+      },
+    });
+    return res.status(200).json(updatedClient);
+  } catch (error) {
+    console.log('failed to update client additional info');
+    return res.status(400).json({ errors:error });
+  }
+};
+
 async function deleteClient(req, res, next) {
   try {
     await prisma.client.delete({
@@ -331,6 +348,6 @@ async function handleUploadFile(req, res, next) {
 
 module.exports = {
   clientController: {
-    getClients, getClientsByStatFilter, getClientStats, getClientById, createClient, updateClient, deleteClient, handleUploadFile
+    getClients, getClientsByStatFilter, getClientStats, getClientById, createClient, updateClient, updateClientAdditional, deleteClient, handleUploadFile
   }
 };

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { CircleUserRound } from "lucide-react";
 import { z } from "zod";
+import { HeartHandshake } from "lucide-react";
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -157,30 +158,29 @@ function Login() {
  return (
   <div className="min-h-screen w-full bg-primaryLight flex items-center justify-center p-md">
     <div className="w-full min-h-[100vh] bg-backgroundAlt rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row">
-      <div className="hidden md:flex flex-1 relative bg-secondary">
+      <div className="md:flex flex-1 relative bg-secondary">
         <img
           src="/HouseDesign.png"
           alt=""
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute opacity-70 inset-0 h-full w-full object-cover"
         />
 
         <div className="relative z-10 flex h-full w-full flex-col justify-between p-lg">
           <div>
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary text-primary">
-              <span className="text-xl font-bold">⌂</span>
+            <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
+              <HeartHandshake className="h-4 w-4 md:h-6 md:w-6" />
             </div>
-
-            <h1 className="text-xl font-bold text-foreground">
+            <h1 className="text-xl font-bold text-slate-700 tracking-[-0.035em]">
               Shelter Resource Tracker
             </h1>
 
-            <p className="mt-1 text-sm text-center text-muted">
+            <p className="m-2 text-sm text-center text-slate-600 italic">
               Bringing a supportive community together.
             </p>
           </div>
 
-          <div className="rounded-lg border border-white/70 bg-white/80 p-md shadow-sm backdrop-blur">
-            <p className="text-sm text-muted text-center">
+          <div className="rounded-lg border border-white/70 bg-white/80 p-sm sm:p-md shadow-sm backdrop-blur">
+            <p className="text-xs sm:text-sm text-muted text-center">
               Secure. Private. Built for shelters and service providers.
             </p>
           </div>
@@ -188,22 +188,9 @@ function Login() {
       </div>
 
       <div className="flex-1 flex flex-col justify-center bg-backgroundAlt px-lg py-lg sm:px-10 md:px-16">
-        <div className="mb-8 flex flex-col items-center text-center md:hidden">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg border-2 border-primary text-primary">
-            <span className="text-xl font-bold">⌂</span>
-          </div>
-
-          <h1 className="text-lg font-bold text-foreground">
-            Shelter Resource Tracker
-          </h1>
-
-          <p className="mt-2 text-center text-sm text-muted">
-            Bringing a supportive community together.
-          </p>
-        </div>
 
         <CardHeader className="px-0 pb-6 pt-0">
-          <CardTitle className="text-2xl text-left font-bold tracking-tight text-foreground">
+          <CardTitle className="text-xl md:text-2xl text-left font-bold tracking-tight text-foreground">
             Welcome,
           </CardTitle>
 
@@ -321,8 +308,21 @@ function Login() {
               Sign Up
             </Link>
           </div>
+
         </CardContent>
+        {isDemo ? (
+          <p className="text-[10px] sm:text-xs text-muted mt-6 text-center">
+            Demo environment only. All client data and records are fictional
+            and created for demonstration purposes. No real client data is used.
+          </p>
+        ) : (
+        <p className="text-[10px] sm:text-xs mt-6 text-muted">
+          Authorized staff access only. Client information should be handled according
+          to organizational privacy and data security policies.
+        </p>
+        )}
       </div>
+
     </div>
   </div>
 );

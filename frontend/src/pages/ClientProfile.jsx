@@ -3,7 +3,7 @@ import { useOutletContext, useParams } from "react-router-dom";
 import { Button } from "@base-ui/react";
 import NoteForm from "../components/forms/NoteForm";
 import ResourceForm from "../components/forms/ResourceForm";
-import ClientForm from "@/components/forms/ClientForm";
+import { ClientForm, ClientFormAdditional } from "@/components/forms/ClientForm";
 import DropdownEditDelete from "../components/partials/Dropdown";
 import { DropdownNoteEditDelete } from "../components/partials/Dropdown";
 import ClientProfileSkeleton from "@/components/partials/loaderSkeleton/ClientProfileLoader";
@@ -106,6 +106,7 @@ export default function ClientProfile() {
           authRouter={authRouter}
           setOpenForm={setOpenForm}
           openForm={openForm}
+          setSuccess={setSuccess}
           className="min-h-0 max-h-[calc(140vh-200px)] overflow-y-auto md:col-span-1"
         />
       </div>
@@ -353,7 +354,8 @@ import {
     authRouter,
     fetchUpdatedData,
     setOpenForm,
-    openForm
+    openForm,
+    setSuccess
   }) {  
     const formatDate = (date) =>
     date ? new Date(date).toLocaleDateString() : "N/A";
@@ -378,13 +380,13 @@ import {
   ];
 
   const extraItems = [
-    { label: "DOB", value: clientData?.dob || "Not added", icon: CalendarDays },
+    { label: "DOB", value: new Date(clientData?.dob).toLocaleDateString() || "Not added", icon: CalendarDays },
     { label: "Age", value: clientData?.age || "Not added", icon: UserRound },
     { label: "Phone", value: clientData?.phone || "Not added", icon: Phone },
     {
-      label: "Emergency #",
-      value: clientData?.emergencyContact || "Not added",
-      icon: HeartHandshake,
+      label: "Email #",
+      value: clientData?.email || "Not added",
+      icon: Info,
     },
   ];
 
@@ -421,6 +423,7 @@ import {
               clientData={clientData}
               fetchUpdatedData={fetchUpdatedData}
               setOpenForm={setOpenForm}
+              setSuccess={setSuccess}
             />
           </DialogContent>
         </Dialog>
@@ -472,6 +475,31 @@ import {
             <p className="text-xs font-medium uppercase tracking-wide text-muted">
               Additional Client Info
             </p>
+            <Dialog open={openForm === "additional"} onOpenChange={(open) => setOpenForm(open ? "additional" : null)}>
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-muted transition bg-transparent hover:bg-primaryLight hover:text-primary"
+                >
+                  <UserRoundPen className="h-3.5 w-3.5" />
+                  Edit
+                </button>
+              </DialogTrigger>
+
+              <DialogContent className="bg-background text-foreground border rounded-lg shadow-lg p-6 w-full max-w-md">
+                <VisuallyHidden>
+                  <DialogTitle>{`Edit Client Information for ${clientData.firstName} ${clientData.lastName}`}</DialogTitle>
+                </VisuallyHidden>
+
+                <ClientFormAdditional
+                  authRouter={authRouter}
+                  clientData={clientData}
+                  fetchUpdatedData={fetchUpdatedData}
+                  setOpenForm={setOpenForm}
+                  setSuccess={setSuccess}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
 
           <div className="grid grid-cols-1 gap-xs">
