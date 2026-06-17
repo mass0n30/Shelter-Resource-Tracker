@@ -74,7 +74,7 @@ export default function ClientProfile() {
     fetchClientData();
   }, [clientId]);
 
-  if (!clientData || loading) {
+  if (!clientData) {
     return <ClientProfileSkeleton />;
   }
 
@@ -611,7 +611,7 @@ export function Notes({
       setLoadingId(noteId);
       setLoading(true);
 
-      await authRouter.post(`/dashboard/notes/${noteId}/completed`);
+      await authRouter.post(`/dashboard/notes/${noteId}/complete`);
       await fetchClientData();
 
       setUpdateMessage("complete");
