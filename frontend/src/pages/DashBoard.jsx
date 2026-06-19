@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 import ClientToggleSection from '../components/dashboard/ClientList';
@@ -74,6 +74,36 @@ function DashBoard() {
         console.error("Error filtering clients:", err);
       } 
     };
+
+  // Scroll-based toggle for recent notes button (pop up effect)
+  const [hideToggle, setHideToggle] = useState(false);
+  const lastScrollRef = useRef(0);
+
+  useEffect(() => {
+    function handleScroll() {
+      const currentScroll = window.scrollY;
+
+      if (currentScroll < 10) {
+        setHideToggle(false);
+        lastScrollRef.current = 0;
+        return;
+      }
+
+      if (currentScroll > lastScrollRef.current) {
+        setHideToggle(true);
+      } else {
+        setHideToggle(false);
+      }
+
+      lastScrollRef.current = currentScroll;
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const handleMarkRead = async () => {
     try {
@@ -210,7 +240,11 @@ return (
               <button
                 type="button"
                 onClick={() => setRecentNotesOpen((prev) => !prev)}
-                className="flex h-[64px] w-[64px] items-center justify-center rounded-full border border-border bg-primary text-white opacity-80 shadow-md transition hover:opacity-100 hover:shadow-lg"
+                className={`fixed bottom-6 right-6 z-50 flex h-[64px] w-[64px] items-center justify-center rounded-full border border-border bg-primary text-white shadow-md transition-all duration-300 ease-in-out hover:scale-105 hover:opacity-100 hover:shadow-lg ${
+                  hideToggle && !recentNotesOpen
+                    ? "translate-y-[110px] opacity-0 pointer-events-none"
+                    : "translate-y-0 opacity-80"
+                }`}
                 aria-label={recentNotesOpen ? "Close recent notes" : "Open recent notes"}
               >
                 {recentNotesOpen ? (

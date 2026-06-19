@@ -1,13 +1,17 @@
 import { Globe, X } from "lucide-react";
 import { getDisplayTime } from "@/lib/utils";
+import { useOutletContext } from "react-router-dom";
 
 export default function RecentPostedNotes({
   notes,
   className = "",
   setRecentNotesOpen,
 }) {
+
+  const currentUserId = useOutletContext()?.user?.id;
+
   const recentPostedNotes = notes
-    ?.filter((note) => note.visibility !== "private")
+    ?.filter((note) => note.visibility !== "private" && !note.isCompleted && note.authorId !== currentUserId)
     ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     ?.slice(0, 4);
 

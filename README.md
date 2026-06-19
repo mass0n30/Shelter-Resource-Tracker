@@ -20,26 +20,6 @@ https://console.cloud.google.com/auth/clients/create?authuser=1&project=resource
 - **Protected API routes:** Sensitive client, referral, and note data is accessed through authenticated backend routes.
 - **Demo-safe data:** The public demo uses mock client data only, not real shelter/client records. Use for showing examples for recruiters or devs forks as well. 
 
-5/23/25
-
-MVP Features: (initially develop for Manager accounts)
-  - Manager can CRUD client accounts, set time notifs, see client case management info. Staff can only view add notes.
-  - Dashboard quick reference for current enrollments
-  - Resources side bar has resource info (add table)?
-  - Clients side bar has all clients in system (active/inactive filter) * for quick lookup upon re enrollments or resource history
-  - attachments / file uploads (client sheets)
-
-Extra Possible Features (after making core MVP product):
-  - resource sidebar / organization directory
-  - notification engine
-  - email reminders
-  - referral status history table
-  - cloudify document upload storing
-  - analytics/reporting
-  - calendar view
-  - task system
-  - audit log
-
 
 ***Notification Reminder System Overview**
   Notifications = action required
@@ -52,7 +32,6 @@ TO-DO GENERAL 5/28 (What to do to Finish Project):
   - Fix loader skeleton bug (dash skeleton loads on records/profile page?)
   - Add/Check all success/fetchUpdated data calls for mounts
   - Add Docs/Img avatar upload routes, look into cloudify cost?
-    * !! Fix Notifications Sheet doesn't toggle on Records route
   - POLISH
   - Add Disclaimer, About pages, ect (look back at notes)
 
