@@ -1,9 +1,10 @@
 {/* import { useState, useEffect } from 'react' */}
-import { useParams, Outlet, useNavigate } from "react-router-dom";
+import { useParams, Outlet, useNavigate, useOutletContext, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import DashboardPageSkeleton from "@/components/partials/loaderSkeleton/DashboardLoader";
 import axios from "axios";
 import { useAsyncStatus, loaderTimer } from "@/components/partials/Loading";
+import LandingPage from "@/pages/LandingPage";
 
 function DashBoardLayout() {
   const [user, SetUser] = useState(null);
@@ -115,6 +116,7 @@ function DashBoardLayout() {
     return <DashboardPageSkeleton />;
   }
 
+
   // show Sonner badge upon creating new client, note, referral, ect.
   return (
     <Outlet
@@ -131,7 +133,7 @@ function DashBoardLayout() {
         authRouter,
         authRouterForm,
         openForm,
-        setOpenForm
+        setOpenForm,
       }}
     />
   );

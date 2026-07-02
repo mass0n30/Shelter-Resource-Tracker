@@ -8,6 +8,7 @@ import Records from "./pages/Records";
 import ClientProfile from "./pages/ClientProfile";
 import SettingsPage from "./pages/UserSettings";
 import ChangePassword from "./components/forms/PasswordReset";
+import LandingPage from "./pages/LandingPage";
 const routes = [
   {
     path: "/", 
@@ -25,6 +26,10 @@ const routes = [
       {
         path: "sign-up",
         element: <Signup />,
+      },
+      {
+        path: "information",
+        element: <LandingPage />,
       },
       {
         path: "change-password",

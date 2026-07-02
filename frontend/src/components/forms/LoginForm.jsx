@@ -26,6 +26,11 @@ function Login() {
 
   const isDemo = import.meta.env.VITE_APP_MODE === "demo";
 
+  if (isDemo) {
+    navigate("/information");
+    return;
+  }
+
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setError(null);
