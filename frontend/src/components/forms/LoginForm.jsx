@@ -27,7 +27,7 @@ function Login() {
   const isDemo = import.meta.env.VITE_APP_MODE === "demo";
 
   useEffect(() => {
-    if (!isDemo) {
+    if (isDemo) {
       navigate("/information");
       return;
     }
