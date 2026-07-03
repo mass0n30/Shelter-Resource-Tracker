@@ -1,5 +1,5 @@
 import { GoogleLogin } from "@react-oauth/google";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { CircleUserRound } from "lucide-react";
 import { z } from "zod";
@@ -26,10 +26,12 @@ function Login() {
 
   const isDemo = import.meta.env.VITE_APP_MODE === "demo";
 
-  if (isDemo) {
-    navigate("/information");
-    return;
-  }
+  useEffect(() => {
+    if (!isDemo) {
+      navigate("/information");
+      return;
+    }
+  }, [navigate]);
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {

@@ -76,7 +76,7 @@ function NavBar() {
  
 function Hero() {
   return (
-    <header className="px-8 pt-20">
+    <header className="px-8 pt-12 pb-24 border-b border-slate-200">
       <div className="mx-auto max-w-3xl text-center">
         <span className="mb-lg inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3.5 py-1.5 text-xs font-semibold text-blue-800">
           Case Management client tracking tool, built for shelters and social service agencies.
@@ -90,7 +90,7 @@ function Hero() {
           Keep intake, follow-ups, and urgent flags organized in one shared dashboard.
         </p>
  
-        <div className="mt-12 mb-lg flex flex-wrap justify-center gap-3">
+        <div className="mt-12 mb-12 flex flex-wrap justify-center gap-3">
           <a
             href="#"
             className="flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-800"
@@ -126,7 +126,7 @@ function Hero() {
           <div className="text-[11px] uppercase tracking-wider text-white/70">
             Good morning
           </div>
-          <div className="mt-0.5 text-lg font-extrabold">Welcome back, Joseph</div>
+          <div className="mt-0.5 text-lg font-extrabold">Welcome back, User</div>
         </div>
         <div className="grid grid-cols-2 gap-3 p-6 sm:grid-cols-4">
           {stats.slice(0, 4).map((s) => (
@@ -146,7 +146,7 @@ function Hero() {
  
 function Features() {
   return (
-    <section id="features" className="px-8 py-24">
+    <section id="features" className="px-8 py-12">
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto mb-12 max-w-6xl text-center">
           <span className="mb-3 block text-xs font-bold uppercase tracking-wider text-blue-600">
@@ -171,7 +171,7 @@ function Features() {
               >
                 <f.icon className={`h-5 w-5 ${f.iconColor}`} strokeWidth={2} />
               </div>
-              <h3 className="text-base font-bold text-slate-900">{f.title}</h3>
+              <h3 className="text-base text-left font-bold text-slate-900">{f.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-slate-500">
                 {f.body}
               </p>
@@ -185,34 +185,62 @@ function Features() {
  
 function StatsBand() {
   return (
-    <section id="how" className="px-8 pb-24">
-      <div className="mx-auto max-w-6xl rounded-3xl bg-gradient-to-br from-blue-800 via-blue-700 to-blue-600 px-10 py-13 sm:grid sm:grid-cols-4 sm:gap-6">
-        {stats.map((s) => (
-          <div key={s.l} className="mb-6 text-center sm:mb-0">
-            <div className="text-3xl font-semibold text-white">{s.n}</div>
-            <div className="mt-1 mb-1 text-sm text-white/80">{s.l}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
- 
-function Quote() {
-  return (
-    <section id="trust" className="px-8 pb-24">
-      <div className="mx-auto max-w-2xl text-center bg-slate-100 rounded-3xl px-10 py-16">
-        <p className="text-2xl italic font-medium leading-snug text-slate-900">
-          "Instead of scattered notes and manual check-ins, every client’s progress,
-          follow-ups, and case notes live in one shared dashboard."
-        </p>
-        <div className="mt-5 text-right text-sm text-slate-500">
-          — Case manager, regional shelter network
+    <section id="how" className="px-6 pb-14">
+      <div className="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white px-6 py-8 shadow-sm sm:px-8">
+        <div className="grid gap-4 sm:grid-cols-4">
+          {stats.map((s) => (
+            <div
+              key={s.l}
+              className="rounded-2xl border border-slate-100 bg-slate-50 px-5 py-6 text-center"
+            >
+              <div className="text-3xl font-semibold tracking-tight text-slate-900">
+                {s.n}
+              </div>
+              <div className="mt-2 text-sm font-medium text-slate-500">
+                {s.l}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
   );
 }
+function Quote() {
+  return (
+    <section id="trust" className="px-8 pb-24 pt-10">
+      <div className="relative mx-auto max-w-2xl overflow-hidden rounded-3xl border border-slate-200/70 bg-white px-10 py-16 text-center shadow-sm">
+        
+        <img
+          src="/demo-graphic.png"
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-8 -left-12 w-full opacity-20"
+        />
+
+        <img
+          src="/demo-graphic.png"
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-12 w-full opacity-20"
+        />
+
+
+        <div className="relative z-10">
+          <p className="text-2xl italic font-medium leading-snug text-slate-900">
+            "Instead of scattered notes and manual check-ins, every client’s progress,
+            follow-ups, and case notes live in one shared dashboard."
+          </p>
+
+          <div className="mt-5 text-right text-sm text-slate-500">
+            — Case manager, regional shelter network
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
  
 function CTABand({setLandingPage  }) {
   return (
@@ -221,7 +249,7 @@ function CTABand({setLandingPage  }) {
         <h2 className="text-3xl text-white font-semibold">
           Bring your caseload into one dashboard
         </h2>
-        <p className="mx-auto mt-3 max-w-md text-sm text-white/85">
+        <p className="mx-auto mt-3 text-center text-sm text-white/85">
           Setup takes an afternoon, not a migration project. Start with a CSV or
           a handful of manual entries.
         </p>
@@ -234,7 +262,7 @@ function CTABand({setLandingPage  }) {
           </Link>
           <Link
             to={'/dashboard'}
-            className="flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3.5 text-sm font-bold text-white"
+            className="flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 px-6 py-3.5 text-sm font-bold text-white hover:bg-orange"
           >
             Try it live <ArrowRight className="h-4 w-4" />
           </Link>
