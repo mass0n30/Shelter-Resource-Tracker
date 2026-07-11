@@ -79,7 +79,7 @@ function Hero() {
     <header className="px-8 pt-12 pb-24 border-b border-slate-200">
       <div className="mx-auto max-w-3xl text-center">
         <span className="mb-lg inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3.5 py-1.5 text-xs font-semibold text-blue-800">
-          Case Management client tracking tool, built for shelters and social service agencies.
+          Case Management client and resource tracker
         </span>
  
         <h1 className="text-4xl font-semibold leading-tight tracking-tight text-slate-900 sm:text-5xl">
@@ -92,7 +92,7 @@ function Hero() {
  
         <div className="mt-12 mb-12 flex flex-wrap justify-center gap-3">
           <a
-            href="#"
+            href="mailto:massoncorlette07@gmail.com"
             className="flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-600/30 hover:bg-blue-800"
           >
             Request a demo
@@ -215,14 +215,14 @@ function Quote() {
           src="/demo-graphic.png"
           alt=""
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-8 -left-12 w-full opacity-20"
+          className="pointer-events-none hidden md:block absolute bottom-8 -left-12 w-full opacity-20"
         />
 
         <img
           src="/demo-graphic.png"
           alt=""
           aria-hidden="true"
-          className="pointer-events-none absolute -left-12 w-full opacity-20"
+          className="pointer-events-none hidden md:block absolute -left-12 w-full opacity-20"
         />
 
 
@@ -242,7 +242,7 @@ function Quote() {
 }
 
  
-function CTABand({setLandingPage  }) {
+function CTABand( ) {
   return (
     <section className="px-8 pb-24">
       <div className="mx-auto max-w-6xl rounded-3xl bg-gradient-to-br from-blue-800 via-blue-600 to-blue-400 px-10 py-16 text-center text-white">
@@ -255,7 +255,7 @@ function CTABand({setLandingPage  }) {
         </p>
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <Link
-            href="#"
+            href="mailto:massoncorlette07@gmail.com"
             className="rounded-xl bg-white px-6 py-3.5 text-sm font-bold text-blue-800"
           >
             Request a demo

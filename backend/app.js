@@ -67,6 +67,8 @@ app.use(
     )
   })
 );
+
+
 app.use(passport.session());  //enables persistent login sessions
 
 app.use('/sign-up', signupRouter);
