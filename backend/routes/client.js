@@ -5,6 +5,8 @@ const controller = require('../controllers/routeController/clientController');
 
 clientRouter.get('/', controller.clientController.getClients);
 
+clientRouter.get('/search', controller.clientController.clientSearch);
+
 clientRouter.post('/', controller.clientController.createClient);
 
 clientRouter.get('/:clientId', controller.clientController.getClientById);

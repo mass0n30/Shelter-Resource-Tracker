@@ -11,6 +11,7 @@ import { useOutletContext } from "react-router-dom";
 import { getClientReferralStats } from '@/lib/utils';
 
 function ClientList({className, viewedClients, loading}) {
+  const [searchTerm, setSearchTerm] = useState("");
 
   const navigate = useNavigate();
 
@@ -108,7 +109,7 @@ function ClientCard({ client, clientStats }) {
       <div className="mt-sm flex flex-wrap items-center gap-2 text-xs sm:text-sm">
         {clientStats?.totalReferrals >= 0 && (
           <div className="inline-flex items-center gap-1 rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] sm:text-xs text-gray-700">
-            <span>Active Resources</span>
+            <span>Active Referrals</span>
             <span className="font-semibold">{clientStats.totalReferrals}</span>
           </div>
         )}
@@ -150,8 +151,9 @@ import { CalendarEmbedded } from './CalenderView';
 import { get } from 'react-hook-form';
 import { useAsyncStatus } from '../partials/Loading';
 
-function ClientToggleSection({className, allClientData, userNotes, userReferrals, authRouter, authRouterForm, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter, openForm, setOpenForm}) {
+function ClientToggleSection({className, allClientData, userNotes, userReferrals, authRouter, viewedClients, setViewedClients, dashStatFilter, setDashStatFilter, openForm, setOpenForm}) {
   // for searching by name
+  const [searchTerm, setSearchTerm] = useState("");
   const [clientId, setClientId] = useState(null);
   const [date, setDate] = useState(null);
   const [filter, setFilter] = useState("ENROLLED");
@@ -177,6 +179,21 @@ function ClientToggleSection({className, allClientData, userNotes, userReferrals
       console.error("Error fetching clients:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleClientGlobalSearch = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await authRouter.get('dashboard/clients/search', {
+        params: {
+          searchTerm: searchTerm,
+        },
+      });
+      setViewedClients(response.data.clients);
+    } catch (error) {
+      console.error("Error searching clients:", error);
     }
   };
 
@@ -246,7 +263,10 @@ return (
         setFilter={setFilter}
         setDashStatFilter={setDashStatFilter}
         setClientId={setClientId}
+        authRouter={authRouter}
         fetchClients={fetchClients}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
       />
       {/* Actions */}
       <div className="flex items-center justify-between gap-2 mt-sm">
@@ -254,13 +274,7 @@ return (
           <Button
             size="sm"
             className="flex items-center gap-1 rounded-lg"
-            onClick={() => {
-              if (clientId) {
-                setViewedClients(allClientData.filter((client) => client.id === clientId));
-              } else {
-                setViewedClients(allClientData);
-              }
-            }}
+            onClick={(e) => handleClientGlobalSearch(e)}
           >
             <UserSearch className="h-4 w-4" />
             <span>Search</span>

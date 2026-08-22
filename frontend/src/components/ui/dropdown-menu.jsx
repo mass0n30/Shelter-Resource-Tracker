@@ -25,7 +25,7 @@ function DropdownMenuTrigger({
 function DropdownMenuContent({
   className,
   align = "start",
-  sideOffset = 1,
+  sideOffset = 0,
   ...props
 }) {
   return (
@@ -53,6 +53,7 @@ function DropdownMenuItem({
   className,
   inset,
   variant = "default",
+  children,
   ...props
 }) {
   return (
@@ -61,10 +62,18 @@ function DropdownMenuItem({
       data-inset={inset}
       data-variant={variant}
       className={cn(
-        "group/dropdown-menu-item rounded-sm border-b relative flex cursor-pointer items-center gap-1.5 px-1.5 py-1 text-sm outline-hidden focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-7 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive",
+        "group/dropdown-menu-item relative flex cursor-pointer items-center gap-2 rounded-sm border-b px-2 py-2 text-sm outline-none",
+        "focus:bg-accent focus:text-accent-foreground",
+        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+        variant === "destructive" &&
+          "text-destructive focus:bg-destructive/10 focus:text-destructive",
         className
       )}
-      {...props} />
+      {...props}
+    >
+      {children}
+    </DropdownMenuPrimitive.Item>
   );
 }
 

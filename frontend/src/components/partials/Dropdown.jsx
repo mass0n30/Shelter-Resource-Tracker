@@ -5,16 +5,38 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
+import {
+  BedDouble,
+  CheckCircle2,
+  ChevronDown,
+  FileText,
+  Loader2,
+  LogOut,
+  Globe,
+  Pencil,
+  Settings,
+  Snowflake,
+  StickyNote,
+  Trash2,
+  UserCheck,
+  UserRoundX,
+  Users,
+  Check,
+  CircleCheck,
+  Ellipsis
+} from "lucide-react";
+
+
+
+
 import ResourceForm from "../forms/ResourceForm";
 import NoteForm from "../forms/NoteForm";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription} from "@/components/ui/dialog";
 
-import { Ellipsis } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown, Settings, LogOut, Loader2 } from "lucide-react";
 
 export function UserDropdown({ user }) {
   const navigate = useNavigate();
@@ -308,27 +330,69 @@ export function DropdownNoteFilter({ setViewedNotes, noteMsg, userNotes, globalN
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent
-        align="end"
-        sideOffset={6}
-        className="z-[9999] w-[var(--radix-dropdown-menu-trigger-width)] text-black border rounded-md shadow-lg"
-      >
-        <DropdownMenuItem 
-        className={noteMsg === "Posted Notes" ? "bg-primary text-white" : ""}
-        onSelect={() => setViewedNotes({notes: globalNotes, filterMsg: "Posted Notes"})}>
-          Posted Notes
-        </DropdownMenuItem>
-        <DropdownMenuItem 
-        className={noteMsg === "Personal Notes" ? "bg-primary text-white" : ""}
-        onSelect={() => setViewedNotes({notes: userNotes.filter(note => !note.completed), filterMsg: "Personal Notes"})}>
-          Personal Notes
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className={noteMsg === "Completed Notes" ? "bg-primary text-white" : ""}
-          onSelect={() => setViewedNotes({notes: userNotes.filter(note => note.completed === true), filterMsg: "Completed Notes"})}>
-          Completed Notes
-        </DropdownMenuItem>
-      </DropdownMenuContent>
+
+  <DropdownMenuContent
+    align="end"
+    sideOffset={6}
+    className="z-[9999] w-[var(--radix-dropdown-menu-trigger-width)] rounded-md border bg-white text-black shadow-lg"
+  >
+    <DropdownMenuItem
+      className={`flex items-center gap-2 ${
+        noteMsg === "Posted Notes" ? "bg-primary text-white" : ""
+      }`}
+      onSelect={() =>
+        setViewedNotes({
+          notes: globalNotes,
+          filterMsg: "Posted Notes",
+        })
+      }
+    >
+      <Globe
+        size={16}
+        strokeWidth={2}
+        className="shrink-0 stroke-current"
+      />
+      <span>Posted Notes</span>
+    </DropdownMenuItem>
+
+    <DropdownMenuItem
+      className={`flex items-center gap-2 ${
+        noteMsg === "Personal Notes" ? "bg-primary text-white" : ""
+      }`}
+      onSelect={() =>
+        setViewedNotes({
+          notes: userNotes.filter((note) => !note.completed),
+          filterMsg: "Personal Notes",
+        })
+      }
+    >
+      <StickyNote
+        size={16}
+        strokeWidth={2}
+        className="shrink-0 stroke-current"
+      />
+      <span>Personal Notes</span>
+    </DropdownMenuItem>
+
+    <DropdownMenuItem
+      className={`flex items-center gap-2 ${
+        noteMsg === "Completed Notes" ? "bg-primary text-white" : ""
+      }`}
+      onSelect={() =>
+        setViewedNotes({
+          notes: userNotes.filter((note) => note.completed),
+          filterMsg: "Completed Notes",
+        })
+      }
+    >
+      <CircleCheck
+        size={16}
+        strokeWidth={2}
+        className="shrink-0 stroke-current"
+      />
+      <span>Completed Notes</span>
+    </DropdownMenuItem>
+  </DropdownMenuContent>
     </DropdownMenu>
   );
 }

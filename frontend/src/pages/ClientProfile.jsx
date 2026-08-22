@@ -168,7 +168,7 @@ function ClientInfoSectionToggle({
         </button>
       </div>
 
-      <div className="min-h-0 max-h-[calc(140vh-200px)] bg-background flex-1 overflow-y-auto pr-1">
+      <div className="min-h-0 max-h-[calc(140vh-200px)] bg-background flex-1 overflow-y-hidden pr-1">
         {activeSection === "resources" && (
           <Resources
             fetchClientData={fetchClientData}

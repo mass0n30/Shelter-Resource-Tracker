@@ -5,6 +5,7 @@ import {
   Upload,
   Menu,
   House,
+  HeartHandshake,
 } from "lucide-react";
 
 import { NavLink } from "react-router-dom";
@@ -151,8 +152,8 @@ function Navbar({
           <div className="hidden h-14 items-center justify-between gap-6 lg:flex">
             {/* Brand */}
             <div className="flex min-w-[290px] items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
-                <House className="h-5 w-5" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primaryLight text-primary">
+                <HeartHandshake size={24} strokeWidth={2.2} />
               </div>
 
               <div className="min-w-0">
@@ -160,7 +161,7 @@ function Navbar({
                   Shelter Resource Tracker
                 </h1>
 
-                <p className="mt-0.5 truncate text-xs text-left font-medium leading-none tracking-[-0.015em] text-slate-400">
+                <p className=" text-xs text-left font-medium leading-none tracking-[-0.015em] text-slate-400">
                   Bringing a supportive community together
                 </p>
               </div>

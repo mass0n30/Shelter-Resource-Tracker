@@ -9,6 +9,8 @@ import {
   CircleCheck,
   Clock,
   History,
+  Tag,
+  CircleDot,
 } from "lucide-react";
 
 function GetTimeLineHistoryItems(clientData) {
@@ -46,6 +48,10 @@ function GetTimeLineHistoryItems(clientData) {
       items.push({
         title: getReferralTitle(referral),
         description: getReferralDescription(referral),
+        resourceType: referral.resourceType,
+        referralStatus: referral.status,
+        purpose: referral.purpose,
+        summary: referral.summary,
         date: referral.createdAt,
         color: getReferralColor(referral.status),
         type: "referral",
@@ -158,19 +164,83 @@ function TimelineItem({ item, isLast }) {
               )}
             </div>
 
-            <p className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground">
-              <Clock size={13} />
+            <p className="mt-1 inline-flex w-full justify-start italic gap-1 text-xs text-muted-foreground">
+              <Clock size={13} className="italic"/>
               {formatTimelineDateOnly(item.date)}
             </p>
           </div>
         </div>
 
-        {item.description && (
-          <p className="mt-2 break-words border-l-2 border-border pl-3 text-xs leading-relaxed text-muted-foreground sm:text-sm">
-            {item.description}
-          </p>
+        {item.type === "referral" ? (
+          <ReferralDetails item={item} />
+        ) : (
+          item.description && (
+            <p className="mt-2 break-words bg-background border-l-2 border-border pl-3 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+              {item.description}
+            </p>
+          )
         )}
       </div>
+    </div>
+  );
+}
+
+function ReferralDetails({ item }) {
+  const hasDetails = item.purpose || item.summary;
+
+  return (
+    <div className="mt-3 border-l-2 bg-background p-sm rounded-sm border-border pl-3">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        {item.resourceType && (
+          <div className="inline-flex items-center gap-1.5 text-xs sm:text-sm">
+            <Tag
+              size={14}
+              className="shrink-0 text-primary"
+              strokeWidth={2.4}
+            />
+
+            <span className="font-semibold text-foreground">Type:</span>
+
+            <span className="text-muted-foreground">
+              {formatStatus(item.resourceType)}
+            </span>
+          </div>
+        )}
+
+        {item.referralStatus && (
+          <div className="inline-flex items-center gap-1.5 text-xs sm:text-sm">
+            <CircleDot
+              size={14}
+              className={getTimelineIconColor(item.color)}
+              strokeWidth={2.4}
+            />
+
+            <span className="font-semibold text-foreground">Status:</span>
+
+            <span className="text-muted-foreground">
+              {formatStatus(item.referralStatus)}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {hasDetails && (
+        <div className="mt-3 space-y-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+          {item.purpose && (
+            <div>
+              <p className="font-semibold text-foreground">Purpose</p>
+              <p className="mt-0.5 break-words">{item.purpose}</p>
+            </div>
+          )}
+
+          {item.summary && (
+            <div>
+              <p className="font-semibold text-foreground">Summary</p>
+              <p className="mt-0.5 break-words">{item.summary}</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -247,27 +317,8 @@ function getEnrollmentColor(type) {
 function getReferralTitle(referral) {
   return `Referral added: ${referral.organizationName}`;
 }
-
-function getReferralDescription(referral) {
-  const parts = [];
-
-  if (referral.resourceType) {
-    parts.push(`Type - ${formatStatus(referral.resourceType)}`);
-  }
-
-  if (referral.status) {
-    parts.push(`Status - ${formatStatus(referral.status)}`);
-  }
-
-  if (referral.purpose) {
-    parts.push(referral.purpose);
-  }
-
-  if (referral.summary) {
-    parts.push(referral.summary);
-  }
-
-  return parts.join(" • ");
+function getReferralDescription() {
+  return "";
 }
 
 function getReferralColor(status) {

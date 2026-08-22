@@ -1,7 +1,6 @@
 import {useState, useEffect} from "react";
 
-export function ClientSearch({ currentClients, setViewedClients, setClientId, fetchClients, filter, setFilter, setDashStatFilter }) {
-  const [searchTerm, setSearchTerm] = useState("");
+export function ClientSearch({ currentClients, setViewedClients, setClientId, authRouterForm, fetchClients, filter, setFilter, setDashStatFilter, searchTerm, setSearchTerm }) {
   const [storedClients, setStoredClients] = useState(currentClients);
 
   useEffect(() => {
@@ -21,6 +20,7 @@ export function ClientSearch({ currentClients, setViewedClients, setClientId, fe
 
     setViewedClients(filtered);
   }, [searchTerm]);
+
 
   return (
     <div className="w-full">

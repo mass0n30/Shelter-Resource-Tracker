@@ -100,6 +100,41 @@ async function getClients(req, res, next) {
   }
 }
 
+async function clientSearch(req, res, next) {
+  const searchTerm = req.body?.searchTerm || req.query?.searchTerm;
+
+  if (!searchTerm) {
+    return res.status(400).json({ message: "Search term is required" });
+  }
+
+  try {
+    const clients = await prisma.client.findMany({
+      where: {
+        OR: [
+          {
+            firstName: {
+              contains: searchTerm,
+              mode: "insensitive",
+            },
+          },
+          {
+            lastName: {
+              contains: searchTerm,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+      include: clientInclude,
+    });
+
+    return res.json({ clients });
+  } catch (error) {
+    console.log("failed to search clients", error);
+    throw error;
+  } 
+}
+
 // not counting completed or closed referrals
 async function getClientsByStatFilter(req, res, next) {
   try {
@@ -348,6 +383,6 @@ async function handleUploadFile(req, res, next) {
 
 module.exports = {
   clientController: {
-    getClients, getClientsByStatFilter, getClientStats, getClientById, createClient, updateClient, updateClientAdditional, deleteClient, handleUploadFile
+    getClients, clientSearch, getClientsByStatFilter, getClientStats, getClientById, createClient, updateClient, updateClientAdditional, deleteClient, handleUploadFile
   }
 };
