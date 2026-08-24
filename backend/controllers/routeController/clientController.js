@@ -311,6 +311,7 @@ async function updateClientAdditional(req, res, next) {
       where: { id: parseInt(req.params.clientId) },
       data: {
         phone: req.body?.phone,
+        age: parseInt(req.body?.age) || req.body?.dob ? Math.floor((new Date() - new Date(req.body.dob)) / (365.25 * 24 * 60 * 60 * 1000)) : null, // calculate age from dob if age not provided
         dob: req.body?.dob ? new Date(req.body.dob) : null, // "1998-05-21" pass in that format from client side
         email: req.body?.email,
       },

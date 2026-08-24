@@ -555,6 +555,7 @@ return (
                       handleAction={handleAction}
                       loadingId={loadingId}
                       noteToggle={true}
+                      setLoading={setLoading}
                       viewedNotes={viewedNotes}
                       currentUser={currentUser}
                       currentToggle={toggle}

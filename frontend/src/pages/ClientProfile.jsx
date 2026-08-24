@@ -102,6 +102,7 @@ export default function ClientProfile() {
 
         <Information
           clientData={clientData.client}
+          totalNotes={clientData?.notes?.length || 0}
           fetchUpdatedData={fetchClientData}
           authRouter={authRouter}
           setOpenForm={setOpenForm}
@@ -243,9 +244,23 @@ function Banner({
                 <h1 className="max-w-[180px] truncate text-base font-semibold text-foreground/90 sm:max-w-none sm:text-lg">
                   {clientData.firstName} {clientData.lastName}
                 </h1>
-
-                <span className="shrink-0 rounded-full border border-border bg-backgroundAlt px-2 py-0.5 text-[11px] font-medium text-muted">
-                  {clientData.status}
+                {clientData?.extensionStatus && (
+                  <span className="shrink-0 rounded-full border border-blue-300 bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700">
+                    EXT
+                  </span>
+                )}
+                <span
+                  className={`shrink-0 rounded-full border border-border px-2 py-0.5 text-[11px] font-medium ${
+                    clientData?.status === "ENROLLED"
+                      ? "bg-green-300 text-green-800"
+                      : clientData?.status === "HOUSED"
+                      ? "bg-orange-300 text-orange-800 border-orange-400"
+                      : clientData?.status === "WC"
+                      ? "bg-blue-300 text-blue-800"
+                      : "bg-gray-300 text-gray-800"
+                  }`}
+                >
+                  {clientData?.status}
                 </span>
               </div>
 
@@ -350,6 +365,7 @@ import {
 
   function Information({
     clientData,
+    totalNotes,
     className,
     authRouter,
     fetchUpdatedData,
@@ -464,7 +480,7 @@ import {
           />
           <StatCard
             label="Notes"
-            value={clientData?.notes?.length || 0}
+            value={totalNotes || 0}
             icon={NotebookText}
           />
         </div>
@@ -529,7 +545,7 @@ function InfoCard({ label, value, icon: Icon, compact = false }) {
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted">
             {label}
           </p>
-          <p className={`mt-1 ${value == 'HOUSED' ? 'text-orange-600 font-bold' : ''} truncate text-sm font-medium text-foreground/85`}>
+          <p className={`mt-1 font-bold truncate text-sm font-medium text-foreground/85`}>
             {value}
           </p>
         </div>
@@ -661,7 +677,7 @@ export function Notes({
     : notes?.filter((note) => !note.completed);
 
   return (
-    <div className="relative bg-background h-full p-2 xs:p-3 sm:p-4 rounded-xl space-y-2 sm:space-y-3">
+    <div className="relative bg-background h-full p-2 xs:p-3 sm:p-4 rounded-xl space-y-2 sm:space-y-1">
       <div
         className={`pointer-events-none absolute right-3 top-3 z-20 flex items-center gap-1 rounded-md border border-primary/20 bg-white/95 px-3 py-1.5 text-[10px] xs:text-xs font-medium text-primary shadow-sm transition-all duration-300 ease-out ${
           success
@@ -686,8 +702,8 @@ export function Notes({
         </span>
       </div>
 
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1 xs:gap-2">
+      <div className="flex items-center justify-between">
+        <div className="flex gap-1 items-center xs:gap-2">
           <NotebookText className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
           <h2 className="text-xs sm:text-sm font-semibold text-gray-800">
             Case Notes
@@ -704,8 +720,8 @@ export function Notes({
       </div>
 
       {notes?.length === 0 && (
-        <p className="text-xs sm:text-sm text-muted-foreground">
-          No notes available
+        <p className="text-xs sm:text-sm text-muted-foreground italic text-center mt-4 text-gray-500">
+          No current notes
         </p>
       )}
 
@@ -976,6 +992,12 @@ export function Resources({ referrals, fetchClientData, authRouter, showName }) 
           Active Referrals
         </h2>
       </div>
+
+      {referrals?.length === 0 && (
+        <p className="text-xs sm:text-sm text-muted-foreground italic text-center mt-4 text-gray-500">
+          No current referrals
+        </p>
+      )}
 
       {referrals?.map((resource) => {
         const config = RESOURCE_CONFIG[resource.resourceType] || {};

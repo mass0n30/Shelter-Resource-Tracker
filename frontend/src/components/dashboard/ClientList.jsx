@@ -62,6 +62,7 @@ function ClientCard({ client, clientStats }) {
     WC: "bg-blue-50 text-blue-700 border-blue-200",
     STAYED_OVERNIGHT: "bg-indigo-50 text-indigo-700 border-indigo-200",
     HOUSED: "bg-orange-50 text-orange-600 border-orange-200",
+    EXTENSION: "bg-blue-50 text-blue-700 border-blue-200",
   };
 
   const currentStatusStyle =
@@ -94,16 +95,31 @@ function ClientCard({ client, clientStats }) {
 
           </div>
         </div>
+        <div className="flex flex-row-reverse flex-wrap items-center gap-1">
+          <span
+            className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-1 text-[10px] font-medium sm:text-xs ${currentStatusStyle}`}
+          >
+            {client?.status === "ENROLLED" && (
+              <BedDouble className="mr-1 h-3.5 w-3.5" />
+            )}
+            {client?.status === "STAYED_OVERNIGHT" && (
+              <ClockAlert className="mr-1 h-3.5 w-3.5" />
+            )}
+            {client?.status === "HOUSED" && (
+              <House className="mr-1 h-3.5 w-3.5" />
+            )}
+            {client?.status === "WC" && (
+              <Snowflake className="mr-1 h-3.5 w-3.5" />
+            )}
+            {client?.status}
+          </span>
 
-        <span
-          className={`shrink-0 inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] sm:text-xs font-medium ${currentStatusStyle}`}
-        >
-          {client?.status === "ENROLLED" && <BedDouble className="h-3.5 w-3.5 mr-1" />}
-          {client?.status === "STAYED_OVERNIGHT" && <ClockAlert className="h-3.5 w-3.5 mr-1" />}
-          {client?.status === "HOUSED" && <House className="h-3.5 w-3.5 mr-1" />}
-          {client?.status === "WC" && <Snowflake className="h-3.5 w-3.5 mr-1" />}
-          {client?.status}
-        </span>
+          {client?.extensionStatus && (
+            <span className="inline-flex shrink-0 items-center rounded-full border border-blue-300 bg-blue-50 px-2.5 py-1 text-[10px] font-medium text-blue-700 sm:text-xs">
+              EXT
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="mt-sm flex flex-wrap items-center gap-2 text-xs sm:text-sm">
@@ -199,7 +215,7 @@ function ClientToggleSection({className, allClientData, userNotes, userReferrals
 
 return (
   <div className={`flex flex-col overflow-hidden ${className}`}>
-    <div className="flex flex-col gap-4 border border-border p-sm md:p-lg">
+    <div className="flex flex-col gap-4 p-sm md:p-lg">
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {/* Section title */}

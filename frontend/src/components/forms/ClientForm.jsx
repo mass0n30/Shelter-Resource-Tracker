@@ -9,7 +9,7 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field";
 import CalendarPopover from "../partials/Calender";
 import { z } from "zod";
-import { RotateCcw, Save, Trash2, Upload, UserRound, SmilePlus, ChevronDown } from "lucide-react";
+import { RotateCcw, Check, Save, Trash2, Upload, UserRound, SmilePlus, ChevronDown } from "lucide-react";
 import { redirect, useNavigate } from "react-router-dom";
 
 const schema = z.object({
@@ -65,18 +65,26 @@ export default function ClientForm({
 }) {
   const isEdit = !!clientData;
 
-  // getting most recent Enrollment date
-  const recentEnrollmentDate = clientData?.EnrollmentDates.filter((d) => d.type === "INTAKE")?.[0]?.date;
+  const recentEnrollmentDate =
+    clientData?.EnrollmentDates?.filter(
+      (enrollmentDate) => enrollmentDate.type === "INTAKE"
+    )?.[0]?.date;
+
   const baseDate =
     isEdit && recentEnrollmentDate
       ? new Date(recentEnrollmentDate)
       : new Date();
 
-  const next90 = new Date(baseDate.getTime() + 90 * 24 * 60 * 60 * 1000);
+  const next90 = new Date(
+    baseDate.getTime() + 90 * 24 * 60 * 60 * 1000
+  );
+
   const today = new Date();
+
   const [error, setError] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
+
   const navigate = useNavigate();
 
   const [date, setDate] = useState({
@@ -92,11 +100,12 @@ export default function ClientForm({
     bedLabel: "",
     gender: "",
     status: "",
+    extensionStatus: false,
   });
 
   const updateField = (key, value) => {
-    setFormData((prev) => ({
-      ...prev,
+    setFormData((previousFormData) => ({
+      ...previousFormData,
       [key]: value,
     }));
   };
@@ -106,24 +115,31 @@ export default function ClientForm({
       setFormData({
         firstName: clientData.firstName || "",
         lastName: clientData.lastName || "",
-        clientId: clientData.clientId ? String(clientData.clientId) : "",
+        clientId: clientData.clientId
+          ? String(clientData.clientId)
+          : "",
         priorityNeed: clientData.priorityNeed || "",
         bedLabel: clientData.bedLabel || "",
         gender: clientData.gender || "",
         status: clientData.status || "",
+        extensionStatus: Boolean(clientData.extensionStatus),
       });
 
       setDate({
-        from: clientData.intakeDate ? new Date(clientData.intakeDate) : null,
-        to: clientData.outtakeDate ? new Date(clientData.outtakeDate) : null,
+        from: clientData.intakeDate
+          ? new Date(clientData.intakeDate)
+          : null,
+        to: clientData.outtakeDate
+          ? new Date(clientData.outtakeDate)
+          : null,
       });
 
       setAvatarPreview(clientData.avatarUrl || null);
       return;
     }
 
-    setFormData((prev) => ({
-      ...prev,
+    setFormData((previousFormData) => ({
+      ...previousFormData,
       firstName: firstName || "",
       lastName: lastName || "",
     }));
@@ -137,16 +153,23 @@ export default function ClientForm({
       setFormData({
         firstName: clientData.firstName || "",
         lastName: clientData.lastName || "",
-        clientId: clientData.clientId ? String(clientData.clientId) : "",
+        clientId: clientData.clientId
+          ? String(clientData.clientId)
+          : "",
         priorityNeed: clientData.priorityNeed || "",
         bedLabel: clientData.bedLabel || "",
         gender: clientData.gender || "",
         status: clientData.status || "",
+        extensionStatus: Boolean(clientData.extensionStatus),
       });
 
       setDate({
-        from: clientData.intakeDate ? new Date(clientData.intakeDate) : null,
-        to: clientData.outtakeDate ? new Date(clientData.outtakeDate) : null,
+        from: clientData.intakeDate
+          ? new Date(clientData.intakeDate)
+          : null,
+        to: clientData.outtakeDate
+          ? new Date(clientData.outtakeDate)
+          : null,
       });
 
       setAvatarPreview(clientData.avatarUrl || null);
@@ -155,7 +178,7 @@ export default function ClientForm({
 
     setDate({
       from: today,
-      to: next60,
+      to: next90,
     });
 
     setFormData({
@@ -166,13 +189,14 @@ export default function ClientForm({
       bedLabel: "",
       gender: "",
       status: "",
+      extensionStatus: false,
     });
 
     setAvatarPreview(null);
   };
 
-  const handleAvatarChange = (e) => {
-    const file = e.target.files?.[0];
+  const handleAvatarChange = (event) => {
+    const file = event.target.files?.[0];
 
     if (!file) return;
 
@@ -209,11 +233,10 @@ export default function ClientForm({
     return data;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     const payload = buildPayload();
-
     const result = schema.safeParse(payload);
 
     if (!result.success) {
@@ -222,22 +245,29 @@ export default function ClientForm({
     }
 
     try {
-      const router = avatarFile && authRouterForm ? authRouterForm : authRouter;
+      const router =
+        avatarFile && authRouterForm
+          ? authRouterForm
+          : authRouter;
 
       if (avatarFile) {
         const formPayload = buildFormPayload(payload);
 
         if (isEdit) {
-          await router.patch(`/dashboard/clients/${clientData.id}`, formPayload);
+          await router.patch(
+            `/dashboard/clients/${clientData.id}`,
+            formPayload
+          );
         } else {
           await router.post("/dashboard/clients", formPayload);
         }
+      } else if (isEdit) {
+        await authRouter.patch(
+          `/dashboard/clients/${clientData.id}`,
+          payload
+        );
       } else {
-        if (isEdit) {
-          await authRouter.patch(`/dashboard/clients/${clientData.id}`, payload);
-        } else {
-          await authRouter.post("/dashboard/clients", payload);
-        }
+        await authRouter.post("/dashboard/clients", payload);
       }
 
       if (setOpenForm) {
@@ -245,7 +275,11 @@ export default function ClientForm({
       }
 
       if (setSuccess) {
-        setSuccess(isEdit ? "Client updated successfully!" : "Client created successfully!");
+        setSuccess(
+          isEdit
+            ? "Client updated successfully!"
+            : "Client created successfully!"
+        );
       }
 
       if (fetchUpdatedData) {
@@ -258,7 +292,9 @@ export default function ClientForm({
       );
 
       setError(
-        `Something went wrong while ${isEdit ? "updating" : "creating"} the client.`
+        `Something went wrong while ${
+          isEdit ? "updating" : "creating"
+        } the client.`
       );
     }
   };
@@ -273,7 +309,9 @@ export default function ClientForm({
     if (!confirmed) return;
 
     try {
-      await authRouter.delete(`/dashboard/clients/${clientData.id}`);
+      await authRouter.delete(
+        `/dashboard/clients/${clientData.id}`
+      );
 
       if (fetchUpdatedData) {
         await fetchUpdatedData();
@@ -283,20 +321,29 @@ export default function ClientForm({
         setOpenForm(null);
       }
     } catch (error) {
-      console.error("Error deleting client:", error.response?.data || error.message);
-      setError("Something went wrong while deleting the client.");
+      console.error(
+        "Error deleting client:",
+        error.response?.data || error.message
+      );
+
+      setError(
+        "Something went wrong while deleting the client."
+      );
     } finally {
       navigate("/dashboard");
     }
   };
 
   return (
-    <DialogContent className="bg-background rounded-lg shadow-lg w-full max-w-md">
+    <DialogContent className="w-full min-w-[800px] rounded-lg bg-white shadow-lg">
       <DialogHeader>
-        <DialogTitle>{isEdit ? "Edit Client" : "Create Client"}</DialogTitle>
+        <DialogTitle>
+          {isEdit ? "Edit Client" : "Create Client"}
+        </DialogTitle>
 
-        <DialogDescription className="mt-2 flex w-full justify-center items-center gap-2 text-sm text-muted">
+        <DialogDescription className="mt-2 flex w-full items-center justify-center gap-2 text-sm text-muted">
           <UserRound className="h-4 w-4" />
+
           {isEdit
             ? "Update this client's profile information."
             : "Fill out the form below to create a new client."}
@@ -309,7 +356,10 @@ export default function ClientForm({
         </span>
       )}
 
-      <form onSubmit={handleSubmit} className="grid w-full gap-4 py-4">
+      <form
+        onSubmit={handleSubmit}
+        className="grid w-full gap-4 py-4"
+      >
         <FieldGroup>
           <Field>
             <div className="flex items-center justify-center gap-4 rounded-md border border-border bg-white px-3 py-3">
@@ -325,9 +375,10 @@ export default function ClientForm({
                 )}
               </div>
 
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-md bg-primary hover:shadow-primaryGlow px-3 py-2 text-sm font-medium text-white transition">
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-white transition hover:shadow-primaryGlow">
                 <Upload className="h-4 w-4" />
                 Upload Image
+
                 <input
                   type="file"
                   accept="image/*"
@@ -341,7 +392,9 @@ export default function ClientForm({
           <Field>
             <Input
               value={formData.firstName}
-              onChange={(e) => updateField("firstName", e.target.value)}
+              onChange={(event) =>
+                updateField("firstName", event.target.value)
+              }
               placeholder="First Name"
               className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
@@ -350,7 +403,9 @@ export default function ClientForm({
           <Field>
             <Input
               value={formData.lastName}
-              onChange={(e) => updateField("lastName", e.target.value)}
+              onChange={(event) =>
+                updateField("lastName", event.target.value)
+              }
               placeholder="Last Name"
               className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
@@ -359,38 +414,47 @@ export default function ClientForm({
           <Field>
             <Input
               value={formData.clientId}
-              onChange={(e) => updateField("clientId", e.target.value)}
+              onChange={(event) =>
+                updateField("clientId", event.target.value)
+              }
               placeholder="Client ID"
               className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </Field>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Field>
-            <div className="relative">
-              <select
-                value={formData.gender}
-                onChange={(e) => updateField("gender", e.target.value)}
-                className="w-full appearance-none rounded-md border border-border bg-white px-3 py-2 pr-10 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              >
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
+            <Field>
+              <div className="relative">
+                <select
+                  value={formData.gender}
+                  onChange={(event) =>
+                    updateField("gender", event.target.value)
+                  }
+                  className="w-full appearance-none rounded-md border border-border bg-white px-3 py-2 pr-10 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                >
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
 
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-            </div>
-          </Field>
+                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+              </div>
+            </Field>
+
             <Field>
               <div className="relative">
                 <select
                   value={formData.status}
-                  onChange={(e) => updateField("status", e.target.value)}
+                  onChange={(event) =>
+                    updateField("status", event.target.value)
+                  }
                   className="w-full appearance-none rounded-md border border-border bg-white px-3 py-2 pr-10 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                 >
                   <option value="">Select Status</option>
                   <option value="ENROLLED">Enrolled</option>
-                  <option value="WC">Winter Contingency</option>
+                  <option value="WC">
+                    Winter Contingency
+                  </option>
                   <option value="INACTIVE">Inactive</option>
                   <option value="HOUSED">Housed</option>
                 </select>
@@ -403,7 +467,9 @@ export default function ClientForm({
           <Field>
             <Input
               value={formData.priorityNeed}
-              onChange={(e) => updateField("priorityNeed", e.target.value)}
+              onChange={(event) =>
+                updateField("priorityNeed", event.target.value)
+              }
               placeholder="Priority Need"
               className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
@@ -412,15 +478,63 @@ export default function ClientForm({
           <Field>
             <Input
               value={formData.bedLabel}
-              onChange={(e) => updateField("bedLabel", e.target.value)}
+              onChange={(event) =>
+                updateField("bedLabel", event.target.value)
+              }
               placeholder="Bed Label"
               className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </Field>
 
           <div className="rounded-md border border-border bg-white px-3 py-2">
-            <span className="mb-2 block text-sm text-muted text-center">Intake & Outtake Dates</span>
-            <CalendarPopover date={date} setDate={setDate} />
+            <span className="mb-2 block text-center text-sm text-muted">
+              Intake & Outtake Dates
+            </span>
+
+            <div className="flex items-center gap-2">
+              <div className="min-w-0 flex-1">
+                <CalendarPopover
+                  date={date}
+                  setDate={setDate}
+                />
+              </div>
+
+              <label className="flex shrink-0 cursor-pointer items-center gap-2 rounded-md border border-border bg-backgroundAlt px-3 py-2 transition hover:bg-primaryLight">
+                <div className="flex flex-col whitespace-nowrap">
+                  <span className="text-sm font-medium text-foreground">
+                    Extension
+                  </span>
+
+                  <span className="text-[11px] text-muted">
+                    Extension Status
+                  </span>
+                </div>
+
+                <input
+                  type="checkbox"
+                  checked={formData.extensionStatus}
+                  onChange={(event) =>
+                    updateField(
+                      "extensionStatus",
+                      event.target.checked
+                    )
+                  }
+                  className="sr-only"
+                />
+
+                <span
+                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md border-2 transition ${
+                    formData.extensionStatus
+                      ? "border-primary bg-primary"
+                      : "border-border bg-white"
+                  }`}
+                >
+                  {formData.extensionStatus && (
+                    <Check className="h-4 w-4 text-white" />
+                  )}
+                </span>
+              </label>
+            </div>
           </div>
         </FieldGroup>
 
@@ -438,7 +552,7 @@ export default function ClientForm({
             )}
           </div>
 
-          <div className="flex w-full justify-between items-center gap-2">
+          <div className="flex w-full items-center justify-between gap-2">
             <button
               type="button"
               onClick={resetForm}
@@ -453,6 +567,7 @@ export default function ClientForm({
               className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition hover:shadow-primaryGlow"
             >
               <Save className="h-4 w-4" />
+
               {isEdit ? "Update Client" : "Create Client"}
             </button>
           </div>
@@ -461,6 +576,7 @@ export default function ClientForm({
     </DialogContent>
   );
 }
+
 
 function ClientFormAdditional({
   authRouter,
@@ -472,7 +588,7 @@ function ClientFormAdditional({
 
   const [formData, setFormData] = useState({
     dob: clientData.dob || "",
-    age: clientData.age || clientData.dob ? Math.floor((new Date() - new Date(clientData.dob)) / (365.25 * 24 * 60 * 60 * 1000)) : "",
+    age: clientData.age || "",
     phone: clientData.phone || "",
     email: clientData.email || "",
   });
@@ -533,7 +649,7 @@ function ClientFormAdditional({
 
           <Field>
             <Input
-              value={formData?.age || ""}
+              value={formData?.dob ? Math.floor((new Date() - new Date(formData.dob)) / (365.25 * 24 * 60 * 60 * 1000)) : ""}
               onChange={(e) => updateField("age", e.target.value)}
               placeholder="Age"
               className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"

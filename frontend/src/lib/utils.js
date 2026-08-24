@@ -117,7 +117,6 @@ export function getClientReferralStats(client) {
     totalReferrals,
     urgentReferrals,
     upcomingFollowUps,
-    getClientReferralStats,
     expiredFollowUps,
   };
 }
