@@ -57,10 +57,10 @@ function Navbar({
               <SheetContent side="left" className="w-[280px] bg-white p-0">
                 <SheetHeader className="border-b border-slate-200 px-4 py-4 text-left">
                   <SheetTitle className="text-base font-bold tracking-[-0.02em] text-slate-950">
-                    Shelter Resource Tracker
+                    ShelterLedger
                   </SheetTitle>
                   <p className="text-sm font-medium text-slate-400">
-                    Bringing a supportive community together
+                    Clearer records. Organized data. Better outcomes.
                   </p>
                 </SheetHeader>
 
@@ -126,11 +126,8 @@ function Navbar({
               </SheetContent>
             </Sheet>
 
-            <h1 className="absolute left-1/2 -translate-x-1/2 text-[15px] font-bold tracking-[0.02em] text-slate-950">
-              <span className="text-slate-700">
-                Dashboard
-              </span>
-              <span className="text-primary"> Overview</span>
+            <h1 className="font-shelter-ledger text-primaryDark font-bold absolute left-1/2 -translate-x-1/2">
+              Dashboard Overview
             </h1>
 
             <Button
@@ -152,17 +149,17 @@ function Navbar({
           <div className="hidden h-14 items-center justify-between gap-6 lg:flex">
             {/* Brand */}
             <div className="flex min-w-[290px] items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primaryLight text-primary">
-                <HeartHandshake size={24} strokeWidth={2.2} />
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primaryLight text-red-500">
+                <HeartHandshake size={24} strokeWidth={2.2} className="text-red-500" />
               </div>
 
-              <div className="min-w-0">
-                <h1 className="truncate text-sm font-bold text-left leading-tight tracking-[-0.035em] text-slate-950">
-                  Shelter Resource Tracker
+              <div className="min-w-0 flex flex-col gap-0.5">
+                <h1 className="truncate text-primaryDark text-md font-bold text-left leading-tight tracking-[-0.035em]">
+                  ShelterLedger
                 </h1>
 
                 <p className=" text-xs text-left font-medium leading-none tracking-[-0.015em] text-slate-400">
-                  Bringing a supportive community together
+                  Clearer records. Organized data. Better outcomes.
                 </p>
               </div>
             </div>

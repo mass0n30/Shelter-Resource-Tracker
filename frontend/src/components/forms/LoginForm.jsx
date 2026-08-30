@@ -169,15 +169,15 @@ function Login() {
 
         <div className="relative z-10 flex h-full w-full flex-col justify-between p-lg">
           <div>
-            <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
+            <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-primaryLight text-red-500 shadow-sm">
               <HeartHandshake className="h-4 w-4 md:h-6 md:w-6" />
             </div>
-            <h1 className="text-xl font-bold text-slate-700 tracking-[-0.035em]">
-              Shelter Resource Tracker
+            <h1 className="shelter-ledger-logo font-semibold text-primaryDark tracking-[-0.045em]">
+              ShelterLedger
             </h1>
 
             <p className="m-2 text-sm text-center text-slate-600 italic">
-              Bringing a supportive community together.
+              Clearer records. Organized data. Better outcomes.
             </p>
           </div>
 
@@ -192,8 +192,8 @@ function Login() {
       <div className="flex-1 flex flex-col justify-center bg-backgroundAlt px-lg py-lg sm:px-10 md:px-16">
 
         <CardHeader className="px-0 pb-6 pt-0">
-          <CardTitle className="text-xl md:text-2xl text-left font-bold tracking-tight text-foreground">
-            Welcome,
+          <CardTitle className="color-primaryDark text-xl font-bold md:text-2xl text-left">
+            Welcome
           </CardTitle>
 
           <CardDescription className="border-b pb-sm border-border text-sm text-left text-muted">

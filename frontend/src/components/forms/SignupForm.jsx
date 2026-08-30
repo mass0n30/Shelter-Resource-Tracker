@@ -92,18 +92,17 @@ function SignUp() {
 
           <div className="relative z-10 flex h-full w-full flex-col justify-between p-lg">
             <div>
-              <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
-                <HeartHandshake className="h-4 w-4 md:h-6 md:w-6" />
-              </div>
-
-              <h1 className="text-xl font-bold text-slate-700 tracking-[-0.035em]">
-                Shelter Resource Tracker
-              </h1>
-
-              <p className="m-2 text-sm text-center text-slate-600 italic">
-                Bringing a supportive community together.
-              </p>
+            <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-primaryLight text-red-500 shadow-sm">
+              <HeartHandshake className="h-4 w-4 md:h-6 md:w-6" />
             </div>
+            <h1 className="shelter-ledger-logo font-semibold text-primaryDark tracking-[-0.045em]">
+              ShelterLedger
+            </h1>
+
+            <p className="m-2 text-sm text-center text-slate-600 italic">
+              Clearer records. Organized data. Better outcomes.
+            </p>
+          </div>
 
             <div className="rounded-lg border border-white/70 bg-white/80 p-sm sm:p-md shadow-sm backdrop-blur">
               <p className="text-xs sm:text-sm text-muted text-center">
@@ -120,7 +119,7 @@ function SignUp() {
             </CardTitle>
 
             <CardDescription className="border-b pb-sm border-border text-sm text-left text-muted">
-              Create your account to get started.
+              Create your account to get started
             </CardDescription>
           </CardHeader>
 

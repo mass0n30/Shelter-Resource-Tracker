@@ -219,8 +219,8 @@ function Banner({
             className="inline-flex w-fit items-center gap-2 rounded-md bg-transparent px-2 py-1 text-xs font-medium text-muted transition hover:bg-primaryLight hover:text-primary"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            <span className="hidden xs:inline sm:inline">Back to Dashboard</span>
-            <span className="sm:hidden">Back</span>
+            <span className="hidden md:inline">Back to Dashboard</span>
+            <span className="md:hidden text-lg">Back</span>
           </button>
 
           <div className="flex min-w-0 items-center gap-3">
@@ -296,7 +296,7 @@ function Banner({
               </button>
             </DialogTrigger>
 
-            <DialogContent className="w-[calc(100vw-2rem)] max-w-md rounded-lg border bg-background p-6 text-foreground shadow-lg">
+            <DialogContent className="rounded-lg border bg-background p-6 text-foreground shadow-lg">
               <VisuallyHidden>
                 <DialogTitle>{`Create Resource for ${clientData.firstName} ${clientData.lastName}`}</DialogTitle>
               </VisuallyHidden>

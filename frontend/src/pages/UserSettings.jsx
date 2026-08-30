@@ -123,7 +123,7 @@ function SettingsPage() {
             className="inline-flex items-center gap-2 rounded-md px-2 py-1 text-xs font-medium text-muted transition bg-transparent hover:bg-primaryLight hover:text-primary"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            Back to Dashboard
+            <span className="hidden md:inline">Back to Dashboard</span>
           </button>
 
           <h1 className="text-2xl font-bold tracking-tight text-foreground">

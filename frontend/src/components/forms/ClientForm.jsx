@@ -335,7 +335,7 @@ export default function ClientForm({
   };
 
   return (
-    <DialogContent className="w-full min-w-[800px] rounded-lg bg-white shadow-lg">
+    <DialogContent className="w-[calc(100vw-2rem)] max-w-lg max-h-[90vh] overflow-y-auto w-full rounded-lg bg-white shadow-lg">
       <DialogHeader>
         <DialogTitle>
           {isEdit ? "Edit Client" : "Create Client"}
@@ -486,58 +486,54 @@ export default function ClientForm({
             />
           </Field>
 
-          <div className="rounded-md border border-border bg-white px-3 py-2">
-            <span className="mb-2 block text-center text-sm text-muted">
-              Intake & Outtake Dates
-            </span>
+        <div className="rounded-lg border border-border bg-white p-3">
+          <span className="mb-3 block text-center text-sm font-medium text-muted">
+            Intake & Outtake Dates
+          </span>
 
-            <div className="flex items-center gap-2">
-              <div className="min-w-0 flex-1">
-                <CalendarPopover
-                  date={date}
-                  setDate={setDate}
-                />
-              </div>
-
-              <label className="flex shrink-0 cursor-pointer items-center gap-2 rounded-md border border-border bg-backgroundAlt px-3 py-2 transition hover:bg-primaryLight">
-                <div className="flex flex-col whitespace-nowrap">
-                  <span className="text-sm font-medium text-foreground">
-                    Extension
-                  </span>
-
-                  <span className="text-[11px] text-muted">
-                    Extension Status
-                  </span>
-                </div>
-
-                <input
-                  type="checkbox"
-                  checked={formData.extensionStatus}
-                  onChange={(event) =>
-                    updateField(
-                      "extensionStatus",
-                      event.target.checked
-                    )
-                  }
-                  className="sr-only"
-                />
-
-                <span
-                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md border-2 transition ${
-                    formData.extensionStatus
-                      ? "border-primary bg-primary"
-                      : "border-border bg-white"
-                  }`}
-                >
-                  {formData.extensionStatus && (
-                    <Check className="h-4 w-4 text-white" />
-                  )}
-                </span>
-              </label>
+          <div className="flex items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <CalendarPopover
+                date={date}
+                setDate={setDate}
+              />
             </div>
-          </div>
-        </FieldGroup>
 
+            <label
+              className={`flex h-10 shrink-0 cursor-pointer items-center gap-2 rounded-md border px-3 transition-colors ${
+                formData.extensionStatus
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border bg-white text-foreground hover:bg-muted/50"
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={formData.extensionStatus}
+                onChange={(event) =>
+                  updateField("extensionStatus", event.target.checked)
+                }
+                className="sr-only"
+              />
+
+              <span
+                className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
+                  formData.extensionStatus
+                    ? "border-primary bg-primary"
+                    : "border-border bg-white"
+                }`}
+              >
+                {formData.extensionStatus && (
+                  <Check className="h-3.5 w-3.5 text-white" />
+                )}
+              </span>
+
+              <span className="whitespace-nowrap text-sm font-medium">
+                Extension
+              </span>
+            </label>
+          </div>
+        </div>
+        </FieldGroup>
         <div className="mt-4 flex items-center justify-between gap-3">
           <div>
             {isEdit && (
