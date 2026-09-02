@@ -491,7 +491,7 @@ export default function ClientForm({
             Intake & Outtake Dates
           </span>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col items-center gap-3">
             <div className="min-w-0 flex-1">
               <CalendarPopover
                 date={date}

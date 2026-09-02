@@ -220,7 +220,7 @@ function Banner({
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span className="hidden md:inline">Back to Dashboard</span>
-            <span className="md:hidden text-lg">Back</span>
+            <span className="md:hidden text-md">Back</span>
           </button>
 
           <div className="flex min-w-0 items-center gap-3">
@@ -444,9 +444,10 @@ import {
           </DialogContent>
         </Dialog>
         </div>
-        <p className="mt-1 text-sm text-muted">
+
+        <div className="mt-md text-sm text-left sm:text-center text-muted">
           Basic details and shelter activity
-        </p>
+        </div>
       </div>
 
       <div className="space-y-sm p-sm text-sm">

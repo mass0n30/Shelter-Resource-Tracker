@@ -261,7 +261,12 @@ function Login() {
 
             <Button type="submit" className="h-11 w-full rounded text-white hover:brightness-110 bg-primary shadow-sm">
               Continue
-            </Button>
+            </Button>            
+            <div className="flex items-center gap-4 py-1">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs text-muted">or</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
             {isDemo ? (
               <Button
                 type="button"
@@ -285,8 +290,6 @@ function Login() {
             )}
 
             <div className="flex items-center gap-4 py-1">
-              <div className="h-px flex-1 bg-border" />
-              <span className="text-xs text-muted">or</span>
               <div className="h-px flex-1 bg-border" />
             </div>
             <div className="space-y-lg">
