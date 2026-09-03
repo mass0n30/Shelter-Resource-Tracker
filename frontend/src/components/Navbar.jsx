@@ -40,28 +40,25 @@ function Navbar({
   return (
     <nav className={className}>
       <header className="border-b border-slate-200 bg-white">
-        <div className="px-5 sm:px-6">
+        <div className="sm:px-0">
           {/* Mobile Navbar */}
-          <div className="flex h-14 items-center justify-between lg:hidden">
-            <Sheet>
+          <div className="mobileNav flex items-center justify-between lg:hidden">
+            <Sheet className="p-0">
               <SheetTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
                   className="h-10 w-10 rounded-xl bg-transparent text-slate-700 hover:bg-blue-50 hover:text-blue-700"
                 >
-                  <Menu className="h-5 w-5" />
+                  <Menu className="h-10 w-auto" />
                 </Button>
               </SheetTrigger>
 
               <SheetContent side="left" className="w-[280px] bg-white p-0">
-                <SheetHeader className="border-b border-slate-200 px-4 py-4 text-left">
-                  <SheetTitle className="text-base font-bold tracking-[-0.02em] text-slate-950">
-                    ShelterLedger
-                  </SheetTitle>
-                  <p className="text-sm font-medium text-slate-400">
-                    Clearer records. Organized data. Better outcomes.
-                  </p>
+                <SheetHeader className="border-b border-slate-200 px-2 py-4 text-left">
+                  <div className="flex w-full items-center gap-3">
+                    <img src="/logo/shelterledgerfull.png" alt="ShelterLedger Logo" className="h-full sm:h-full w-auto" />
+                  </div>
                 </SheetHeader>
 
                 <div className="flex flex-col gap-1 px-3 py-4">
@@ -103,7 +100,7 @@ function Navbar({
                     <DialogTrigger asChild>
                       <button
                         type="button"
-                        className="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-semibold text-white transition hover:bg-blue-50 hover:text-blue-700"
+                        className="flex bg-blue-500 items-center gap-3 rounded-lg px-3 py-3 text-sm font-semibold text-white transition hover:bg-blue-50 hover:text-blue-700"
                       >
                         <Upload className="h-4 w-4" />
                         Upload CSV
@@ -126,9 +123,9 @@ function Navbar({
               </SheetContent>
             </Sheet>
 
-            <h1 className="font-shelter-ledger text-primaryDark font-bold absolute left-1/2 -translate-x-1/2">
-              Dashboard Overview
-            </h1>
+            <span className="text-sm font-semibold text-slate-700">
+              <img src="/logo/dashboardoverview.png" className=" h-20 w-auto" loading="eager"/>
+            </span>
 
             <Button
               type="button"
@@ -137,7 +134,7 @@ function Navbar({
               onClick={() => setNotificationsOpen?.(true)}
               className="relative h-10 w-10 rounded-xl bg-transparent text-slate-700 hover:bg-blue-50 hover:text-blue-700"
             >
-              <Bell className="h-5 w-5" />
+              <Bell className="h-10 w-auto" />
 
               <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
                 !
@@ -149,18 +146,10 @@ function Navbar({
           <div className="hidden h-14 items-center justify-between gap-6 lg:flex">
             {/* Brand */}
             <div className="flex min-w-[290px] items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primaryLight text-red-500">
-                <HeartHandshake size={24} strokeWidth={2.2} className="text-red-500" />
-              </div>
-
               <div className="min-w-0 flex flex-col gap-0.5">
-                <h1 className="truncate text-primaryDark text-md font-bold text-left leading-tight tracking-[-0.035em]">
-                  ShelterLedger
-                </h1>
-
-                <p className=" text-xs text-left font-medium leading-none tracking-[-0.015em] text-slate-400">
-                  Clearer records. Organized data. Better outcomes.
-                </p>
+                <span className="truncate text-sm font-semibold text-slate-700">
+                    <img src="/logo/shelterledgerfulltwo.png" alt="ShelterLedger Logo" className="h-20 w-auto" />
+                </span>
               </div>
             </div>
 

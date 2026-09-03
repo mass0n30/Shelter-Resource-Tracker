@@ -157,6 +157,72 @@ function Login() {
   });
   };
 
+  if (isDemo) {
+  return (
+    <div className="flex min-h-screen w-full items-center justify-center bg-primaryLight p-md">
+      <div className="flex min-h-[100vh] w-full flex-col overflow-hidden rounded-lg bg-backgroundAlt shadow-xl md:flex-row">
+        <div className="relative flex flex-1 bg-secondary">
+          <img
+            src="/HouseDesign.png"
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover opacity-70"
+          />
+
+          <div className="relative z-10 flex h-full w-full flex-col justify-between p-lg">
+            <div className="flex h-50 items-center gap-3 p-sm sm:p-md">
+              <img
+                src="/logo/shelterledgerfull.png"
+                alt="ShelterLedger Logo"
+                className="h-50 w-auto"
+              />
+            </div>
+
+            <div className="rounded-lg border border-white/70 bg-white/80 p-sm shadow-sm backdrop-blur sm:p-md">
+              <p className="text-center text-[10px] text-muted sm:text-sm">
+                Secure. Private. Built for shelters and service providers.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-1 flex-col justify-center bg-backgroundAlt px-lg py-lg sm:px-10 md:px-16">
+          <CardHeader className="px-0 pb-6 pt-0">
+            <CardTitle className="text-left text-xl font-bold text-primaryDark md:text-2xl">
+              Explore ShelterLedger
+            </CardTitle>
+
+            <CardDescription className="border-b border-border pb-sm text-left text-sm text-muted">
+              Explore a preloaded workspace with fictional sample data. No
+              account required.
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="px-0">
+            {error && (
+              <span className="mb-4 block text-center text-sm text-destructive">
+                Error was encountered: {error}
+              </span>
+            )}
+
+            <Button
+              type="button"
+              onClick={handleDemoLogin}
+              className="h-12 w-full rounded bg-primary text-white shadow-sm hover:bg-primaryDark"
+            >
+              Enter Demo Dashboard
+            </Button>
+
+            <p className="mt-6 text-center text-[10px] text-muted sm:text-xs">
+              Demo environment only. All client data and records are fictional.
+              No real client data is used.
+            </p>
+          </CardContent>
+        </div>
+      </div>
+    </div>
+  );
+}
+
  return (
   <div className="min-h-screen w-full bg-primaryLight flex items-center justify-center p-md">
     <div className="w-full min-h-[100vh] bg-backgroundAlt rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row">
@@ -168,21 +234,11 @@ function Login() {
         />
 
         <div className="relative z-10 flex h-full w-full flex-col justify-between p-lg">
-          <div>
-            <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-primaryLight text-red-500 shadow-sm">
-              <HeartHandshake className="h-4 w-4 md:h-6 md:w-6" />
-            </div>
-            <h1 className="shelter-ledger-logo font-semibold text-primaryDark tracking-[-0.045em]">
-              ShelterLedger
-            </h1>
-
-            <p className="m-2 text-sm text-center text-slate-600 italic">
-              Clearer records. Organized data. Better outcomes.
-            </p>
+          <div className="flex h-50 items-center gap-3 p-sm sm:p-md">
+            <img src="/logo/shelterledgerfull.png" alt="ShelterLedger Logo" className="h-50 w-auto" />
           </div>
-
           <div className="rounded-lg border border-white/70 bg-white/80 p-sm sm:p-md shadow-sm backdrop-blur">
-            <p className="text-xs sm:text-sm text-muted text-center">
+            <p className="text-[10px] sm:text-sm text-muted text-center">
               Secure. Private. Built for shelters and service providers.
             </p>
           </div>
@@ -258,15 +314,6 @@ function Login() {
                 Forgot password?
               </button>
             </div>
-
-            <Button type="submit" className="h-11 w-full rounded text-white hover:brightness-110 bg-primary shadow-sm">
-              Continue
-            </Button>            
-            <div className="flex items-center gap-4 py-1">
-              <div className="h-px flex-1 bg-border" />
-              <span className="text-xs text-muted">or</span>
-              <div className="h-px flex-1 bg-border" />
-            </div>
             {isDemo ? (
               <Button
                 type="button"
@@ -285,9 +332,22 @@ function Login() {
                     "https://shelter-resource-tracker-demo.vercel.app/";
                 }}
               >
-                View Live Demo
+               <span>
+                  View Live Demo
+                </span>
+                <span className="text-[14px] italic">
+                  (no login required)
+                </span>
               </Button>
             )}
+            <div className="flex items-center gap-4 py-1">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs text-muted">or</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <Button type="submit" className="h-11 w-full rounded text-white hover:brightness-110 bg-primary shadow-sm">
+              Login 
+            </Button>            
 
             <div className="flex items-center gap-4 py-1">
               <div className="h-px flex-1 bg-border" />

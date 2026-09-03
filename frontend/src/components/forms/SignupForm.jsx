@@ -91,21 +91,11 @@ function SignUp() {
           />
 
           <div className="relative z-10 flex h-full w-full flex-col justify-between p-lg">
-            <div>
-            <div className="flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-primaryLight text-red-500 shadow-sm">
-              <HeartHandshake className="h-4 w-4 md:h-6 md:w-6" />
+            <div className="flex h-50 items-center gap-3">
+              <img src="/logo/shelterledgerfull.png" alt="ShelterLedger Logo" className="h-50 w-auto" />
             </div>
-            <h1 className="shelter-ledger-logo font-semibold text-primaryDark tracking-[-0.045em]">
-              ShelterLedger
-            </h1>
-
-            <p className="m-2 text-sm text-center text-slate-600 italic">
-              Clearer records. Organized data. Better outcomes.
-            </p>
-          </div>
-
             <div className="rounded-lg border border-white/70 bg-white/80 p-sm sm:p-md shadow-sm backdrop-blur">
-              <p className="text-xs sm:text-sm text-muted text-center">
+              <p className="text-[10px] sm:text-sm text-muted text-center">
                 Secure. Private. Built for shelters and service providers.
               </p>
             </div>
